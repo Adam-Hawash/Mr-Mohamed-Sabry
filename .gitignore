@@ -3,7 +3,6 @@ node_modules/
 next-env.d.ts
 tsconfig.tsbuildinfo
 .env
-db/
 dev.log
 *.log
 tool-results/
@@ -14,5 +13,5 @@ CLAUDE.md
 AGENTS.md
 Caddyfile
 public/uploads/
-prisma/db/
+prisma/upload/
 upload/
