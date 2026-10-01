@@ -35,19 +35,30 @@ export function Navbar({ onLogin }: { onLogin: () => void }) {
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "border-b border-gold-500/20 bg-night-800/90 shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md"
-          : "bg-transparent"
+          ? "border-b border-border/80 bg-white/90 shadow-[0_4px_24px_rgba(0,0,0,0.06)] backdrop-blur-md"
+          : "border-b border-transparent bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* الشعار */}
         <a href="#home" className="group flex items-center gap-3" aria-label="الرئيسية">
-          <Emblem size={46} className="glow-gold transition-transform duration-500 group-hover:rotate-12" />
+          <Emblem
+            size={46}
+            className="transition-transform duration-500 group-hover:rotate-12"
+          />
           <span className="flex flex-col leading-tight">
-            <span className="font-ruqaa text-xl font-bold text-gold-gradient sm:text-2xl">
+            <span
+              className={`text-xl font-extrabold transition-colors sm:text-2xl ${
+                scrolled ? "text-foreground" : "text-gold-300"
+              }`}
+            >
               مستر محمد صبري
             </span>
-            <span className="font-kufi text-[11px] tracking-wide text-cream/70">
+            <span
+              className={`text-[11px] font-medium tracking-wide transition-colors ${
+                scrolled ? "text-muted-foreground" : "text-stone-300"
+              }`}
+            >
               مادة اللغة العربية
             </span>
           </span>
@@ -59,7 +70,11 @@ export function Navbar({ onLogin }: { onLogin: () => void }) {
             <a
               key={l.href}
               href={l.href}
-              className="relative font-kufi text-sm text-cream/80 transition-colors hover:text-gold-300 after:absolute after:-bottom-1.5 after:start-0 after:h-px after:w-0 after:bg-gold-400 after:transition-all after:duration-300 hover:after:w-full"
+              className={`relative text-sm font-semibold transition-colors after:absolute after:-bottom-1.5 after:start-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full ${
+                scrolled
+                  ? "text-foreground/75 hover:text-primary"
+                  : "text-stone-200 hover:text-gold-300"
+              }`}
             >
               {l.label}
             </a>
@@ -69,8 +84,11 @@ export function Navbar({ onLogin }: { onLogin: () => void }) {
         <div className="flex items-center gap-2">
           <Button
             onClick={onLogin}
-            variant="outline"
-            className="border-gold-500/50 bg-gold-500/10 font-kufi text-gold-300 hover:bg-gold-500 hover:text-night-900"
+            className={
+              scrolled
+                ? "bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
+                : "border border-gold-500/50 bg-gold-500/10 font-semibold text-gold-300 hover:bg-gold-500 hover:text-gold-900"
+            }
           >
             <LogIn className="size-4" />
             دخول
@@ -82,20 +100,21 @@ export function Navbar({ onLogin }: { onLogin: () => void }) {
               <Button
                 variant="outline"
                 size="icon"
-                className="border-gold-500/40 text-gold-300 lg:hidden"
+                className={
+                  scrolled
+                    ? "border-border text-foreground lg:hidden"
+                    : "border-gold-500/40 bg-white/10 text-gold-300 hover:bg-white/20 hover:text-gold-200 lg:hidden"
+                }
                 aria-label="فتح القائمة"
               >
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="w-72 border-gold-500/25 bg-night-700"
-            >
+            <SheetContent side="right" className="w-72">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-3 text-start">
                   <Emblem size={38} />
-                  <span className="font-ruqaa text-lg text-gold-gradient">مستر محمد صبري</span>
+                  <span className="text-lg font-extrabold text-foreground">مستر محمد صبري</span>
                 </SheetTitle>
               </SheetHeader>
               <nav className="mt-2 flex flex-col gap-1 px-2" aria-label="قائمة الموبايل">
@@ -104,7 +123,7 @@ export function Navbar({ onLogin }: { onLogin: () => void }) {
                     key={l.href}
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    className="rounded-lg px-3 py-2.5 font-kufi text-cream/85 transition-colors hover:bg-gold-500/10 hover:text-gold-300"
+                    className="rounded-lg px-3 py-2.5 text-foreground/80 transition-colors hover:bg-muted hover:text-primary"
                   >
                     {l.label}
                   </a>
@@ -114,7 +133,7 @@ export function Navbar({ onLogin }: { onLogin: () => void }) {
                     setOpen(false);
                     onLogin();
                   }}
-                  className="mt-3 bg-gold-500 font-kufi text-night-900 hover:bg-gold-400"
+                  className="mt-3 bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
                 >
                   <LogIn className="size-4" />
                   تسجيل الدخول

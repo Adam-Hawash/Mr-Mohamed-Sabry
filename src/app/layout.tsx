@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#071A14",
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
 };
@@ -23,16 +23,18 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
-        {/* الخطوط العربية الزخرفية — عماني/رقعة للعناوين، أميري للنص القرآني، كوفي للمسادات، القاهرة للنصوص */}
+        {/* خط القاهرة هو خط المنصة بالكامل (400-800). الخطان الزخرفيان
+            (Aref Ruqaa + Amiri) مستخدمان داخل الهيرو فقط — عبر CDN عمدًا
+            (next/font بيعطل مع Turbopack في بيئة التطوير) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font -- الخطوط عبر CDN عمدًا (next/font بيعطل مع Turbopack في بيئة التطوير) */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- الخطوط عبر CDN عمدًا */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
       </head>

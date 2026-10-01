@@ -37,8 +37,8 @@ export default function Home() {
   if (checking) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
-        <Emblem size={72} className="glow-gold animate-pulse-glow" />
-        <p className="font-amiri text-lg text-gold-300/80">بسم الله الرحمن الرحيم</p>
+        <Emblem size={72} className="animate-pulse-glow" />
+        <p className="text-lg font-semibold text-muted-foreground">جاري تحميل المنصة...</p>
       </div>
     );
   }

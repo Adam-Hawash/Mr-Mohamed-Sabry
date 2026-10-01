@@ -1,6 +1,6 @@
 /**
  * زخارف SVG عربية — قلادة، فواصل مزخرفة، زوايا إطار
- * كلها مرسومة يدويًا بأسلوب التذهيب في المخطوطات العربية
+ * بألوان الهوية: برونزي #A16207 + ذهبي #D4A843 على الأساس الموحّد
  */
 
 export function Emblem({
@@ -21,15 +21,15 @@ export function Emblem({
       aria-label="شعار منصة مستر محمد صبري"
     >
       {/* الدائرة الخارجية */}
-      <circle cx="60" cy="60" r="57" stroke="#D4A843" strokeWidth="2" />
+      <circle cx="60" cy="60" r="57" stroke="#A16207" strokeWidth="2" />
       <circle
         cx="60"
         cy="60"
         r="50"
-        stroke="#D4A843"
+        stroke="#A16207"
         strokeWidth="1"
         strokeDasharray="4 3"
-        opacity="0.65"
+        opacity="0.55"
       />
       {/* نجمة ثمانية — مربعان متقاطعان */}
       <rect
@@ -37,7 +37,7 @@ export function Emblem({
         y="30"
         width="60"
         height="60"
-        stroke="#D4A843"
+        stroke="#A16207"
         strokeWidth="1.2"
         opacity="0.8"
       />
@@ -46,21 +46,21 @@ export function Emblem({
         y="30"
         width="60"
         height="60"
-        stroke="#E9C767"
+        stroke="#C49A38"
         strokeWidth="1.2"
         opacity="0.8"
         transform="rotate(45 60 60)"
       />
-      {/* قرص مركزي */}
-      <circle cx="60" cy="60" r="31" fill="#0B241C" stroke="#D4A843" strokeWidth="1.5" />
+      {/* قرص مركزي — بني داكن بروح الهيرو */}
+      <circle cx="60" cy="60" r="31" fill="#292524" stroke="#A16207" strokeWidth="1.5" />
       <text
         x="60"
-        y="64"
+        y="66"
         textAnchor="middle"
         dominantBaseline="middle"
-        fontFamily="'Aref Ruqaa', 'Amiri', serif"
-        fontWeight="700"
-        fontSize="42"
+        fontFamily="'Cairo', sans-serif"
+        fontWeight="800"
+        fontSize="40"
         fill="#E9C767"
       >
         م
@@ -72,7 +72,7 @@ export function Emblem({
           cx={60 + 57 * Math.cos((a * Math.PI) / 180)}
           cy={60 + 57 * Math.sin((a * Math.PI) / 180)}
           r="2.2"
-          fill="#D4A843"
+          fill="#A16207"
           opacity="0.9"
         />
       ))}
@@ -102,29 +102,29 @@ export function OrnamentDivider({
       <line x1="216" y1="13" x2="320" y2="13" stroke="url(#goldLineR)" strokeWidth="1.5" />
       <defs>
         <linearGradient id="goldLineL" x1="0" y1="0" x2="104" y2="0" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#D4A843" stopOpacity="0" />
-          <stop offset="1" stopColor="#D4A843" />
+          <stop stopColor="#C49A38" stopOpacity="0" />
+          <stop offset="1" stopColor="#C49A38" />
         </linearGradient>
         <linearGradient id="goldLineR" x1="216" y1="0" x2="320" y2="0" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#D4A843" />
-          <stop offset="1" stopColor="#D4A843" stopOpacity="0" />
+          <stop stopColor="#C49A38" />
+          <stop offset="1" stopColor="#C49A38" stopOpacity="0" />
         </linearGradient>
       </defs>
       {/* معيّنان جانبيان */}
       <rect x="108" y="9" width="8" height="8" transform="rotate(45 112 13)" fill="#D4A843" opacity="0.85" />
       <rect x="204" y="9" width="8" height="8" transform="rotate(45 208 13)" fill="#D4A843" opacity="0.85" />
       {/* الزهرة المركزية */}
-      <circle cx="160" cy="13" r="9.5" stroke="#D4A843" strokeWidth="1.3" />
-      <circle cx="160" cy="13" r="3.4" fill="#E9C767" />
-      <circle cx="160" cy="1.5" r="2" fill="#D4A843" opacity="0.9" />
-      <circle cx="160" cy="24.5" r="2" fill="#D4A843" opacity="0.9" />
-      <circle cx="148.5" cy="13" r="2" fill="#D4A843" opacity="0.9" />
-      <circle cx="171.5" cy="13" r="2" fill="#D4A843" opacity="0.9" />
+      <circle cx="160" cy="13" r="9.5" stroke="#C49A38" strokeWidth="1.3" />
+      <circle cx="160" cy="13" r="3.4" fill="#D4A843" />
+      <circle cx="160" cy="1.5" r="2" fill="#C49A38" opacity="0.9" />
+      <circle cx="160" cy="24.5" r="2" fill="#C49A38" opacity="0.9" />
+      <circle cx="148.5" cy="13" r="2" fill="#C49A38" opacity="0.9" />
+      <circle cx="171.5" cy="13" r="2" fill="#C49A38" opacity="0.9" />
     </svg>
   );
 }
 
-/** زاوية إطار مزخرفة — تُدار بحسب الركن */
+/** زاوية إطار مزخرفة — تُدار بحسب الركن (للاستخدام داخل الهيرو فقط) */
 export function CornerOrnament({
   className = "",
   flipX = false,
