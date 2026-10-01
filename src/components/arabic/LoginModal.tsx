@@ -58,13 +58,13 @@ export function LoginModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md border-gold-500/30 bg-card p-0 sm:rounded-xl">
-        <div className="pattern-glow-top rounded-t-xl border-b border-gold-500/20 bg-night-700/60 px-6 pb-5 pt-6 text-center">
+      <DialogContent className="max-w-md p-0 sm:rounded-xl">
+        <div className="rounded-t-xl border-b border-border bg-muted/60 px-6 pb-5 pt-6 text-center">
           <DialogHeader className="items-center space-y-0">
-            <DialogTitle className="font-ruqaa text-2xl font-bold text-gold-gradient">
+            <DialogTitle className="text-2xl font-extrabold text-foreground">
               تسجيل الدخول
             </DialogTitle>
-            <DialogDescription className="mt-1 font-kufi text-xs text-cream/60">
+            <DialogDescription className="mt-1 text-xs font-medium text-muted-foreground">
               منصّة مستر محمد صبري — اللغة العربية
             </DialogDescription>
           </DialogHeader>
@@ -73,11 +73,11 @@ export function LoginModal({
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-6">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="login-id" className="font-kufi text-cream/85">
+            <Label htmlFor="login-id" className="font-semibold text-foreground">
               رقم تسجيل الدخول
             </Label>
             <div className="relative">
-              <UserRound className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-gold-500/70" />
+              <UserRound className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="login-id"
                 value={id}
@@ -86,18 +86,18 @@ export function LoginModal({
                 dir="ltr"
                 inputMode="numeric"
                 autoComplete="username"
-                className="border-gold-500/25 bg-night-600/50 ps-9 text-center tracking-widest text-cream placeholder:text-cream/35 focus-visible:ring-gold-500/60"
+                className="ps-9 text-center tracking-widest"
                 required
               />
             </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="login-password" className="font-kufi text-cream/85">
+            <Label htmlFor="login-password" className="font-semibold text-foreground">
               كلمة السر
             </Label>
             <div className="relative">
-              <LockKeyhole className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-gold-500/70" />
+              <LockKeyhole className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="login-password"
                 type="password"
@@ -105,7 +105,7 @@ export function LoginModal({
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="أدخل كلمة السر"
                 autoComplete="current-password"
-                className="border-gold-500/25 bg-night-600/50 ps-9 text-cream placeholder:text-cream/35 focus-visible:ring-gold-500/60"
+                className="ps-9"
                 required
               />
             </div>
@@ -120,7 +120,7 @@ export function LoginModal({
           <Button
             type="submit"
             disabled={loading}
-            className="h-11 bg-gold-500 font-kufi text-base font-semibold text-night-900 hover:bg-gold-400"
+            className="h-11 bg-primary text-base font-bold text-primary-foreground hover:bg-primary/90"
           >
             {loading ? <Loader2 className="size-5 animate-spin" /> : "دخول"}
           </Button>

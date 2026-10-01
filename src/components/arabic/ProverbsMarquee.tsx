@@ -19,21 +19,21 @@ export function ProverbsMarquee() {
   const row = [...PROVERBS, ...PROVERBS];
   return (
     <div
-      className="marquee-hover-pause relative overflow-hidden border-y border-gold-500/25 bg-night-700/80 py-3.5"
+      className="marquee-hover-pause relative overflow-hidden border-y border-border bg-muted py-3.5"
       dir="rtl"
       aria-label="حكم وأمثال عربية"
     >
       {/* تلاشي الحواف */}
-      <div className="pointer-events-none absolute inset-y-0 start-0 z-10 w-20 bg-gradient-to-l from-transparent to-night-800" />
-      <div className="pointer-events-none absolute inset-y-0 end-0 z-10 w-20 bg-gradient-to-r from-transparent to-night-800" />
+      <div className="pointer-events-none absolute inset-y-0 start-0 z-10 w-20 bg-gradient-to-l from-transparent to-muted" />
+      <div className="pointer-events-none absolute inset-y-0 end-0 z-10 w-20 bg-gradient-to-r from-transparent to-muted" />
 
       <div className="flex w-max animate-marquee items-center gap-8">
         {row.map((p, i) => (
           <div key={i} className="flex items-center gap-8">
-            <p className="whitespace-nowrap font-amiri text-lg text-gold-200/90 sm:text-xl">
+            <p className="whitespace-nowrap text-lg font-semibold text-foreground/80 sm:text-xl">
               «{p}»
             </p>
-            <SmallRosette className="shrink-0 text-gold-500/70" />
+            <SmallRosette className="shrink-0 text-primary/60" />
           </div>
         ))}
       </div>

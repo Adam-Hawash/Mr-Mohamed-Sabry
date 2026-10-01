@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { ArrowRight, Loader2, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,29 +43,22 @@ export function AdminLoginView({
   }
 
   return (
-    <div className="relative flex min-h-screen flex-1 items-center justify-center overflow-hidden px-4 py-16">
-      {/* الخلفية */}
-      <div className="absolute inset-0" aria-hidden="true">
-        <Image
-          src="/images/hero-pattern.jpg"
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-night-800/88" />
-        <div className="absolute inset-0 pattern-glow-top" />
-      </div>
+    <div className="relative flex min-h-screen flex-1 items-center justify-center overflow-hidden bg-background px-4 py-16">
+      {/* لمسة خلفية هادئة — تدرج بيج خفيف */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_0%,rgba(212,168,67,0.10),transparent_70%)]"
+        aria-hidden="true"
+      />
 
       <div className="relative z-10 w-full max-w-md">
-        <div className="frame-ornate rounded-2xl bg-card/90 p-8 shadow-[0_30px_90px_rgba(0,0,0,0.55)] backdrop-blur-sm glow-gold-soft">
+        <div className="rounded-2xl border border-border bg-card p-8 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
           <div className="flex flex-col items-center text-center">
-            <Emblem size={72} className="glow-gold" />
-            <h1 className="mt-4 font-ruqaa text-3xl font-bold text-gold-gradient">
+            <Emblem size={72} />
+            <h1 className="mt-4 text-3xl font-extrabold text-foreground">
               دخول المشرفين
             </h1>
-            <p className="mt-1 flex items-center gap-1.5 font-kufi text-xs text-cream/55">
-              <ShieldCheck className="size-3.5 text-gold-500/80" />
+            <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <ShieldCheck className="size-3.5 text-primary" />
               هذه المنطقة مخصّصة لإدارة المنصّة
             </p>
             <OrnamentDivider width={220} className="mt-3 max-w-full" />
@@ -74,29 +66,29 @@ export function AdminLoginView({
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="admin-email" className="font-kufi text-cream/85">
+              <Label htmlFor="admin-email" className="font-semibold text-foreground">
                 البريد الإلكتروني
               </Label>
               <div className="relative">
-                <Mail className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-gold-500/70" />
+                <Mail className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="admin-email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="أدخل البريد الإلكتروني"
                   autoComplete="username"
-                  className="border-gold-500/25 bg-night-600/50 ps-9 text-cream placeholder:text-cream/35 focus-visible:ring-gold-500/60"
+                  className="ps-9"
                   required
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="admin-password" className="font-kufi text-cream/85">
+              <Label htmlFor="admin-password" className="font-semibold text-foreground">
                 كلمة السر
               </Label>
               <div className="relative">
-                <LockKeyhole className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-gold-500/70" />
+                <LockKeyhole className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="admin-password"
                   type="password"
@@ -104,7 +96,7 @@ export function AdminLoginView({
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="أدخل كلمة السر"
                   autoComplete="current-password"
-                  className="border-gold-500/25 bg-night-600/50 ps-9 text-cream placeholder:text-cream/35 focus-visible:ring-gold-500/60"
+                  className="ps-9"
                   required
                 />
               </div>
@@ -119,7 +111,7 @@ export function AdminLoginView({
             <Button
               type="submit"
               disabled={loading}
-              className="h-11 bg-gold-500 font-kufi text-base font-semibold text-night-900 hover:bg-gold-400"
+              className="h-11 bg-primary text-base font-bold text-primary-foreground hover:bg-primary/90"
             >
               {loading ? <Loader2 className="size-5 animate-spin" /> : "تأكيد الدخول"}
             </Button>
@@ -129,7 +121,7 @@ export function AdminLoginView({
         <Button
           variant="ghost"
           onClick={onBack}
-          className="mx-auto mt-5 flex font-kufi text-cream/60 hover:text-gold-300"
+          className="mx-auto mt-5 flex font-semibold text-muted-foreground hover:text-primary"
         >
           <ArrowRight className="size-4" />
           عودة إلى الموقع

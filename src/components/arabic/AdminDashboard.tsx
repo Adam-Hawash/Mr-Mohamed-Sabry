@@ -130,15 +130,15 @@ export function AdminDashboard({ onExit }: { onExit: () => void }) {
   return (
     <div className="flex min-h-screen flex-col">
       {/* ===== الهيدر ===== */}
-      <header className="sticky top-0 z-40 border-b border-gold-500/20 bg-night-800/95 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <Emblem size={42} className="glow-gold" />
+            <Emblem size={42} />
             <div className="flex flex-col leading-tight">
-              <span className="font-ruqaa text-xl font-bold text-gold-gradient">
+              <span className="text-xl font-extrabold text-foreground">
                 لوحة تحكم المشرفين
               </span>
-              <span className="font-kufi text-[11px] text-cream/60">
+              <span className="text-[11px] font-medium text-muted-foreground">
                 منصّة مستر محمد صبري — اللغة العربية
               </span>
             </div>
@@ -148,7 +148,7 @@ export function AdminDashboard({ onExit }: { onExit: () => void }) {
               variant="outline"
               size="sm"
               onClick={onExit}
-              className="border-gold-500/40 font-kufi text-gold-300 hover:bg-gold-500/10"
+              className="font-semibold"
             >
               <ExternalLink className="size-4" />
               عرض الموقع
@@ -158,7 +158,7 @@ export function AdminDashboard({ onExit }: { onExit: () => void }) {
               size="sm"
               onClick={handleLogout}
               disabled={loggingOut}
-              className="border-destructive/40 font-kufi text-destructive hover:bg-destructive/10"
+              className="border-destructive/40 font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive"
             >
               {loggingOut ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
               خروج
@@ -175,10 +175,10 @@ export function AdminDashboard({ onExit }: { onExit: () => void }) {
               <button
                 key={n.key}
                 onClick={() => setTab(n.key)}
-                className={`flex shrink-0 items-center gap-3 rounded-xl border px-4 py-3 font-kufi text-sm transition-all lg:w-full ${
+                className={`flex shrink-0 items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-all lg:w-full ${
                   tab === n.key
-                    ? "border-gold-500/60 bg-gold-500/15 font-semibold text-gold-300 shadow-[0_4px_20px_rgba(212,168,67,0.15)]"
-                    : "border-gold-500/15 bg-card/60 text-cream/70 hover:border-gold-500/40 hover:text-gold-200"
+                    ? "border-primary/35 bg-primary/10 font-bold text-primary"
+                    : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground"
                 }`}
               >
                 <n.icon className="size-4.5" />
@@ -243,14 +243,14 @@ function OverviewTab({
   return (
     <div className="flex flex-col gap-6">
       {/* ترحيب */}
-      <div className="frame-ornate rounded-xl bg-card/80 p-6 sm:p-8">
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
         <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-start">
-          <Emblem size={64} className="glow-gold shrink-0" />
+          <Emblem size={64} className="shrink-0" />
           <div>
-            <h2 className="font-ruqaa text-2xl font-bold text-gold-gradient">
-              أهلًا بك يا أستاذ محمد ✦
+            <h2 className="text-2xl font-extrabold text-foreground">
+              أهلًا بك يا أستاذ محمد <span className="text-primary">✦</span>
             </h2>
-            <p className="mt-1 leading-7 text-cream/70">
+            <p className="mt-1 leading-7 text-muted-foreground">
               من هنا تدير منصّة اللغة العربية — كل إعلان أو درس تضيفه يظهر
               مباشرة في صفحة الموقع الرئيسية.
             </p>
@@ -265,26 +265,24 @@ function OverviewTab({
           <button
             key={s.label}
             onClick={() => onGo(s.tab)}
-            className="frame-ornate group rounded-xl bg-card/80 p-5 text-start transition-all hover:-translate-y-0.5 hover:bg-card"
+            className="group rounded-xl border border-border bg-card p-5 text-start shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-md"
           >
             <div className="flex items-center justify-between">
-              <span className="font-kufi text-sm text-cream/60">{s.label}</span>
-              <s.icon className="size-5 text-gold-400" />
+              <span className="text-sm font-medium text-muted-foreground">{s.label}</span>
+              <s.icon className="size-5 text-primary" />
             </div>
             {loading ? (
-              <Loader2 className="mt-2 size-6 animate-spin text-gold-500/60" />
+              <Loader2 className="mt-2 size-6 animate-spin text-primary/60" />
             ) : (
-              <p className="mt-1 font-ruqaa text-4xl font-bold text-gold-gradient">
-                {s.value}
-              </p>
+              <p className="mt-1 text-4xl font-extrabold text-primary">{s.value}</p>
             )}
           </button>
         ))}
-        <div className="frame-ornate rounded-xl bg-card/80 p-5">
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="font-kufi text-sm text-cream/60">آخر تحديث</span>
+            <span className="text-sm font-medium text-muted-foreground">آخر تحديث</span>
           </div>
-          <p className="mt-2 font-kufi text-sm leading-7 text-gold-200/90">
+          <p className="mt-2 text-sm font-semibold leading-7 text-foreground">
             {loading ? "..." : lastUpdate ? formatDate(lastUpdate.createdAt) : "لا يوجد محتوى بعد"}
           </p>
         </div>
@@ -384,29 +382,29 @@ function AnnouncementsTab({
   return (
     <div className="flex flex-col gap-6">
       {/* نموذج الإضافة/التعديل */}
-      <form onSubmit={handleSave} className="frame-ornate rounded-xl bg-card/80 p-5 sm:p-6">
-        <h3 className="flex items-center gap-2 font-kufi text-lg font-semibold text-gold-300">
-          {editingId ? <Save className="size-5" /> : <Plus className="size-5" />}
+      <form onSubmit={handleSave} className="rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
+        <h3 className="flex items-center gap-2 text-lg font-bold text-foreground">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            {editingId ? <Save className="size-4.5" /> : <Plus className="size-4.5" />}
+          </span>
           {editingId ? "تعديل الإعلان" : "إضافة إعلان جديد"}
         </h3>
         <div className="mt-4 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label className="font-kufi text-cream/85">عنوان الإعلان</Label>
+            <Label className="font-semibold text-foreground">عنوان الإعلان</Label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="مثال: بدء امتحانات شهر أكتوبر"
-              className="border-gold-500/25 bg-night-600/50 text-cream placeholder:text-cream/35 focus-visible:ring-gold-500/60"
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label className="font-kufi text-cream/85">نص الإعلان</Label>
+            <Label className="font-semibold text-foreground">نص الإعلان</Label>
             <Textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="اكتب تفاصيل الإعلان هنا..."
               rows={4}
-              className="border-gold-500/25 bg-night-600/50 text-cream placeholder:text-cream/35 focus-visible:ring-gold-500/60"
             />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -416,7 +414,7 @@ function AnnouncementsTab({
                 onCheckedChange={setImportant}
                 id="important-switch"
               />
-              <Label htmlFor="important-switch" className="font-kufi text-cream/85">
+              <Label htmlFor="important-switch" className="font-semibold text-foreground">
                 إعلان مهم
               </Label>
             </div>
@@ -426,7 +424,7 @@ function AnnouncementsTab({
                   type="button"
                   variant="ghost"
                   onClick={cancelEdit}
-                  className="font-kufi text-cream/60 hover:text-cream"
+                  className="font-semibold text-muted-foreground hover:text-foreground"
                 >
                   <X className="size-4" />
                   إلغاء
@@ -435,7 +433,7 @@ function AnnouncementsTab({
               <Button
                 type="submit"
                 disabled={saving}
-                className="bg-gold-500 font-kufi font-semibold text-night-900 hover:bg-gold-400"
+                className="bg-primary font-bold text-primary-foreground hover:bg-primary/90"
               >
                 {saving ? <Loader2 className="size-4 animate-spin" /> : editingId ? "حفظ التعديل" : "إضافة الإعلان"}
               </Button>
@@ -446,11 +444,11 @@ function AnnouncementsTab({
 
       {/* القائمة */}
       <div>
-        <h3 className="mb-3 font-kufi text-sm text-cream/60">
+        <h3 className="mb-3 text-sm font-semibold text-muted-foreground">
           الإعلانات المنشورة ({items.length})
         </h3>
         {items.length === 0 ? (
-          <p className="frame-ornate rounded-xl bg-card/60 p-8 text-center font-amiri text-lg text-cream/60">
+          <p className="rounded-xl border border-border bg-card p-8 text-center text-lg font-medium text-muted-foreground">
             لا توجد إعلانات بعد — ابدأ بإضافة أول إعلان
           </p>
         ) : (
@@ -458,29 +456,29 @@ function AnnouncementsTab({
             {items.map((a) => (
               <div
                 key={a.id}
-                className="frame-ornate rounded-xl bg-card/70 p-4 transition-colors hover:bg-card"
+                className="rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary/30"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="font-kufi font-semibold text-cream">{a.title}</h4>
+                      <h4 className="font-bold text-foreground">{a.title}</h4>
                       {a.important && (
-                        <span className="rounded-full bg-gold-500 px-2 py-0.5 font-kufi text-[10px] font-bold text-night-900">
+                        <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
                           مهم
                         </span>
                       )}
                     </div>
-                    <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-cream/60">
+                    <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground">
                       {a.body}
                     </p>
-                    <p className="mt-2 text-xs text-cream/40">{formatDate(a.createdAt)}</p>
+                    <p className="mt-2 text-xs text-muted-foreground/70">{formatDate(a.createdAt)}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">
                     <Button
                       variant="outline"
                       size="icon"
                       onClick={() => startEdit(a)}
-                      className="size-8 border-gold-500/35 text-gold-300 hover:bg-gold-500/15"
+                      className="size-8 border-primary/35 text-primary hover:bg-primary/10 hover:text-primary"
                       aria-label={`تعديل ${a.title}`}
                     >
                       <Pencil className="size-3.5" />
@@ -504,20 +502,18 @@ function AnnouncementsTab({
 
       {/* تأكيد الحذف */}
       <AlertDialog open={deleteId !== null} onOpenChange={(o) => !o && setDeleteId(null)}>
-        <AlertDialogContent className="border-gold-500/30 bg-card">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-kufi">تأكيد الحذف</AlertDialogTitle>
+            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
             <AlertDialogDescription>
               هل أنت متأكد من حذف هذا الإعلان؟ لا يمكن التراجع عن هذه الخطوة.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-gold-500/30 font-kufi hover:bg-gold-500/10">
-              إلغاء
-            </AlertDialogCancel>
+            <AlertDialogCancel className="font-semibold">إلغاء</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-destructive font-kufi text-white hover:bg-destructive/85"
+              className="bg-destructive font-bold text-white hover:bg-destructive/85"
             >
               نعم، احذف
             </AlertDialogAction>
@@ -617,30 +613,31 @@ function LessonsTab({ items, refresh }: { items: Lesson[]; refresh: () => Promis
   return (
     <div className="flex flex-col gap-6">
       {/* نموذج الإضافة/التعديل */}
-      <form onSubmit={handleSave} className="frame-ornate rounded-xl bg-card/80 p-5 sm:p-6">
-        <h3 className="flex items-center gap-2 font-kufi text-lg font-semibold text-gold-300">
-          {editingId ? <Save className="size-5" /> : <Plus className="size-5" />}
+      <form onSubmit={handleSave} className="rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
+        <h3 className="flex items-center gap-2 text-lg font-bold text-foreground">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            {editingId ? <Save className="size-4.5" /> : <Plus className="size-4.5" />}
+          </span>
           {editingId ? "تعديل الدرس" : "إضافة درس جديد"}
         </h3>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <Label className="font-kufi text-cream/85">عنوان الدرس</Label>
+            <Label className="font-semibold text-foreground">عنوان الدرس</Label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="مثال: المبتدأ والخبر"
-              className="border-gold-500/25 bg-night-600/50 text-cream placeholder:text-cream/35 focus-visible:ring-gold-500/60"
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label className="font-kufi text-cream/85">الصف الدراسي</Label>
+            <Label className="font-semibold text-foreground">الصف الدراسي</Label>
             <Select value={grade} onValueChange={setGrade}>
-              <SelectTrigger className="border-gold-500/25 bg-night-600/50 text-cream focus-visible:ring-gold-500/60">
+              <SelectTrigger>
                 <SelectValue placeholder="اختر الصف" />
               </SelectTrigger>
-              <SelectContent className="border-gold-500/30 bg-night-700">
+              <SelectContent>
                 {GRADES.map((g) => (
-                  <SelectItem key={g} value={g} className="font-kufi text-cream focus:bg-gold-500/15">
+                  <SelectItem key={g} value={g}>
                     {g}
                   </SelectItem>
                 ))}
@@ -648,23 +645,21 @@ function LessonsTab({ items, refresh }: { items: Lesson[]; refresh: () => Promis
             </Select>
           </div>
           <div className="flex flex-col gap-2 sm:col-span-2">
-            <Label className="font-kufi text-cream/85">وصف الدرس</Label>
+            <Label className="font-semibold text-foreground">وصف الدرس</Label>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="وصف مختصر لمحتوى الدرس..."
               rows={3}
-              className="border-gold-500/25 bg-night-600/50 text-cream placeholder:text-cream/35 focus-visible:ring-gold-500/60"
             />
           </div>
           <div className="flex flex-col gap-2 sm:col-span-2">
-            <Label className="font-kufi text-cream/85">رابط الدرس (اختياري)</Label>
+            <Label className="font-semibold text-foreground">رابط الدرس (اختياري)</Label>
             <Input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://..."
               dir="ltr"
-              className="border-gold-500/25 bg-night-600/50 text-cream placeholder:text-cream/35 focus-visible:ring-gold-500/60"
             />
           </div>
           <div className="flex items-center justify-end gap-2 sm:col-span-2">
@@ -673,7 +668,7 @@ function LessonsTab({ items, refresh }: { items: Lesson[]; refresh: () => Promis
                 type="button"
                 variant="ghost"
                 onClick={cancelEdit}
-                className="font-kufi text-cream/60 hover:text-cream"
+                className="font-semibold text-muted-foreground hover:text-foreground"
               >
                 <X className="size-4" />
                 إلغاء
@@ -682,7 +677,7 @@ function LessonsTab({ items, refresh }: { items: Lesson[]; refresh: () => Promis
             <Button
               type="submit"
               disabled={saving}
-              className="bg-gold-500 font-kufi font-semibold text-night-900 hover:bg-gold-400"
+              className="bg-primary font-bold text-primary-foreground hover:bg-primary/90"
             >
               {saving ? <Loader2 className="size-4 animate-spin" /> : editingId ? "حفظ التعديل" : "إضافة الدرس"}
             </Button>
@@ -692,11 +687,11 @@ function LessonsTab({ items, refresh }: { items: Lesson[]; refresh: () => Promis
 
       {/* القائمة */}
       <div>
-        <h3 className="mb-3 font-kufi text-sm text-cream/60">
+        <h3 className="mb-3 text-sm font-semibold text-muted-foreground">
           الدروس المنشورة ({items.length})
         </h3>
         {items.length === 0 ? (
-          <p className="frame-ornate rounded-xl bg-card/60 p-8 text-center font-amiri text-lg text-cream/60">
+          <p className="rounded-xl border border-border bg-card p-8 text-center text-lg font-medium text-muted-foreground">
             لا توجد دروس بعد — ابدأ بإضافة أول درس
           </p>
         ) : (
@@ -704,18 +699,18 @@ function LessonsTab({ items, refresh }: { items: Lesson[]; refresh: () => Promis
             {items.map((l) => (
               <div
                 key={l.id}
-                className="frame-ornate rounded-xl bg-card/70 p-4 transition-colors hover:bg-card"
+                className="rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary/30"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="font-kufi font-semibold text-cream">{l.title}</h4>
-                      <span className="rounded-full border border-gold-500/40 bg-gold-500/10 px-2.5 py-0.5 font-kufi text-[10px] text-gold-300">
+                      <h4 className="font-bold text-foreground">{l.title}</h4>
+                      <span className="rounded-full border border-primary/25 bg-muted px-2.5 py-0.5 text-[10px] font-semibold text-primary">
                         {l.grade}
                       </span>
                     </div>
                     {l.description && (
-                      <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-cream/60">
+                      <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground">
                         {l.description}
                       </p>
                     )}
@@ -725,7 +720,7 @@ function LessonsTab({ items, refresh }: { items: Lesson[]; refresh: () => Promis
                         target="_blank"
                         rel="noopener noreferrer"
                         dir="ltr"
-                        className="mt-1.5 block truncate text-xs text-gold-400/80 hover:text-gold-300"
+                        className="mt-1.5 block truncate text-xs text-primary/80 hover:text-primary"
                       >
                         {l.url}
                       </a>
@@ -736,7 +731,7 @@ function LessonsTab({ items, refresh }: { items: Lesson[]; refresh: () => Promis
                       variant="outline"
                       size="icon"
                       onClick={() => startEdit(l)}
-                      className="size-8 border-gold-500/35 text-gold-300 hover:bg-gold-500/15"
+                      className="size-8 border-primary/35 text-primary hover:bg-primary/10 hover:text-primary"
                       aria-label={`تعديل ${l.title}`}
                     >
                       <Pencil className="size-3.5" />
@@ -760,20 +755,18 @@ function LessonsTab({ items, refresh }: { items: Lesson[]; refresh: () => Promis
 
       {/* تأكيد الحذف */}
       <AlertDialog open={deleteId !== null} onOpenChange={(o) => !o && setDeleteId(null)}>
-        <AlertDialogContent className="border-gold-500/30 bg-card">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-kufi">تأكيد الحذف</AlertDialogTitle>
+            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
             <AlertDialogDescription>
               هل أنت متأكد من حذف هذا الدرس؟ لا يمكن التراجع عن هذه الخطوة.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-gold-500/30 font-kufi hover:bg-gold-500/10">
-              إلغاء
-            </AlertDialogCancel>
+            <AlertDialogCancel className="font-semibold">إلغاء</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-destructive font-kufi text-white hover:bg-destructive/85"
+              className="bg-destructive font-bold text-white hover:bg-destructive/85"
             >
               نعم، احذف
             </AlertDialogAction>

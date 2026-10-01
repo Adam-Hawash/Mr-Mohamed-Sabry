@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarDays, Megaphone, Newspaper } from "lucide-react";
+import { CalendarDays, Newspaper } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { OrnamentDivider } from "./Ornaments";
+import { SectionHeader } from "./SectionHeader";
 
 type Announcement = {
   id: string;
@@ -42,34 +42,28 @@ export function AnnouncementsSection() {
   }, []);
 
   return (
-    <section id="news" className="relative py-20 sm:py-24">
+    <section id="news" className="relative bg-muted/45 py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="flex flex-col items-center text-center">
-          <span className="font-kufi text-sm tracking-widest text-gold-400">✦ الأخبار والإعلانات ✦</span>
-          <h2 className="mt-3 font-ruqaa text-3xl font-bold leading-relaxed text-gold-gradient sm:text-4xl">
-            جديد المنصة
-          </h2>
-          <OrnamentDivider width={280} className="mt-2 max-w-full" />
-        </div>
+        <SectionHeader badge="الأخبار والإعلانات" title="جديد المنصة" />
 
         <div className="mt-12">
           {/* حالة التحميل */}
           {items === null && (
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-40 rounded-xl bg-night-600/60" />
+                <Skeleton key={i} className="h-40 rounded-xl" />
               ))}
             </div>
           )}
 
           {/* لا توجد إعلانات */}
           {items !== null && items.length === 0 && (
-            <div className="frame-ornate mx-auto max-w-xl rounded-xl bg-card/70 p-10 text-center">
-              <Newspaper className="mx-auto size-10 text-gold-500/70" />
-              <p className="mt-4 font-amiri text-xl text-cream/85">
+            <div className="mx-auto max-w-xl rounded-xl border border-border bg-card p-10 text-center shadow-sm">
+              <Newspaper className="mx-auto size-10 text-primary/60" />
+              <p className="mt-4 text-xl font-semibold text-foreground">
                 لا توجد إعلانات حاليًا — تابعونا قريبًا
               </p>
-              <p className="mt-2 text-sm text-cream/50">
+              <p className="mt-2 text-sm text-muted-foreground">
                 كل جديد عن الدروس والامتحانات سيظهر هنا أولًا بأول
               </p>
             </div>
@@ -81,21 +75,21 @@ export function AnnouncementsSection() {
               {items.slice(0, 6).map((a) => (
                 <article
                   key={a.id}
-                  className="group frame-ornate flex flex-col rounded-xl bg-card/80 p-5 transition-all duration-300 hover:-translate-y-1 hover:bg-card"
+                  className="group flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-kufi text-lg font-semibold leading-relaxed text-cream group-hover:text-gold-300">
+                    <h3 className="text-lg font-bold leading-relaxed text-foreground group-hover:text-primary">
                       {a.title}
                     </h3>
                     {a.important && (
-                      <span className="shrink-0 rounded-full bg-gold-500 px-2.5 py-0.5 font-kufi text-[11px] font-bold text-night-900">
+                      <span className="shrink-0 rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-bold text-primary-foreground">
                         مهم
                       </span>
                     )}
                   </div>
-                  <p className="mt-3 flex-1 text-sm leading-7 text-cream/70">{a.body}</p>
-                  <div className="mt-4 flex items-center gap-2 border-t border-gold-500/15 pt-3 text-xs text-cream/45">
-                    <CalendarDays className="size-3.5 text-gold-500/70" />
+                  <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">{a.body}</p>
+                  <div className="mt-4 flex items-center gap-2 border-t border-border/70 pt-3 text-xs text-muted-foreground">
+                    <CalendarDays className="size-3.5 text-primary/70" />
                     {formatDate(a.createdAt)}
                   </div>
                 </article>
