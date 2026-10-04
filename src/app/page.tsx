@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Landing } from "@/components/arabic/Landing";
 import { AdminLoginView } from "@/components/arabic/AdminLoginView";
 import { AdminDashboard } from "@/components/arabic/AdminDashboard";
-import { Emblem } from "@/components/arabic/Ornaments";
+import { PlatformLoader } from "@/components/PlatformLoader";
 
 type View = "landing" | "admin-login" | "admin-dashboard";
 
@@ -35,12 +35,8 @@ export default function Home() {
   }, [view]);
 
   if (checking) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
-        <Emblem size={72} className="animate-pulse-glow" />
-        <p className="text-lg font-semibold text-muted-foreground">جاري تحميل المنصة...</p>
-      </div>
-    );
+    /* (ص2) هيئة الإقلاع زي المنصات الكبيرة — نفس لودر شريف/جينيوس لكن بهوية صبري الذهبية */
+    return <PlatformLoader variant="full" />;
   }
 
   return (

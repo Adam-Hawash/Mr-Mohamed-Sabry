@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { BookOpenText, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PlatformLoader } from "@/components/PlatformLoader";
 import { SectionHeader } from "./SectionHeader";
 
 type Lesson = {
@@ -70,14 +70,8 @@ export function LessonsSection() {
         )}
 
         <div className="mt-10">
-          {/* التحميل */}
-          {lessons === null && (
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-44 rounded-xl" />
-              ))}
-            </div>
-          )}
+          {/* التحميل — لودر المنصة زي المنصات الكبيرة (ص2) */}
+          {lessons === null && <PlatformLoader variant="inline" label="جاري تحميل الدروس..." />}
 
           {/* لا توجد دروس */}
           {lessons !== null && lessons.length === 0 && (

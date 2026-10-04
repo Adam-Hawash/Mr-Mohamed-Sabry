@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CalendarDays, Newspaper } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PlatformLoader } from "@/components/PlatformLoader";
 import { SectionHeader } from "./SectionHeader";
 
 type Announcement = {
@@ -47,14 +47,8 @@ export function AnnouncementsSection() {
         <SectionHeader badge="الأخبار والإعلانات" title="جديد المنصة" />
 
         <div className="mt-12">
-          {/* حالة التحميل */}
-          {items === null && (
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-40 rounded-xl" />
-              ))}
-            </div>
-          )}
+          {/* حالة التحميل — لودر المنصة زي المنصات الكبيرة (ص2) */}
+          {items === null && <PlatformLoader variant="inline" label="جاري تحميل الإعلانات..." />}
 
           {/* لا توجد إعلانات */}
           {items !== null && items.length === 0 && (
