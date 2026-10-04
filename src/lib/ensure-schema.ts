@@ -38,7 +38,7 @@ export var SCHEMA_TABLES = [
   'CREATE TABLE IF NOT EXISTS ParentStudent (id TEXT PRIMARY KEY, parentId TEXT NOT NULL, studentId TEXT NOT NULL, createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, UNIQUE(parentId, studentId))',
   // (2026-و40) الكتب والملازم — مكتبة PDF للطالب (تاب أدمن + تاب طالب)
   // (و43) sourceUrl: لينك خارجي للكتب الكبيرة — من غير تخزين الملف في قاعدة البيانات
-  'CREATE TABLE IF NOT EXISTS Book (id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL DEFAULT \'\', filePath TEXT NOT NULL DEFAULT \'\', fileName TEXT NOT NULL DEFAULT \'\', sourceUrl TEXT NOT NULL DEFAULT \'\', fileType TEXT NOT NULL DEFAULT \'application/pdf\', sizeBytes INTEGER NOT NULL DEFAULT 0, grade TEXT NOT NULL DEFAULT \'\', createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedAt DATETIME NOT NULL)',
+  'CREATE TABLE IF NOT EXISTS Book (id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL DEFAULT \'\', filePath TEXT NOT NULL DEFAULT \'\', fileName TEXT NOT NULL DEFAULT \'\', sourceUrl TEXT NOT NULL DEFAULT \'\', fileType TEXT NOT NULL DEFAULT \'application/pdf\', sizeBytes INTEGER NOT NULL DEFAULT 0, grade TEXT NOT NULL DEFAULT \'\', usage TEXT NOT NULL DEFAULT \'both\', questionsJson TEXT NOT NULL DEFAULT \'\', createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedAt DATETIME NOT NULL)',
   // (2026-و44) الإشعارات — رد الشكوى/الكتب الجديدة/امتحانات وواجبات جديدة
   'CREATE TABLE IF NOT EXISTS Notification (id TEXT PRIMARY KEY, studentId TEXT NOT NULL, type TEXT NOT NULL DEFAULT \'general\', title TEXT NOT NULL, body TEXT NOT NULL DEFAULT \'\', read INTEGER NOT NULL DEFAULT 0, createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)',
   /* (2026-و66) ساحة التحدي — غرف الجروبات + اللاعبين + تحدي المستر + الفلاش كاردز
@@ -61,6 +61,18 @@ export var SCHEMA_TABLES = [
   /* (2026-و89) اشتراكات Web Push لولي الأمر — الإشعار الخارجي بقى إشعار براوزر حقيقي
      (مش واتساب — طلب المستر) — كل صف = جهاز مشترك لرقم ولي أمر مطبّع */
   'CREATE TABLE IF NOT EXISTS ParentPushSubscription (id TEXT PRIMARY KEY, parentId TEXT NOT NULL DEFAULT \'\', endpoint TEXT NOT NULL UNIQUE, p256dh TEXT NOT NULL DEFAULT \'\', auth TEXT NOT NULL DEFAULT \'\', userAgent TEXT NOT NULL DEFAULT \'\', createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)',
+  /* (ص10) جداول ناقصة من الترميم رغم إنها في schema.prisma — AssistantUse
+     (سجل المساعد) + HomeworkResult (تسليمات الواجبات — الأهم) + UploadChunk
+     (الرفع المجزأ للملفات الكبيرة) — أول مرة يدخلوا الترميم المركزي */
+  'CREATE TABLE IF NOT EXISTS AssistantUse (id TEXT PRIMARY KEY, studentId TEXT NOT NULL, kind TEXT DEFAULT \'\', refId TEXT DEFAULT \'\', page TEXT DEFAULT \'\', createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)',
+  'CREATE TABLE IF NOT EXISTS HomeworkResult (id TEXT PRIMARY KEY, homeworkId TEXT NOT NULL, studentId TEXT NOT NULL, score REAL DEFAULT 0, maxScore REAL DEFAULT 100, answers TEXT DEFAULT \'\', submittedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)',
+  'CREATE TABLE IF NOT EXISTS UploadChunk (id TEXT PRIMARY KEY, uploadId TEXT NOT NULL, chunkIndex INTEGER NOT NULL, totalChunks INTEGER DEFAULT 0, data TEXT DEFAULT \'\', fileName TEXT DEFAULT \'\', category TEXT DEFAULT \'general\', createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)',
+  /* (ص10) فهارس قيود التفرد للجداول الجديدة — نفس شكل السكيما */
+  'CREATE UNIQUE INDEX IF NOT EXISTS idx_hw_result_unique ON HomeworkResult(studentId, homeworkId)',
+  'CREATE INDEX IF NOT EXISTS idx_hw_result_student ON HomeworkResult(studentId)',
+  'CREATE UNIQUE INDEX IF NOT EXISTS idx_upload_chunk_unique ON UploadChunk(uploadId, chunkIndex)',
+  'CREATE INDEX IF NOT EXISTS idx_upload_chunk_upload ON UploadChunk(uploadId)',
+  'CREATE INDEX IF NOT EXISTS idx_assistant_use ON AssistantUse(studentId, refId)',
   'CREATE INDEX IF NOT EXISTS idx_pps_parent ON ParentPushSubscription(parentId)',
 ]
 
@@ -140,6 +152,8 @@ var SCHEMA_COLUMNS = [
   // (2026-و80) تصنيف الكتاب: واجب (homework) / أسئلة (questions) / الاتنين (both)
   // — كان ناقص من و79 على Turso (العمود لازم يكون هنا + تغيير البصمة)
   ['Book', 'usage', 'TEXT', "DEFAULT 'both'"],
+  /* (ص10) سناب شوت أسئلة الكتاب (و110) — كان ناقص من القائمة فجدول Book القديم على Turso كان بينهار بـ no such column */
+  ['Book', 'questionsJson', 'TEXT', "DEFAULT ''"],
   // (2026-و68-إضافي) فيديو المستر في تحدي المستر — طلب المستر: «يصور فيديو ويعمله
   // في التحديات» — videoUrl: لينك يوتيوب خام أو مسار /api/files/<id> لملف مرفوع،
   // videoType: 'youtube' | 'file' | '' (فاضي = مفيش فيديو — الواجهة بتخفي البلوك)
@@ -240,7 +254,7 @@ export var SCHEMA_INDEXES = [
 /* (2026-و66) الجداول الجديدة (ساحة التحدي + الخرائط الذهنية) دخلت CORE_TABLES
  * والبصمة اتبدّلت — نفس درس و38/و40/و43/و44/و45: من غير كده الجداول الجديدة
  * عمرها ما بتتعمل على Turso أول ريكوست بعد النشر */
-export var CORE_TABLES = ['Admin', 'Student', 'StudentActivity', 'Video', 'Homework', 'Exam', 'ExamResult', 'Announcement', 'Discussion', 'SiteConfig', 'Media', 'VideoProgress', 'GalleryImage', 'Payment', 'VideoAccess', 'Complaint', 'Parent', 'ParentStudent', 'Book', 'Notification', 'BattleRoom', 'BattlePlayer', 'TeacherChallenge', 'ChallengeEntry', 'FlashcardScore', 'MindMap', 'ChallengeBankQuestion', 'ChallengeAttempt', 'FlashcardCard']
+export var CORE_TABLES = ['Admin', 'Student', 'StudentActivity', 'Video', 'Homework', 'Exam', 'ExamResult', 'Announcement', 'Discussion', 'SiteConfig', 'Media', 'VideoProgress', 'GalleryImage', 'Payment', 'VideoAccess', 'Complaint', 'Parent', 'ParentStudent', 'Book', 'Notification', 'BattleRoom', 'BattlePlayer', 'TeacherChallenge', 'ChallengeEntry', 'FlashcardScore', 'MindMap', 'ChallengeBankQuestion', 'ChallengeAttempt', 'FlashcardCard', 'AssistantUse', 'HomeworkResult', 'UploadChunk']
 
 /* (2026-و38) مفتاح البصمة اتبدل — البصمة القديمة كانت اتخزنت على الإنتاج
  * بعد ما كود و37 نزل (والجدول وقتها مش معمول لسه في CORE_TABLES فالترميم
@@ -276,7 +290,14 @@ export var CORE_TABLES = ['Admin', 'Student', 'StudentActivity', 'Video', 'Homew
  * إشعارات Web Push لولي الأمر) دخل SCHEMA_TABLES — نفس الدرس الموثق
  * و38/و40/و43/و45/و68/و72/و80: من غير تغيير المفتاح الجدول مش هيتعمل على
  * قواعد Turso الموجودة أول ريكوست بعد النشر. */
-var SCHEMA_HASH_KEY = 'schema_heal_hash_v2_w89'
+/* (ص10) مفتاح البصمة اتبدّل تاسع — عمود Book.questionsJson (سناب شوت أسئلة
+ * الكتاب من و110) كان ناقص من SCHEMA_TABLES/SCHEMA_COLUMNS رغم إنه في
+ * schema.prisma فجدول Book القديم على Turso كان بيبوّظ /api/books بـ 500
+ * (no such column: questionsJson) — وجداول AssistantUse/HomeworkResult/
+ * UploadChunk دخلت الترميم المركزي لأول مرة. نفس الدرس الموثق
+ * و38/و40/و43/و45/و68/و72/و80/و89: من غير البَمب الترميم مش بيجري على
+ * القواعد الموجودة أول ريكوست بعد النشر. */
+var SCHEMA_HASH_KEY = 'schema_heal_hash_v2_p10_bookq'
 
 /* ============================================================
  * 2026-و23 — **إصلاح بطء المنصة** (طلب المستر: «المنصة بطيئة، تسجيل
