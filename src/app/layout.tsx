@@ -71,8 +71,9 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning>
+    <html lang="ar" dir="rtl" translate="no" suppressHydrationWarning>
       <head>
+      <meta name="google" content="notranslate" />
         {/* (و64) سكريبت مبكر — الثيم (ليلي/نهاري) واللغة بيتريّكوا قبل أول رسم.
             (ص2) لمنصة اللغة العربية: **العربية RTL هي الافتراضي** — اللي مختار
             إنجليزي (ms_lang=en) الاتجاه بيتقلب LTR قبل أول رسم */}
