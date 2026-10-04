@@ -14,4 +14,4 @@ AGENTS.md
 Caddyfile
 public/uploads/
 prisma/upload/
-upload/
+/upload/
