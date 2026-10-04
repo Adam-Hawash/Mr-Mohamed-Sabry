@@ -45,7 +45,10 @@ export default function HeroSection() {
       var img = new Image()
       img.onload = function () { setFallbackBgExists(true) }
       img.onerror = function () { setFallbackBgExists(false) }
-      img.src = '/images/hero-bg.jpg'
+      /* (2026-ش) إصلاح 404: الملف الموجود فعلًا في public/images هو hero-bg.png
+         — الفحص كان بيسأل على .jpg مش موجودة فبيضرب 404 والخلفية البديلة
+         مستبقةش تظهر رغم إن الصورة موجودة في المشروع */
+      img.src = '/images/hero-bg.png'
     } else {
       setFallbackBgExists(false)
     }
