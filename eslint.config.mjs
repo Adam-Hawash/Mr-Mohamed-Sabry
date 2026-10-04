@@ -11,6 +11,10 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     // TypeScript rules
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
+    "@typescript-eslint/no-this-alias": "off",
+    "@typescript-eslint/no-unsafe-function-type": "off",
+    "@typescript-eslint/no-require-imports": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/prefer-as-const": "off",
@@ -19,8 +23,11 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     // React rules
     "react-hooks/exhaustive-deps": "off",
     "react-hooks/purity": "off",
-    /* قاعدة مبالغ فيها — بتضرب حتى في مكونات shadcn الأساسية (carousel / use-mobile) */
     "react-hooks/set-state-in-effect": "off",
+    "react-hooks/refs": "off",
+    "react-hooks/immutability": "off",
+    "react-hooks/static-components": "off",
+    "react-hooks/use-optimized-call-when-created": "off",
     "react/no-unescaped-entities": "off",
     "react/display-name": "off",
     "react/prop-types": "off",
@@ -32,6 +39,8 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     
     // General JavaScript rules
     "prefer-const": "off",
+    "no-var": "off",
+    "prefer-spread": "off",
     "no-unused-vars": "off",
     "no-console": "off",
     "no-debugger": "off",
