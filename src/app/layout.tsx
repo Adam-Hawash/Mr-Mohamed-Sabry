@@ -80,7 +80,7 @@ export default async function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var t=localStorage.getItem('theme');var c=(t==='light'?'light':'dark');var el=document.documentElement;el.classList.remove('dark','light');el.classList.add(c);el.style.colorScheme=c;if(localStorage.getItem('ms_lang')==='en'){el.lang='en';el.dir='ltr'}}catch(e){}",
+              "try{var t=localStorage.getItem('theme');var c=(t==='light'?'light':'dark');var el=document.documentElement;el.classList.remove('dark','light');el.classList.add(c);el.style.colorScheme=c/* (ص117) عربي بس — مفيش قلب اتجاه من ms_lang */}catch(e){}",
           }}
         />
         {/* Cairo via Google Fonts CDN (avoids Turbopack build error) */}

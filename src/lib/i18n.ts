@@ -14,19 +14,16 @@ export type Lang = 'ar' | 'en'
 
 var LANG_KEY = 'ms_lang'
 
+/* (ص117) طلب المستر: منصة عربي بس من غير تبديل لغات —
+   أي استدعاء بيتجاهل ويطبّق عربي RTL على كل الحالات */
 function applyToDocument(l: Lang) {
   if (typeof document === 'undefined') return
-  document.documentElement.lang = l
-  document.documentElement.dir = l === 'en' ? 'ltr' : 'rtl'
+  document.documentElement.lang = 'ar'
+  document.documentElement.dir = 'rtl'
 }
 
 export function readStoredLang(): Lang {
-  if (typeof window === 'undefined') return 'ar'
-  try {
-    var v = window.localStorage.getItem(LANG_KEY)
-    if (v === 'en' || v === 'ar') return v
-  } catch (e) { /* صامت */ }
-  /* (ص2) الافتراضي عربي — منصة اللغة العربية والطالب يفتح يلاقيها عربي */
+  /* (ص117) عربي بس — أي قيمة قديمة محفوظة (en) بتت تجاهل */
   return 'ar'
 }
 
@@ -40,9 +37,10 @@ export var useLangStore = create<LangStore>(function () {
     /* (ص2) الافتراضي عربي — منصة اللغة العربية */
     lang: 'ar',
     setLang: function (l) {
-      try { window.localStorage.setItem(LANG_KEY, l) } catch (e) { /* صامت */ }
-      applyToDocument(l)
-      useLangStore.setState({ lang: l })
+      /* (ص117) التبديل اتشال — بيفضل عربي مهما حصل */
+      try { window.localStorage.setItem(LANG_KEY, 'ar') } catch (e) { /* صامت */ }
+      applyToDocument('ar')
+      useLangStore.setState({ lang: 'ar' })
     },
   }
 })
@@ -50,15 +48,16 @@ export var useLangStore = create<LangStore>(function () {
 /* useT — hook الترجمة: بيسجّل في ستور اللغة، فأي تبديل بيعيد رسم
    المكوّن فورًا. الاستخدام: var T = useT(); T('المجتمع', 'Community') */
 export function useT() {
-  var lang = useLangStore(function (s) { return s.lang })
+  /* (ص117) عربي بس — النص الإنجليزي بيتتجاهل في كل المنصة */
   return function (ar: string, en: string): string {
-    return lang === 'en' ? en : ar
+    return ar
   }
 }
 
 /* t — نسخة بدون hook (للكود اللي مش جوه رندر) — مش بيعيد الرسم لوحده */
 export function t(ar: string, en: string): string {
-  return useLangStore.getState().lang === 'en' ? en : ar
+  /* (ص117) عربي بس */
+  return ar
 }
 
 export function currentLang(): Lang {
@@ -69,11 +68,7 @@ export function currentLang(): Lang {
    إنجليزي بقرأ المفتاح *_en (لو الأدمن كاتبه أو فيه افتراضي)،
    عربي بقرأ المفتاح الأساسي — المستر يكتب كل لغة لوحده من لوحة التحكم */
 export function pickConfig(cfg: any, key: string, lang: string, arFallback?: string, enFallback?: string): string {
-  if (lang === 'en') {
-    var en = cfg ? cfg[key + '_en'] : ''
-    if (en && String(en).trim() !== '') return String(en)
-    return enFallback || arFallback || ''
-  }
+  /* (ص117) عربي بس — مفاتيح *_en مش بتتقري تاني */
   var v = cfg ? cfg[key] : ''
   if (v && String(v).trim() !== '') return String(v)
   return arFallback || ''
@@ -84,9 +79,9 @@ export function pickConfig(cfg: any, key: string, lang: string, arFallback?: str
    بيتكفل بالموضوع قبل الرسم عشان مفيش وميض اتجاه غلط) */
 export function LangBoot() {
   useEffect(function () {
-    var l = readStoredLang()
-    applyToDocument(l)
-    useLangStore.setState({ lang: l })
+    /* (ص117) عربي RTL ثابت */
+    applyToDocument('ar')
+    useLangStore.setState({ lang: 'ar' })
   }, [])
   return null
 }

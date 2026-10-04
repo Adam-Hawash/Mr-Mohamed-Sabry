@@ -49,6 +49,11 @@ export function ThemeToggle() {
    (طلب المستر: «السويتش اللي في منصة دكتور شيماء ده حلو قوي عاوزك تعمله
    لي في كل المنصات») — المفعّل متعلم عليه بالـ primary */
 export function LangToggle() {
+  /* (ص117) طلب المستر: منصة عربي بس — سويتش اللغة اتشال نهائيًا من كل الصفحات */
+  return null
+}
+
+export function LangToggleRemoved() {
   var lang = useLangStore(function (s) { return s.lang })
   var setLang = useLangStore(function (s) { return s.setLang })
 
