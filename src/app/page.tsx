@@ -3,6 +3,9 @@
 import { useAppStore } from '@/stores/app-store'
 import { Navbar } from '@/components/landing/Navbar'
 import { Footer } from '@/components/landing/Footer'
+/* (ص5) الديزاين الأصلي: شريط الحكم المتحرك + تأثير الظهور مع السكرول */
+import { ProverbsMarquee } from '@/components/landing/ProverbsMarquee'
+import { Reveal } from '@/components/landing/Reveal'
 import { StudentPendingView } from '@/components/landing/StudentPendingView'
 import { StudentPaymentView } from '@/components/landing/StudentPaymentView'
 import { LoginView, RegisterView } from '@/components/landing/AuthPages'
@@ -216,23 +219,26 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className={'min-h-screen flex flex-col' + (currentView === 'landing' ? ' sabry-v1' : '')}>
       <VideoProtection />
       <Navbar />
 
       {currentView === 'landing' && (
         <main className="flex-1">
           <HeroSection />
-          <FeaturesGuideSection />
-          <FeaturesSection />
+          {/* (ص5) شريط الحكم والأمثال المتحرك — من الديزاين الأصلي بالحرف */}
+          <ProverbsMarquee />
+          {/* (ص5) تأثير «لما بنزل الحاجات بتتكون» — كل قسم بيظهر بتلاشي وصعود */}
+          <Reveal><FeaturesGuideSection /></Reveal>
+          <Reveal><FeaturesSection /></Reveal>
           {/* (G-2) فيديو «إزاي تستخدم المنصة» — بعد المميزات وقبل صفوف الصفوف
               الدراسية — وبيظهر بس لما الأدمن يكون ضاف فيديو من لوحة التحكم */}
-          <HowToVideoSection />
-          <GradesSection />
+          <Reveal><HowToVideoSection /></Reveal>
+          <Reveal><GradesSection /></Reveal>
           {/* (2026-و29) أفضل 3 طلاب بقوا في النافبار (زرار أوائل الطلبة) بدل الرئيسية */}
-          <LessonsSection />
-          <TipsSection />
-          <GallerySection />
+          <Reveal><LessonsSection /></Reveal>
+          <Reveal><TipsSection /></Reveal>
+          <Reveal><GallerySection /></Reveal>
         </main>
       )}
 

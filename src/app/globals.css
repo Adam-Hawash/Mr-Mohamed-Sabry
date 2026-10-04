@@ -48,6 +48,15 @@
   --color-gold-600: #C49A38;
   --color-gold-400: #E5BE5A;
   --color-gold-100: #FFF8E7;
+  /* (ص5) ألوان الديزاين الأصلي — ليل + كريم + باقي درجات الذهبي */
+  --color-night-900: #050f0c;
+  --color-night-800: #071a14;
+  --color-night-700: #0b241c;
+  --color-night-600: #0e2b21;
+  --color-night-500: #12332a;
+  --color-cream: #f5efe0;
+  --color-gold-200: #f0dfae;
+  --color-gold-700: #96741f;
   --color-gold-900: #2A1F00;
 }
 
@@ -413,4 +422,169 @@ img {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+}
+
+/* ============================================================
+   (ص5 — 2026) الديزاين الأصلي لمستر محمد صبري — ليل + ذهب
+   متطبق جوه .sabry-v1 بس (صفحة الهبوط) — البورتال/الأدمن
+   زي ما هما من غير أي لمس. نفس التوكنز والحركات من الإصدار الأول.
+   ============================================================ */
+.sabry-v1 {
+  --background: #071a14;
+  --foreground: #f5efe0;
+  --card: #0b241c;
+  --card-foreground: #f5efe0;
+  --popover: #0b241c;
+  --popover-foreground: #f5efe0;
+  --primary: #d4a843;
+  --primary-foreground: #050f0c;
+  --secondary: #0e2b21;
+  --secondary-foreground: #f0dfae;
+  --muted: #0e2b21;
+  --muted-foreground: #a8b8ae;
+  --accent: #12332a;
+  --accent-foreground: #f0dfae;
+  --border: rgba(212, 168, 67, 0.22);
+  --input: rgba(212, 168, 67, 0.22);
+  --ring: #d4a843;
+  --sidebar: #0b241c;
+  --sidebar-foreground: #f5efe0;
+  --sidebar-primary: #d4a843;
+  --sidebar-primary-foreground: #050f0c;
+  --sidebar-accent: #12332a;
+  --sidebar-accent-foreground: #f0dfae;
+  --sidebar-border: rgba(212, 168, 67, 0.18);
+  --sidebar-ring: #d4a843;
+  background:
+    radial-gradient(1100px 560px at 85% -8%, rgba(212, 168, 67, 0.09), transparent 60%),
+    radial-gradient(900px 500px at 8% 108%, rgba(212, 168, 67, 0.06), transparent 55%),
+    linear-gradient(180deg, #071a14 0%, #050f0c 100%);
+  color: var(--foreground);
+}
+
+.sabry-v1 ::selection {
+  background: rgba(212, 168, 67, 0.35);
+  color: #fff8e7;
+}
+
+/* خطوط الديزاين الأصلي */
+.sabry-v1 .font-amiri {
+  font-family: "Amiri", "Cairo", serif;
+}
+.sabry-v1 .font-ruqaa {
+  font-family: "Aref Ruqaa", "Amiri", serif;
+}
+.sabry-v1 .font-kufi {
+  font-family: "Reem Kufi", "Cairo", sans-serif;
+}
+
+/* نص ذهبي متدرّج (زي التذهيب في اللوحات) */
+.text-gold-gradient {
+  background: linear-gradient(
+    120deg,
+    #f7edd3 0%,
+    #e9c767 20%,
+    #d4a843 40%,
+    #b8912f 60%,
+    #e9c767 80%,
+    #f7edd3 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gold-shimmer 6s linear infinite;
+}
+
+@keyframes gold-shimmer {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* إطار مزخرف مزدوج */
+.sabry-v1 .frame-ornate {
+  position: relative;
+  border: 1px solid rgba(212, 168, 67, 0.35);
+  outline: 1px solid rgba(212, 168, 67, 0.15);
+  outline-offset: 5px;
+}
+
+/* ظل توهج ذهبي */
+.glow-gold {
+  filter: drop-shadow(0 0 22px rgba(212, 168, 67, 0.35));
+}
+.glow-gold-soft {
+  box-shadow: 0 0 40px rgba(212, 168, 67, 0.12), 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* حركات الديزاين الأصلي */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 3.2s ease-in-out infinite;
+}
+
+@keyframes marquee-rtl {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}
+.animate-marquee {
+  animation: marquee-rtl 45s linear infinite;
+}
+.marquee-hover-pause:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+@keyframes bounce-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 1;
+  }
+}
+.animate-bounce-soft {
+  animation: bounce-soft 2s ease-in-out infinite;
+}
+
+/* زخرفة توهج أعلى الخلفية */
+.pattern-glow-top {
+  background: radial-gradient(720px 300px at 50% 0%, rgba(212, 168, 67, 0.1), transparent 70%);
+}
+
+/* (ص5) أزرار الدخول الملوّنة الثابتة في النافبار ترجع ذهبية جوه الهبوط */
+.sabry-v1 .bg-\[\#0F3D3E\] {
+  background-color: #d4a843 !important;
+  color: #050f0c !important;
+}
+.sabry-v1 .bg-\[\#0F3D3E\]:hover {
+  background-color: #e5be5a !important;
 }
