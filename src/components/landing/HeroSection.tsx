@@ -26,7 +26,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Emblem, OrnamentDivider, CornerOrnament, SmallRosette } from './Ornaments'
-import CalligraphyCloud from './CalligraphyCloud'
+import ManuscriptCloud, { CalligraphyMist } from './CalligraphyCloud'
 
 const FEATURES = [
   { icon: BookOpenText, label: 'دروس مشروحة' },
@@ -249,17 +249,20 @@ export default function HeroSection() {
                 </div>
               </div>
             ) : (
-              /* (ص120) بدون إطار — القصاصة بتطلع عايمة على «سحابة الحروف»:
-                 سديمة زمرّدية + كلمات عربية دهبية خافتة (زي سحابة مستر أحمد
-                 شعبان بس بهوية منصّتنا) — والصورة بـ object-contain عشان
-                 القصاصة الشفافة متتقصش + ظل بيتبع حروفها مش مربّع */
+              /* (ص121) بدون إطار — القصاصة واقفة على «السحابة المخطوطة»:
+                 سحابة حقيقية ظاهرة تحت الصورة (جسم مخطوطة كريمي بحدود
+                 ذهبية وكلمات عربية واقفة عليها — زي سحابة مستر أحمد
+                 شعبان بس بهوية منصّتنا) + ضباب كلمات خافت وراها.
+                 الصورة بـ object-contain عشان القصاصة الشفافة متتقصش */
               <div className="relative">
-                <CalligraphyCloud className="-inset-[12%]" />
+                <CalligraphyMist className="-inset-[14%]" />
                 <img
                   src={photo}
                   alt={'صورة ' + teacherName}
-                  className="relative mx-auto max-h-[520px] w-full object-contain object-bottom drop-shadow-[0_24px_45px_rgba(0,0,0,0.55)]"
+                  className="relative z-10 mx-auto max-h-[520px] w-full object-contain object-bottom drop-shadow-[0_24px_45px_rgba(0,0,0,0.55)]"
                 />
+                {/* السحابة قدّام تحت الصورة (z-20) — القصاصة بتتخطف جواها */}
+                <ManuscriptCloud className="absolute bottom-[-4%] left-1/2 z-20 w-[116%] -translate-x-1/2" />
               </div>
             )}
           </div>
