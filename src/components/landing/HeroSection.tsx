@@ -84,6 +84,8 @@ export default function HeroSection() {
   /* (ص119) شكل صورة المستر: '1' بإطار التذهيب / '0' بدون إطار (الافتراضي —
      زي منصة مستر أحمد شعبان) — بيتغير من لوحة الأدمن لحظيًا */
   var framed = C('hero_photo_frame', '0') === '1'
+  /* (ص122) سحابة الحروف المخطوطة — بيتحكم فيها من الأدمن (افتراضيًا مخفية) */
+  var cloudOn = C('hero_photo_cloud', '0') === '1'
 
   var stats = [
     { value: C('hero_stat1_value', '8+'), label: C('hero_stat1_label', 'صفوف دراسية') },
@@ -249,20 +251,20 @@ export default function HeroSection() {
                 </div>
               </div>
             ) : (
-              /* (ص121) بدون إطار — القصاصة واقفة على «السحابة المخطوطة»:
-                 سحابة حقيقية ظاهرة تحت الصورة (جسم مخطوطة كريمي بحدود
-                 ذهبية وكلمات عربية واقفة عليها — زي سحابة مستر أحمد
-                 شعبان بس بهوية منصّتنا) + ضباب كلمات خافت وراها.
-                 الصورة بـ object-contain عشان القصاصة الشفافة متتقصش */
+              /* (ص121+ص122) بدون إطار — القصاصة بتطلع عايمة نضيفة، وسحابة
+                 الحروف المخطوطة **اختيارية** بتحكم الأدمن (hero_photo_cloud):
+                 لو مفعّلة بتبقى سحابة حقيقية تحت الصورة (جسم مخطوطة كريمي
+                 بحدود ذهبية وكلمات عربية — زي سحابة شعبان بهويتنا) + ضباب
+                 كلمات خافت وراها. الصورة بـ object-contain عشان متتقصش */
               <div className="relative">
-                <CalligraphyMist className="-inset-[14%]" />
+                {cloudOn ? <CalligraphyMist className="-inset-[14%]" /> : null}
                 <img
                   src={photo}
                   alt={'صورة ' + teacherName}
                   className="relative z-10 mx-auto max-h-[520px] w-full object-contain object-bottom drop-shadow-[0_24px_45px_rgba(0,0,0,0.55)]"
                 />
                 {/* السحابة قدّام تحت الصورة (z-20) — القصاصة بتتخطف جواها */}
-                <ManuscriptCloud className="absolute bottom-[-4%] left-1/2 z-20 w-[116%] -translate-x-1/2" />
+                {cloudOn ? <ManuscriptCloud className="absolute bottom-[-4%] left-1/2 z-20 w-[116%] -translate-x-1/2" /> : null}
               </div>
             )}
           </div>

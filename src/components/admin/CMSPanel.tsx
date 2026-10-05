@@ -930,8 +930,39 @@ export function CMSPanel() {
               <span className="text-lg">✨ صورة نضيفة بدون إطار</span>
             </button>
           </div>
+
+          {/* (ص122) توجل سحابة الحروف المخطوطة — تحكم كامل من الأدمن */}
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <span className="text-xs font-bold text-muted-foreground sm:w-32">سحابة الحروف المخطوطة:</span>
+            <button
+              type="button"
+              onClick={function () {
+                setConfig(function (p: any) { return Object.assign({}, p, { hero_photo_cloud: '1' }) })
+                persistConfigNow({ hero_photo_cloud: '1' })
+              }}
+              className={"flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-bold transition-colors " + ((config['hero_photo_cloud'] || '0') === '1'
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-dashed border-border bg-transparent text-muted-foreground hover:border-primary/40')}
+            >
+              {(config['hero_photo_cloud'] || '0') === '1' ? <span className="text-lg">☁️</span> : null}
+              <span>ظاهرة تحت الصورة</span>
+            </button>
+            <button
+              type="button"
+              onClick={function () {
+                setConfig(function (p: any) { return Object.assign({}, p, { hero_photo_cloud: '0' }) })
+                persistConfigNow({ hero_photo_cloud: '0' })
+              }}
+              className={"flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-bold transition-colors " + ((config['hero_photo_cloud'] || '0') !== '1'
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-dashed border-border bg-transparent text-muted-foreground hover:border-primary/40')}
+            >
+              {(config['hero_photo_cloud'] || '0') !== '1' ? <span className="text-lg">🚫</span> : null}
+              <span>مخفية</span>
+            </button>
+          </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            «صورة نضيفة بدون إطار» = قصاصة المستر بتطلع واقفة على سحابة مخطوطة ذهبية بحروف عربية (نحو إعراب بلاغة...) — زي سحابة منصة مستر أحمد شعبان بس بهوية المنصة. ارفع الصورة من غير خلفية (PNG شفاف) وهتقعد على السحابة على طول من غير أي تعديل عليها. الاختيار بيتحفظ فورًا.
+            «صورة نضيفة بدون إطار» = قصاصة المستر بتطلع عايمة نضيفة. و«سحابة الحروف المخطوطة» اختياري: لو ظاهرة بتبقى سحابة ذهبية بحروف عربية (نحو إعراب بلاغة...) واقفة تحتها — زي سحابة منصة مستر أحمد شعبان بس بهوية المنصة. ارفع الصورة من غير خلفية (PNG شفاف) وهتظهر نضيفة من غير أي تعديل عليها. الاختيار بيتحفظ فورًا.
           </p>
         </CardContent>
       </Card>
