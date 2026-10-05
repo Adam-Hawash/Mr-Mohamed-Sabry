@@ -26,8 +26,11 @@ var WORDS = [
 ]
 
 export default function CalligraphyCloud({ className }: { className?: string }) {
+  /* (ص120) ملاحظة: ممنوع نحط inset-0 هنا مع className زي -inset-[12%] —
+     الاتنين نفس الـ specificity والـ CSS هو اللي بيختار فيظهر السحابة
+     مخفية ورا الصورة. الافتراضي -inset-[12%] عشان الكلمات تطلع حوالين الصورة */
   return (
-    <div className={'pointer-events-none absolute inset-0 ' + (className || '')} aria-hidden="true">
+    <div className={'pointer-events-none absolute ' + (className || '-inset-[12%]')} aria-hidden="true">
       {/* ===== السديمة الخضرا — جسم السحابة ===== */}
       <div className="absolute inset-[6%] rounded-[45%_55%_52%_48%/55%_45%_55%_45%] bg-emerald-500/[0.13] blur-3xl" />
       <div className="absolute inset-[14%] rounded-[55%_45%_48%_52%/48%_52%_45%_55%] bg-emerald-400/[0.10] blur-3xl" />
