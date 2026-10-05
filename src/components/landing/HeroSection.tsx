@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Emblem, OrnamentDivider, CornerOrnament, SmallRosette } from './Ornaments'
+import CalligraphyCloud from './CalligraphyCloud'
 
 const FEATURES = [
   { icon: BookOpenText, label: 'دروس مشروحة' },
@@ -248,16 +249,16 @@ export default function HeroSection() {
                 </div>
               </div>
             ) : (
-              /* بدون إطار — الصورة نضيفة على خلفية الهيرو مباشرة (زي منصة مستر أحمد شعبان) */
+              /* (ص120) بدون إطار — القصاصة بتطلع عايمة على «سحابة الحروف»:
+                 سديمة زمرّدية + كلمات عربية دهبية خافتة (زي سحابة مستر أحمد
+                 شعبان بس بهوية منصّتنا) — والصورة بـ object-contain عشان
+                 القصاصة الشفافة متتقصش + ظل بيتبع حروفها مش مربّع */
               <div className="relative">
-                <div
-                  aria-hidden="true"
-                  className="absolute -inset-4 rounded-[2rem] bg-gold-500/10 blur-2xl"
-                />
+                <CalligraphyCloud className="-inset-[12%]" />
                 <img
                   src={photo}
                   alt={'صورة ' + teacherName}
-                  className="relative aspect-[3/4] w-full rounded-3xl object-cover shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
+                  className="relative mx-auto max-h-[520px] w-full object-contain object-bottom drop-shadow-[0_24px_45px_rgba(0,0,0,0.55)]"
                 />
               </div>
             )}

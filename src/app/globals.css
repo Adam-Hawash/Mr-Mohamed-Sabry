@@ -583,11 +583,12 @@ img {
   background: radial-gradient(720px 300px at 50% 0%, rgba(212, 168, 67, 0.1), transparent 70%);
 }
 
-/* (ص5) أزرار الدخول الملوّنة الثابتة في النافبار ترجع ذهبية جوه الهبوط */
+/* (ص120) زر «اعمل حساب» في النافبار أخضر — الهوية الزمرّدية المستقلة
+   للمنصة (طلب المستر: الزرار ده أصفر في الكود القديم، عايزه أخضر) */
 .sabry-v1 .bg-\[\#0F3D3E\] {
-  background-color: #d4a843 !important;
-  color: #050f0c !important;
+  background-color: #10b981 !important;
+  color: #04120c !important;
 }
 .sabry-v1 .bg-\[\#0F3D3E\]:hover {
-  background-color: #e5be5a !important;
+  background-color: #34d399 !important;
 }

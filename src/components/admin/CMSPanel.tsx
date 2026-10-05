@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import type { SiteConfig } from '@/stores/app-store'
 import { useAppStore } from '@/stores/app-store'
 import { chunkedUpload } from '@/lib/chunked-upload'
+import { removeWhiteBackground } from '@/lib/remove-white-bg'
 import { normalizeIntroVideoUrl } from '@/lib/intro-video'
 import { ConfigVideoPlayer } from '@/components/landing/ConfigVideoPlayer'
 /* (و78) المحتوى الديناميكي — نصائح ومميزات إضافية JSON آمن */
@@ -805,7 +806,17 @@ export function CMSPanel() {
   var handleUpload = async function(file: File, configKey: string) {
     setUploading(configKey)
     try {
-      var data = await chunkedUpload(file, 'photos')
+      var toUpload = file
+      /* (ص120) صورة المعلم بس: لو رفعت صورة بخلفية بيضا → بنشيل الخلفية
+         تلقائيًا flood-fill من الحواف (الأبيض جوه الشخص زي القميص بيفضل) —
+         عشان وضع «صورة نضيفة بدون إطار» يطلع قصاصة شفافة فعلًا زي شعبان */
+      if (configKey === 'instructor_photo') {
+        toUpload = await removeWhiteBackground(file)
+        if (toUpload !== file) {
+          toast.success('اتشالت الخلفية البيضا تلقائيًا — الصورة بقت نضيفة من غير خلفية ✨')
+        }
+      }
+      var data = await chunkedUpload(toUpload, 'photos')
       var newConfig = Object.assign({}, config)
       newConfig[configKey] = data.filePath
       setConfig(newConfig)
@@ -929,7 +940,7 @@ export function CMSPanel() {
             </button>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            «صورة نضيفة بدون إطار» = الصورة بتظهر على خلفية المنصة مباشرة من غير أي إطار أو خلفية (زي منصة مستر أحمد شعبان). الاختيار بيتحفظ فورًا.
+            «صورة نضيفة بدون إطار» = قصاصة المستر بتطلع عايمة فوق سحابة حروف عربية دهبية (نحو إعراب بلاغة...) بهوية المنصة — زي سحابة منصة مستر أحمد شعبان. ولو الصورة اللي اترفعت فيها خلفية بيضا بيتشال تلقائيًا وقت الرفع. الاختيار بيتحفظ فورًا.
           </p>
         </CardContent>
       </Card>

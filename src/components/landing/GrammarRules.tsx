@@ -412,7 +412,8 @@ export function GrammarRules() {
                     setOpenRule(c.id + '-0')
                   }}
                   aria-pressed={isActive}
-                  className={'flex min-h-[44px] shrink-0 items-center gap-2 rounded-xl px-4 text-sm font-bold transition-all ' + (isActive
+                  /* (ص120) التابات بخط نسخ (Amiri) — طلب المستر: ممنوع الرقعة في العناوين */
+                  className={'flex min-h-[44px] shrink-0 items-center gap-2 rounded-xl px-4 font-amiri text-base font-bold transition-all sm:text-lg ' + (isActive
                     ? 'bg-emerald-500 text-night-900 shadow-[0_6px_20px_rgba(16,185,129,0.35)]'
                     : 'text-cream/70 hover:bg-emerald-500/10 hover:text-emerald-300')}
                 >
@@ -455,7 +456,8 @@ export function GrammarRules() {
                     : 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300')}>
                     {arabicNum(idx + 1)}
                   </span>
-                  <h2 className="flex-1 font-kufi text-base font-bold text-cream sm:text-lg">{rule.title}</h2>
+                  {/* (ص120) عنوان القاعدة بخط نسخ (Amiri) — طلب المستر */}
+                  <h2 className="flex-1 font-amiri text-lg font-bold text-cream sm:text-xl">{rule.title}</h2>
                   <ChevronDown className={'h-5 w-5 shrink-0 text-emerald-400 transition-transform duration-300 ' + (isOpen ? 'rotate-180' : '')} aria-hidden="true" />
                 </button>
 
