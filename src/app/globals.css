@@ -69,7 +69,8 @@
   --card-foreground: #1A1A1A;
   --popover: #FFFFFF;
   --popover-foreground: #1A1A1A;
-  --primary: #A16207;
+  /* (ص119) الأزرار الخضراء — أسلوب مستقل لمنصة اللغة العربية */
+  --primary: #047857;
   --primary-foreground: #FFFFFF;
   --secondary: #F7F1E3;
   --secondary-foreground: #1A1A1A;
@@ -80,20 +81,20 @@
   --destructive: #DC2626;
   --border: #D0D0D0;
   --input: #D0D0D0;
-  --ring: #A16207;
-  --chart-1: #A16207;
+  --ring: #047857;
+  --chart-1: #047857;
   --chart-2: #059669;
   --chart-3: #7C3AED;
   --chart-4: #2563EB;
   --chart-5: #DC2626;
   --sidebar: #FFFFFF;
   --sidebar-foreground: #1A1A1A;
-  --sidebar-primary: #A16207;
+  --sidebar-primary: #047857;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #F5EFE0;
   --sidebar-accent-foreground: #1A1A1A;
   --sidebar-border: #D0D0D0;
-  --sidebar-ring: #A16207;
+  --sidebar-ring: #047857;
 }
 
 /* ========== DARK MODE - Sleek Black & Gold ========== */
@@ -104,7 +105,8 @@
   --card-foreground: #F5F0E3;
   --popover: #131316;
   --popover-foreground: #F5F0E3;
-  --primary: #D4A843;
+  /* (ص119) الأزرار الخضراء في الوضع الغامق */
+  --primary: #34D399;
   --primary-foreground: #09090B;
   --secondary: #1A1A1F;
   --secondary-foreground: #F5F0E3;
@@ -115,20 +117,20 @@
   --destructive: #EF4444;
   --border: #27272A;
   --input: #27272A;
-  --ring: #D4A843;
-  --chart-1: #D4A843;
+  --ring: #34D399;
+  --chart-1: #34D399;
   --chart-2: #34D399;
   --chart-3: #A78BFA;
   --chart-4: #60A5FA;
   --chart-5: #F87171;
   --sidebar: #0C0C0E;
   --sidebar-foreground: #F5F0E3;
-  --sidebar-primary: #D4A843;
+  --sidebar-primary: #34D399;
   --sidebar-primary-foreground: #09090B;
   --sidebar-accent: #1A1A1F;
   --sidebar-accent-foreground: #F5F0E3;
   --sidebar-border: #27272A;
-  --sidebar-ring: #D4A843;
+  --sidebar-ring: #34D399;
 }
 
 @layer base {
@@ -436,8 +438,9 @@ img {
   --card-foreground: #f5efe0;
   --popover: #0b241c;
   --popover-foreground: #f5efe0;
-  --primary: #d4a843;
-  --primary-foreground: #050f0c;
+  /* (ص119) الأزرار الخضراء — أسلوب منصة اللغة العربية المستقل */
+  --primary: #10b981;
+  --primary-foreground: #04120c;
   --secondary: #0e2b21;
   --secondary-foreground: #f0dfae;
   --muted: #0e2b21;
@@ -446,15 +449,15 @@ img {
   --accent-foreground: #f0dfae;
   --border: rgba(212, 168, 67, 0.22);
   --input: rgba(212, 168, 67, 0.22);
-  --ring: #d4a843;
+  --ring: #10b981;
   --sidebar: #0b241c;
   --sidebar-foreground: #f5efe0;
-  --sidebar-primary: #d4a843;
-  --sidebar-primary-foreground: #050f0c;
+  --sidebar-primary: #10b981;
+  --sidebar-primary-foreground: #04120c;
   --sidebar-accent: #12332a;
   --sidebar-accent-foreground: #f0dfae;
   --sidebar-border: rgba(212, 168, 67, 0.18);
-  --sidebar-ring: #d4a843;
+  --sidebar-ring: #10b981;
   background:
     radial-gradient(1100px 560px at 85% -8%, rgba(212, 168, 67, 0.09), transparent 60%),
     radial-gradient(900px 500px at 8% 108%, rgba(212, 168, 67, 0.06), transparent 55%),

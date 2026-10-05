@@ -39,7 +39,7 @@ function ComplaintsLink() {
   return (
     <Link
       href="/complaints"
-      className="font-bold underline decoration-2 underline-offset-2 text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 transition-colors"
+      className="font-bold underline decoration-2 underline-offset-2 text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
     >
       قسم الشكاوي
     </Link>

@@ -32,7 +32,7 @@ export function FeaturesSection() {
     {
       icon: BookOpen,
       title: pickConfig(cfg, 'feature1_title', lang, 'شرح مبسط | Simplified Explanations', 'Simplified Explanations'),
-      description: pickConfig(cfg, 'feature1_desc', lang, 'شرح واضح ومبسط لكل درس رياضيات بطريقة تساعد الطالب على الفهم السريع والاستيعاب العميق لمفاهيم Algebra و Geometry الأساسية.', 'Clear, simplified explanation for every math lesson that helps students understand quickly and master the core Algebra and Geometry concepts.'),
+      description: pickConfig(cfg, 'feature1_desc', lang, 'شرح واضح ومبسط لكل درس لغة عربية بطريقة تساعد الطالب على الفهم السريع والاستيعاب العميق لقواعد النحو والإعراب الأساسية.', 'Clear, simplified explanation for every Arabic lesson that helps students understand quickly and master the core grammar and parsing concepts.'),
       color: 'bg-[#C49A38]/10 text-[#C49A38] dark:bg-[#C49A38]/15 dark:text-[#E5BE5A]',
     },
     {
@@ -74,7 +74,7 @@ export function FeaturesSection() {
         <div className="text-center mb-12">
           <h2 className="text-2xl font-bold sm:text-3xl">{pickConfig(cfg, 'features_title', lang, 'لماذا تختارنا؟ | Why Choose Us?', 'Why Choose Us?')}</h2>
           <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-            {pickConfig(cfg, 'features_subtitle', lang, 'نقدّم لك تجربة تعليمية فريدة تجمع بين الشرح المبسط والتطبيق العملي في Algebra, Geometry, and More', 'A unique learning experience combining simple explanations and hands-on practice across Algebra, Geometry, and More')}
+            {pickConfig(cfg, 'features_subtitle', lang, 'نقدّم لك تجربة تعليمية فريدة تجمع بين الشرح المبسط والتطبيق العملي في النحو والبلاغة والأدب', 'A unique learning experience combining simple explanations and hands-on practice across Grammar, Rhetoric, and Literature')}
           </p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

@@ -80,6 +80,9 @@ export default function HeroSection() {
   var badge = C('hero_badge', 'منصّة اللغة العربية | Arabic Language Platform')
   var subtitle = C('hero_subtitle', 'نُحبّ العربية ونقرّبها لابنك! نحو وبلاغة وإعراب وإملاء بأسلوب مبسّط — دروس مشروحة، واجبات أسبوعية، امتحانات منتظمة، ومتابعة مستمرة لتقدّمه الأكاديمي.')
   var photo = C('instructor_photo', '/images/hero-bg.png')
+  /* (ص119) شكل صورة المستر: '1' بإطار التذهيب / '0' بدون إطار (الافتراضي —
+     زي منصة مستر أحمد شعبان) — بيتغير من لوحة الأدمن لحظيًا */
+  var framed = C('hero_photo_frame', '0') === '1'
 
   var stats = [
     { value: C('hero_stat1_value', '8+'), label: C('hero_stat1_label', 'صفوف دراسية') },
@@ -170,7 +173,7 @@ export default function HeroSection() {
             <Button
               size="lg"
               onClick={function () { setView('auth-register') }}
-              className="h-12 min-h-[48px] bg-gold-500 px-7 font-kufi text-base font-semibold text-night-900 shadow-[0_8px_30px_rgba(212,168,67,0.35)] transition-all hover:bg-gold-400 hover:shadow-[0_8px_40px_rgba(212,168,67,0.5)]"
+              className="h-12 min-h-[48px] bg-emerald-500 px-7 font-kufi text-base font-semibold text-night-900 shadow-[0_8px_30px_rgba(16,185,129,0.35)] transition-all hover:bg-emerald-400 hover:shadow-[0_8px_40px_rgba(16,185,129,0.5)]"
             >
               سجّل في المنصة
             </Button>
@@ -178,7 +181,7 @@ export default function HeroSection() {
               size="lg"
               variant="outline"
               onClick={function () { setView('auth-login') }}
-              className="h-12 min-h-[48px] border-gold-500/45 bg-transparent px-7 font-kufi text-base text-gold-300 hover:bg-gold-500/10 hover:text-gold-200"
+              className="h-12 min-h-[48px] border-emerald-500/45 bg-transparent px-7 font-kufi text-base text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200"
             >
               تسجيل الدخول
             </Button>
@@ -212,7 +215,10 @@ export default function HeroSection() {
           </motion.div>
         </motion.div>
 
-        {/* ===== صورة المستر (إطار التذهيب العايم) ===== */}
+        {/* ===== صورة المستر =====
+            (ص119) طلب المستر: متكونش متزامن على الإطار — بقى اختيارين من
+            الأدمن (hero_photo_frame): «1» بإطار التذهيب زي ما كان، أو «0»
+            بدون أي إطار/خلفية خالص زي منصة مستر أحمد شعبان (الافتراضي). */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -220,26 +226,41 @@ export default function HeroSection() {
           className="mx-auto w-full max-w-[340px] sm:max-w-[380px] lg:max-w-[420px]"
         >
           <div className="animate-float-slow">
-            <div className="rounded-2xl bg-gradient-to-b from-gold-400 via-gold-600 to-gold-400 p-[3px] shadow-[0_25px_80px_rgba(0,0,0,0.5)]">
-              <div className="rounded-[13px] bg-night-700 p-2">
-                <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-night-800">
-                  <img
-                    src={photo}
-                    alt={'صورة ' + teacherName}
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                  {/* لمعة التذهيب على حافة الصورة */}
-                  <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-gold-500/30" />
-                  <div className="absolute bottom-0 start-0 end-0 bg-gradient-to-t from-night-900/85 via-night-900/40 to-transparent px-4 pb-3 pt-10">
-                    <div className="flex items-center justify-center gap-2">
-                      <SmallRosette className="shrink-0 text-gold-400" />
-                      <span className="font-kufi text-sm text-cream/95 sm:text-base">{teacherName}</span>
-                      <SmallRosette className="shrink-0 text-gold-400" />
+            {framed ? (
+              <div className="rounded-2xl bg-gradient-to-b from-gold-400 via-gold-600 to-gold-400 p-[3px] shadow-[0_25px_80px_rgba(0,0,0,0.5)]">
+                <div className="rounded-[13px] bg-night-700 p-2">
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-night-800">
+                    <img
+                      src={photo}
+                      alt={'صورة ' + teacherName}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    {/* لمعة التذهيب على حافة الصورة */}
+                    <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-gold-500/30" />
+                    <div className="absolute bottom-0 start-0 end-0 bg-gradient-to-t from-night-900/85 via-night-900/40 to-transparent px-4 pb-3 pt-10">
+                      <div className="flex items-center justify-center gap-2">
+                        <SmallRosette className="shrink-0 text-gold-400" />
+                        <span className="font-kufi text-sm text-cream/95 sm:text-base">{teacherName}</span>
+                        <SmallRosette className="shrink-0 text-gold-400" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              /* بدون إطار — الصورة نضيفة على خلفية الهيرو مباشرة (زي منصة مستر أحمد شعبان) */
+              <div className="relative">
+                <div
+                  aria-hidden="true"
+                  className="absolute -inset-4 rounded-[2rem] bg-gold-500/10 blur-2xl"
+                />
+                <img
+                  src={photo}
+                  alt={'صورة ' + teacherName}
+                  className="relative aspect-[3/4] w-full rounded-3xl object-cover shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
+                />
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

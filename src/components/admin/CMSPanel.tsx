@@ -5,11 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Settings, Save, Upload, Loader2, Image as ImageIcon, Trash2, Link2, Type, Layout, GraduationCap, Compass, Lightbulb, BookOpen, Smartphone, Globe, CalendarClock, PlusCircle, MonitorPlay } from 'lucide-react'
+import { Settings, Save, Upload, Loader2, Image as ImageIcon, Trash2, Link2, Type, Layout, GraduationCap, Compass, Lightbulb, BookOpen, Smartphone, Globe, CalendarClock, PlusCircle, MonitorPlay, PlayCircle, Clapperboard } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import type { SiteConfig } from '@/stores/app-store'
+import { useAppStore } from '@/stores/app-store'
 import { chunkedUpload } from '@/lib/chunked-upload'
+import { normalizeIntroVideoUrl } from '@/lib/intro-video'
+import { ConfigVideoPlayer } from '@/components/landing/ConfigVideoPlayer'
 /* (و78) المحتوى الديناميكي — نصائح ومميزات إضافية JSON آمن */
 import { parseCustomContent, emptyCustomItem } from '@/lib/custom-content'
 import type { CustomContentItem } from '@/lib/custom-content'
@@ -512,6 +515,199 @@ function HowToVideoCard(props: {
   )
 }
 
+/* ============================================================
+   (ص119) كارت «الفيديوهات التعريفية» — زي منصة مستر أحمد شعبان بالظبط
+   ============================================================
+   فيديوهين مستقلين، كل واحد منهم:
+   - لينك (يوتيوب/درايف/vimeo/ستريمابل/أرشايف) — بيتطبع للصيغة الصح قبل الحفظ
+   - رفع من الجهاز (chunkedUpload → Media → /api/files/<id>)
+   - حذف بيفضّي القيمة ويمسح ملف الـ Media اليتيم لو موجود
+   القيمة فاضية = السكشن مش بيظهر في الرئيسية نهائيًا (إخفاء شرطي صارم)
+   كل عملية بتتحفظ فورًا بنفس آلية persistConfigNow. */
+function IntroVideosCard(props: {
+  config: SiteConfig
+  setConfig: (c: SiteConfig) => void
+  persistNow: (c: SiteConfig) => Promise<void>
+}) {
+  var introLinkState = useState('')
+  var introLink = introLinkState[0]
+  var setIntroLink = introLinkState[1]
+  var teacherLinkState = useState('')
+  var teacherLink = teacherLinkState[0]
+  var setTeacherLink = teacherLinkState[1]
+  var busyState = useState<'intro-link' | 'intro-upload' | 'intro-delete' | 'teacher-link' | 'teacher-upload' | 'teacher-delete' | null>(null)
+  var busy = busyState[0]
+  var setBusy = busyState[1]
+  var introFileRef = useRef<HTMLInputElement | null>(null)
+  var teacherFileRef = useRef<HTMLInputElement | null>(null)
+
+  var currentIntro = String(props.config.intro_video_url || '')
+  var currentTeacher = String(props.config.teacher_video_url || '')
+
+  /* كتابة القيمة في الحالة المحلية + حفظ فوري بنفس آلية HowToVideoCard */
+  var applyValue = async function (key: 'intro_video_url' | 'teacher_video_url', value: string) {
+    var newConfig = Object.assign({}, props.config)
+    ;(newConfig as any)[key] = value
+    props.setConfig(newConfig)
+    await props.persistNow(newConfig)
+  }
+
+  /* مسح ملف الـ Media اليتيم (استبدال/حذف فوق ملف مرفوع قديم) — زي زيكولا */
+  var removeOrphanMedia = function (oldValue: string) {
+    var m = String(oldValue || '').match(/\/api\/files\/([\w-]+)/)
+    if (!m) return
+    try {
+      var adminId = (useAppStore.getState() as any).currentAdmin?.id || ''
+      fetch('/api/files/' + m[1] + '?adminId=' + encodeURIComponent(adminId), { method: 'DELETE' }).catch(function () {})
+    } catch (e) { /* صامت */ }
+  }
+
+  var saveLink = async function (which: 'intro' | 'teacher') {
+    var raw = (which === 'intro' ? introLink : teacherLink).trim()
+    var busyKey: 'intro-link' | 'teacher-link' = which === 'intro' ? 'intro-link' : 'teacher-link'
+    var key = which === 'intro' ? 'intro_video_url' : 'teacher_video_url'
+    var current = which === 'intro' ? currentIntro : currentTeacher
+    if (!raw) { toast.error('اكتب لينك الفيديو الأول (يوتيوب / درايف / ستريمابل)'); return }
+    setBusy(busyKey)
+    try {
+      var normalized = normalizeIntroVideoUrl(raw)
+      await applyValue(key as any, normalized)
+      if (normalized !== current) removeOrphanMedia(current)
+      if (which === 'intro') setIntroLink(''); else setTeacherLink('')
+      toast.success(which === 'intro' ? 'الفيديو التعريفي اتسجل — هيظهر بعد الهيرو في الرئيسية' : 'فيديو المستر اتسجل — هيظهر قبل المعرض في الرئيسية')
+    } catch (e: any) {
+      toast.error((e && e.message) || 'خطأ في الحفظ')
+    }
+    setBusy(null)
+  }
+
+  var uploadFile = async function (which: 'intro' | 'teacher', file: File) {
+    var busyKey: 'intro-upload' | 'teacher-upload' = which === 'intro' ? 'intro-upload' : 'teacher-upload'
+    var key = which === 'intro' ? 'intro_video_url' : 'teacher_video_url'
+    var current = which === 'intro' ? currentIntro : currentTeacher
+    setBusy(busyKey)
+    try {
+      var data = await chunkedUpload(file, 'intro-video')
+      var path = String((data as any).filePath || '')
+      await applyValue(key as any, path)
+      if (path !== current) removeOrphanMedia(current)
+      toast.success('الفيديو اترفع وحُفظ — السكشن ظهر للطلاب')
+    } catch (err: any) {
+      toast.error((err && err.message) || 'خطأ في رفع الفيديو')
+    }
+    setBusy(null)
+    if (which === 'intro' && introFileRef.current) introFileRef.current.value = ''
+    if (which === 'teacher' && teacherFileRef.current) teacherFileRef.current.value = ''
+  }
+
+  var deleteVideo = async function (which: 'intro' | 'teacher') {
+    var busyKey: 'intro-delete' | 'teacher-delete' = which === 'intro' ? 'intro-delete' : 'teacher-delete'
+    var key = which === 'intro' ? 'intro_video_url' : 'teacher_video_url'
+    var current = which === 'intro' ? currentIntro : currentTeacher
+    setBusy(busyKey)
+    try {
+      await applyValue(key as any, '')
+      removeOrphanMedia(current)
+      toast.success('الفيديو اتمسح — السكشن اختفى من الصفحة الرئيسية')
+    } catch (e: any) {
+      toast.error((e && e.message) || 'خطأ في الحذف')
+    }
+    setBusy(null)
+  }
+
+  var renderOne = function (which: 'intro' | 'teacher') {
+    var isIntro = which === 'intro'
+    var current = isIntro ? currentIntro : currentTeacher
+    var linkVal = isIntro ? introLink : teacherLink
+    var setLinkVal = isIntro ? setIntroLink : setTeacherLink
+    var fileRef = isIntro ? introFileRef : teacherFileRef
+    var busyPrefix = isIntro ? 'intro' : 'teacher'
+    var has = !!current.trim()
+    var title = isIntro ? 'الفيديو التعريفي للمنصة | Intro Video' : 'فيديو عن المستر | Teacher Video'
+    var hint = isIntro
+      ? 'لو ضفت فيديو هيظهر قسم «الفيديو التعريفي» في الصفحة الرئيسية بعد الهيرو مباشرة — ولو فضّيته (حذف) القسم بيختفي خالص.'
+      : 'لو ضفت فيديو هيظهر قسم «فيديو عن المستر» في الصفحة الرئيسية قبل المعرض — ولو فضّيته (حذف) القسم بيختفي خالص.'
+    return (
+      <div className="rounded-xl border border-border/60 p-4 space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <p className="text-sm font-bold flex items-center gap-2">
+            {isIntro ? <PlayCircle className="h-4 w-4 text-primary" /> : <GraduationCap className="h-4 w-4 text-primary" />}
+            {title}
+          </p>
+          <span className={'text-[10px] font-semibold px-2 py-0.5 rounded-full ' + (has ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-muted text-muted-foreground')}>
+            {has ? 'مضاف ✓' : 'مفيش — السكشن مخفي'}
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground">{hint}</p>
+
+        {has && (
+          <div className="rounded-lg border border-border/60 p-2 bg-muted/20">
+            <p className="text-[10px] font-semibold text-muted-foreground mb-1.5">المعاينة الحالية (اللي بياه الطلاب):</p>
+            <div className="aspect-video max-h-56 w-full overflow-hidden rounded-lg bg-black">
+              <ConfigVideoPlayer url={current} title={title} />
+            </div>
+          </div>
+        )}
+
+        <div className="grid gap-2 sm:grid-cols-[1fr_auto] items-end">
+          <div>
+            <Label className="text-xs mb-1 block">لينك فيديو (YouTube / Drive / Streamable)</Label>
+            <Input
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={linkVal}
+              onChange={function (e) { setLinkVal(e.target.value) }}
+              dir="ltr"
+              className="min-h-[44px]"
+            />
+          </div>
+          <Button onClick={function () { saveLink(which) }} disabled={busy !== null} className="min-h-[44px]">
+            {busy === busyPrefix + '-link' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            <span className="mr-1">{busy === busyPrefix + '-link' ? 'جاري الحفظ...' : 'حفظ اللينك'}</span>
+          </Button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            ref={function (el) { fileRef.current = el }}
+            type="file"
+            accept="video/mp4,video/webm,video/quicktime,video/*"
+            className="hidden"
+            onChange={function (e) { const f = e.target.files?.[0]; if (f) uploadFile(which, f) }}
+          />
+          <Button variant="outline" onClick={function () { fileRef.current?.click() }} disabled={busy !== null} className="min-h-[44px]">
+            {busy === busyPrefix + '-upload' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            <span className="mr-1">{busy === busyPrefix + '-upload' ? 'جاري الرفع...' : 'رفع من الجهاز'}</span>
+          </Button>
+          {has && (
+            <Button variant="ghost" onClick={function () { deleteVideo(which) }} disabled={busy !== null} className="min-h-[44px] text-destructive hover:text-destructive">
+              {busy === busyPrefix + '-delete' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              <span className="mr-1">{busy === busyPrefix + '-delete' ? 'جاري الحذف...' : 'حذف الفيديو'}</span>
+            </Button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Clapperboard className="h-5 w-5 text-primary" />
+          الفيديوهات التعريفية | Intro Videos
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-xs text-muted-foreground">
+          زي منصة مستر أحمد شعبان بالظبط: فيديو تعريفي عن المنصة + فيديو تعريفي عن المستر. كل واحد اختياري — فاضي = مش بيظهر خالص.
+        </p>
+        {renderOne('intro')}
+        {renderOne('teacher')}
+      </CardContent>
+    </Card>
+  )
+}
+
 export function CMSPanel() {
   var [config, setConfig] = useState<SiteConfig>({})
   var [loading, setLoading] = useState(true)
@@ -697,6 +893,49 @@ export function CMSPanel() {
           </div>
         </CardContent>
       </Card>
+
+      {/* (ص119) شكل صورة المستر في الهيرو — بإطار ذهبي أو نضيفة بدون أي إطار */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">شكل صورة المستر في الواجهة | Hero Photo Style</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button
+              type="button"
+              onClick={function () {
+                var next = (config['hero_photo_frame'] || '0') === '1' ? '0' : '1'
+                setConfig(function (p: any) { return Object.assign({}, p, { hero_photo_frame: next }) })
+                persistConfigNow({ hero_photo_frame: next })
+              }}
+              className={"flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-bold transition-colors " + ((config['hero_photo_frame'] || '0') === '1'
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-dashed border-border bg-transparent text-muted-foreground hover:border-primary/40')}
+            >
+              {(config['hero_photo_frame'] || '0') === '1' ? <span className="text-lg">🖼️</span> : null}
+              <span>بإطار ذهبي</span>
+            </button>
+            <button
+              type="button"
+              onClick={function () {
+                setConfig(function (p: any) { return Object.assign({}, p, { hero_photo_frame: '0' }) })
+                persistConfigNow({ hero_photo_frame: '0' })
+              }}
+              className={"flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border-2 px-4 text-sm font-bold transition-colors " + ((config['hero_photo_frame'] || '0') !== '1'
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-dashed border-border bg-transparent text-muted-foreground hover:border-primary/40')}
+            >
+              <span className="text-lg">✨ صورة نضيفة بدون إطار</span>
+            </button>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            «صورة نضيفة بدون إطار» = الصورة بتظهر على خلفية المنصة مباشرة من غير أي إطار أو خلفية (زي منصة مستر أحمد شعبان). الاختيار بيتحفظ فورًا.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* (ص119) الفيديوهات التعريفية — فيديو المنصة + فيديو المستر (زي زيكولا) */}
+      <IntroVideosCard config={config} setConfig={setConfig} persistNow={persistConfigNow} />
 
       {/* (G-2) فيديو «إزاي تستخدم المنصة» — لينك أو ملف مرفوع + حذف (اختياري بالكامل) */}
       <HowToVideoCard config={config} setConfig={setConfig} persistNow={persistConfigNow} />

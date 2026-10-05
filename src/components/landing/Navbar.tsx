@@ -22,7 +22,7 @@ import {
   LayoutDashboard,
   Shield,
   Youtube,
-  Shapes,
+  BookOpenText,
   Trophy,
   CalendarClock,
 } from 'lucide-react'
@@ -150,19 +150,19 @@ export function Navbar() {
               type="button"
               onClick={function () { setTopStudentsOpen(true) }}
               title="أوائل الطلبة — أفضل 3 طلاب"
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-xl text-sm font-bold text-[#8A6D22] dark:text-[#E5BE5A] hover:bg-[#C49A38]/10 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-xl text-sm font-bold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-500/10 transition-colors cursor-pointer"
             >
               <Trophy className="h-4 w-4" />
               {T('أوائل الطلبة', 'Top Students')}
             </button>
-            {/* Geometry Laws — قوانين الهندسة (طلب المستر: حاجة اسمها بالانجليزي جنب الرئيسية) */}
+            {/* (ص119) قواعد النحو — المنصة لغة عربية فبقيت قواعد النحو بدل قوانين الهندسة */}
             <a
-              href="/geometry-laws"
-              title="Geometry Laws — كل قوانين الهندسة: مساحات ومحيطات وحجوم"
+              href="/grammar-rules"
+              title="قواعد النحو — كل قواعد اللغة العربية بالأمثلة والإعراب"
               className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-xl text-sm font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
             >
-              <Shapes className="h-4 w-4" />
-              Geometry Laws
+              <BookOpenText className="h-4 w-4" />
+              قواعد النحو
             </a>
             {/* (و43) مواعيد السنتر اتشالت من النافبار الديسك توب بطلب المستر —
                بتفضل في قايمة الموبايل وصفحة /schedule شغالة زي ما هي */}
@@ -239,7 +239,7 @@ export function Navbar() {
               onClick={function () { setTopStudentsOpen(true) }}
               title="أوائل الطلبة — أفضل 3"
               aria-label="أوائل الطلبة — أفضل 3 طلاب"
-              className="md:hidden flex items-center gap-1 min-h-[36px] px-2 rounded-lg text-[#8A6D22] dark:text-[#E5BE5A] bg-[#C49A38]/10 border border-[#C49A38]/40 hover:bg-[#C49A38]/20 transition-colors cursor-pointer"
+              className="md:hidden flex items-center gap-1 min-h-[36px] px-2 rounded-lg text-emerald-800 dark:text-emerald-300 bg-emerald-500/10 border border-emerald-500/40 hover:bg-emerald-500/20 transition-colors cursor-pointer"
             >
               <Trophy className="h-4 w-4" />
               <span className="text-[11px] font-bold">الأوائل</span>
@@ -248,13 +248,13 @@ export function Navbar() {
                 (طلب المستر: «عاوزه يبقى باين في الموبايل»)
                 (2026-و29) طلب المستر: الأيقونة لوحدها مش كفاية — اكتبوا Geometry جنبها */}
             <a
-              href="/geometry-laws"
-              title="Geometry Laws — قوانين الهندسة"
-              aria-label="Geometry Laws — قوانين الهندسة"
+              href="/grammar-rules"
+              title="قواعد النحو — قواعد اللغة العربية"
+              aria-label="قواعد النحو — قواعد اللغة العربية"
               className="md:hidden flex items-center gap-1 min-h-[36px] px-2 rounded-lg text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 transition-colors"
             >
-              <Shapes className="h-4 w-4" />
-              <span dir="ltr" className="text-[11px] font-bold">Geometry</span>
+              <BookOpenText className="h-4 w-4" />
+              <span className="text-[11px] font-bold">النحو</span>
             </a>
             {youtubeLink && (
               /* (2026-و76) آيفون مخفي على الموبايل الصغير — بيتعوض بأول عنصر في
@@ -315,19 +315,19 @@ export function Navbar() {
             <button
               type="button"
               onClick={function () { setMobileMenu(false); setTopStudentsOpen(true) }}
-              className="flex items-center gap-2 min-h-[44px] px-3 rounded-xl border border-[#C49A38]/40 bg-[#C49A38]/10 text-[#8A6D22] dark:text-[#E5BE5A] font-bold text-sm cursor-pointer"
+              className="flex items-center gap-2 min-h-[44px] px-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 font-bold text-sm cursor-pointer"
             >
               <Trophy className="h-4 w-4" />
               {T('أوائل الطلبة', 'Top Students')}
             </button>
-            {/* Geometry Laws — قوانين الهندسة (ظاهر للكل: زائر/طالب/أدمن) */}
+            {/* (ص119) قواعد النحو — ظاهر للكل: زائر/طالب/أدمن */}
             <a
-              href="/geometry-laws"
+              href="/grammar-rules"
               onClick={() => setMobileMenu(false)}
               className="flex items-center gap-2 min-h-[44px] px-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold text-sm"
             >
-              <Shapes className="h-4 w-4" />
-              Geometry Laws — قوانين الهندسة
+              <BookOpenText className="h-4 w-4" />
+              قواعد النحو — اللغة العربية
             </a>
             {/* (و35) مواعيد السنتر في قايمة الموبايل */}
             <a

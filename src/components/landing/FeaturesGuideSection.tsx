@@ -68,7 +68,7 @@ export default function FeaturesGuideSection() {
       icon: GUIDE_ICONS[4],
       titleAr: cfg.guide_card5_title || 'بطاقات تعليمية',
       titleEn: cfg.guide_card5_title_en || 'Flashcards',
-      description: cfg.guide_card5_desc || 'استخدم البطاقات التعليمية لمراجعة المصطلحات والقوانين الرياضية بشكل سريع. Review formulas and terms with flashcards.',
+      description: cfg.guide_card5_desc || 'استخدم البطاقات التعليمية لمراجعة قواعد النحو والمصطلحات بشكل سريع. Review grammar rules and terms with flashcards.',
       descriptionEn: cfg.guide_card5_desc_en || 'Use flashcards to review math terms and formulas quickly.',
       color: GUIDE_COLORS[4],
     },

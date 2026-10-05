@@ -36,6 +36,11 @@ var DEFAULTS = {
   instructor_title: 'معلم اللغة العربية المتخصص | Arabic Language Specialist',
   instructor_photo: '/images/teacher.jpg',
 
+  // === (ص119) شكل صورة المستر في الهيرو ===
+  // '0' = بدون إطار/خلفية خالص (زي منصة مستر أحمد شعبان) — الافتراضي
+  // '1' = بإطار التذهيب الذهبي زي التصميم القديم
+  hero_photo_frame: '0',
+
   // === Features Section ===
   features_title: 'لماذا تختارنا؟ | Why Choose Us?',
   features_subtitle: 'نقدّم تجربة تعليمية فريدة تجمع بين الشرح المبسّط والتطبيق العملي في النحو والبلاغة والأدب',
@@ -132,6 +137,11 @@ var DEFAULTS = {
   howto_video_url: '',
   howto_video_kind: 'link',
 
+  // === (ص119) الفيديوهات التعريفية — زي منصة مستر أحمد شعبان ===
+  // فاضي = السكشن مش بيظهر خالص في الصفحة الرئيسية (إخفاء شرطي صارم)
+  intro_video_url: '',
+  teacher_video_url: '',
+
   // === (2026-ص2) مفتاح قفل التسلسل الموحد — دروس/واجبات/امتحانات ===
   // '1' (أو غايب) = التسلسل شغّال: كل حاجة بتفتح بعد اللي قبلها لكل الطلبة
   // '0' = التسلسل مطفي للكل: كله مفتوح بنفس الشكل لكل الطلبة
@@ -177,20 +187,29 @@ export async function PUT(request) {
     var body = await request.json()
     var keys = Object.keys(body)
 
+    /* (ص119) إصلاح «صفحة الأدمن بتاخد وقت عقبال ما تتحفظ»:
+     * قبل كده كل مفتاح كان بيتكتب لوحده بـ safeWrite متتالية — يعني حفظ
+     * الكونفج الكامل (~70 مفتاح) = ~70 رحلة ذهاب-إياب على Turso واحدة
+     * ورا التانية = دقايق انتظار. دلوقتي كل المفاتيح بتتكتب في
+     * transaction واحدة (batch واحدة على قاعدة البيانات) = ثواني أو أقل. */
+    var upserts = []
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i]
       var value = body[key]
       // Skip non-config keys that might come from error responses
       if (key === 'error' || key === 'defaults') continue
-      await safeWrite(function(k, v) {
-        return function() {
-          return db.siteConfig.upsert({
-            where: { key: k },
-            update: { value: v, updatedAt: new Date() },
-            create: { key: k, value: v },
-          })
-        }
-      }(key, value))
+      upserts.push(
+        db.siteConfig.upsert({
+          where: { key: key },
+          update: { value: String(value), updatedAt: new Date() },
+          create: { key: key, value: String(value) },
+        })
+      )
+    }
+    if (upserts.length > 0) {
+      await safeWrite(function () {
+        return db.$transaction(upserts)
+      })
     }
 
     return NextResponse.json({ message: 'Config updated' })

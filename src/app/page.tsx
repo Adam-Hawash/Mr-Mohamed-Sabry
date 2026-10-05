@@ -27,6 +27,14 @@ const FeaturesSection = dynamic(() => import('@/components/landing/FeaturesSecti
 const HowToVideoSection = dynamic(() => import('@/components/landing/HowToVideoSection').then(function(m) { return { default: (m as any).HowToVideoSection || (m as any).default } }), {
   loading: () => <div className="h-20" />,
 })
+/* (ص119) الفيديوهات التعريفية — زي منصة مستر أحمد شعبان بالظبط:
+   فيديو المنصة بعد الهيرو، وفيديو المستر قبل المعرض. فاضي = مخفي خالص */
+const IntroVideoSection = dynamic(() => import('@/components/landing/IntroVideoSection').then(function(m) { return { default: (m as any).IntroVideoSection || (m as any).default } }), {
+  loading: () => <div className="h-20" />,
+})
+const TeacherVideoSection = dynamic(() => import('@/components/landing/TeacherVideoSection').then(function(m) { return { default: (m as any).TeacherVideoSection || (m as any).default } }), {
+  loading: () => <div className="h-20" />,
+})
 const GradesSection = dynamic(() => import('@/components/landing/GradesSection').then(function(m) { return { default: m.GradesSection } }), {
   loading: () => <div className="h-20" />,
 })
@@ -228,6 +236,9 @@ export default function HomePage() {
           <HeroSection />
           {/* (ص5) شريط الحكم والأمثال المتحرك — من الديزاين الأصلي بالحرف */}
           <ProverbsMarquee />
+
+          {/* (ص119) الفيديو التعريفي عن المنصة — بعد الهيرو مباشرة (زي زيكولا) */}
+          <Reveal><IntroVideoSection /></Reveal>
           {/* (ص5) تأثير «لما بنزل الحاجات بتتكون» — كل قسم بيظهر بتلاشي وصعود */}
           <Reveal><FeaturesGuideSection /></Reveal>
           <Reveal><FeaturesSection /></Reveal>
@@ -238,6 +249,8 @@ export default function HomePage() {
           {/* (2026-و29) أفضل 3 طلاب بقوا في النافبار (زرار أوائل الطلبة) بدل الرئيسية */}
           <Reveal><LessonsSection /></Reveal>
           <Reveal><TipsSection /></Reveal>
+          {/* (ص119) فيديو تعريف المستر — قبل المعرض بالظبط (زي زيكولا) */}
+          <Reveal><TeacherVideoSection /></Reveal>
           <Reveal><GallerySection /></Reveal>
         </main>
       )}

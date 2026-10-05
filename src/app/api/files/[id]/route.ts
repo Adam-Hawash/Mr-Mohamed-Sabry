@@ -80,7 +80,17 @@ export async function GET(
         const howtoVal = howtoRows && howtoRows[0] ? String(howtoRows[0].value || '') : ''
         isHowToPublic = !!howtoVal && howtoVal.indexOf(id) !== -1
       } catch (e) { /* جدول ناقص — نكمل بالحماية العادية */ }
-      if (!tokenOk && !adminOk && !isIntroPublic && !isHowToPublic) {
+      /* (ص119) الفيديوهات التعريفية الجديدة — فيديو المنصة وفيديو المستر
+         الاتنين فيديوهات عامة على الرئيسية زي الفيديو التعريفي بالظبط */
+      let isTeacherPublic = false
+      try {
+        const tvRows: any[] = await db.$queryRawUnsafe(
+          "SELECT value FROM SiteConfig WHERE key = 'teacher_video_url' LIMIT 1"
+        ) as any[]
+        const tvVal = tvRows && tvRows[0] ? String(tvRows[0].value || '') : ''
+        isTeacherPublic = !!tvVal && tvVal.indexOf(id) !== -1
+      } catch (e) { /* جدول ناقص — نكمل بالحماية العادية */ }
+      if (!tokenOk && !adminOk && !isIntroPublic && !isHowToPublic && !isTeacherPublic) {
         return NextResponse.json(
           { error: 'غير مسموح — الفيديو بيتشغل من داخل المنصة بس' },
           { status: 403 }
@@ -161,5 +171,34 @@ export async function GET(
   } catch (error: any) {
     console.error('File serve error:', error)
     return NextResponse.json({ error: 'File not found' }, { status: 404 })
+  }
+}
+
+/* ============================================================
+   (ص119) حذف ملف من Media — بيمسح ملف الفيديو اليتيم لما الأدمن
+   يستبدل/يمسح فيديو تعريفي (لينك/ملف جديد فوق ملف قديم).
+   محمي بـ adminId زي الأدمن في كل العمليات. نفس بنية زيكولا.
+   ============================================================ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    var { id } = await params
+    const { searchParams } = new URL(request.url)
+    const adminOk = await isAdmin(searchParams.get('adminId'))
+    if (!adminOk) {
+      return NextResponse.json({ error: 'غير مصرح' }, { status: 403 })
+    }
+    var removed = await db.media.delete({ where: { id } }).catch(function (e) {
+      return null
+    })
+    if (!removed) {
+      return NextResponse.json({ error: 'الملف مش موجود' }, { status: 404 })
+    }
+    return NextResponse.json({ ok: true, deleted: id })
+  } catch (error: any) {
+    console.error('File delete error:', error)
+    return NextResponse.json({ error: 'حذف الملف فشل' }, { status: 500 })
   }
 }
