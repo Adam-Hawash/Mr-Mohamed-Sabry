@@ -823,7 +823,13 @@ function VideosTab({ videos, watchedIds, approvedVideoIds, studentId, grade, vid
       var arr: VideoType[] = item.type === 'group' ? item.parts : [item.video]
       arr.forEach(function (v) {
         var k = videoKindOf(v)
-        if (k === 'youtube' || k === 'file') chain.push({ id: v.id })
+        /* (ز22) الفيديو اللي بفلوس والطالب مالوش وصول له — اختياري صامت
+           (طلب المستر: «الفيديو اللي بفلوس ده يكون اختياري عادي بس متكتبش
+           ان هو اختياري — لو الطالب مشافش الفيديو الفيديو اللي بعده يتفتح»):
+           مش بيدخل سلسلة الحجب أصلاً — الفيديو اللي بعده بيتفتح عادي.
+           لو معاه وصول (دفعة معتمدة/مُنِحت) بيدخل زي أي فيديو عادي */
+        var paidNoAccess = (Number(v.price) || 0) > 0 && !approvedVideoIds.has(v.id)
+        if ((k === 'youtube' || k === 'file') && !paidNoAccess) chain.push({ id: v.id })
       })
     })
     var completedOf = function (id: string) { return (mergedProgress[id] || 0) >= 99 }
@@ -847,7 +853,7 @@ function VideosTab({ videos, watchedIds, approvedVideoIds, studentId, grade, vid
       }
     }
     return map
-  }, [lessons, mergedProgress, seqLockEnabled, progressLoaded])
+  }, [lessons, mergedProgress, seqLockEnabled, progressLoaded, approvedVideoIds])
 
   const lockedMap = useMemo(function () {
     var map: Record<string, boolean> = {}
