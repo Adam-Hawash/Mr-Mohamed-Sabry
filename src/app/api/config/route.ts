@@ -5,6 +5,10 @@ import { db, safeWrite } from '@/lib/db'
 var DEFAULTS = {
   // === Navbar ===
   navbar_brand: 'Mr. Mohamed Sabry',
+
+  /* (ز29 — طلب المستر) القبول التلقائي للتسجيلات:
+     «1» = أي طالب يعمل حساب بيتقبل تلقائي (مفعّل دلوقتي) | «0» = التسجيلات تستنى موافقة الأستر */
+  auto_approve_students: '1',
   navbar_subtitle: 'مستر محمد صبري',
 
   // === Hero Section ===
