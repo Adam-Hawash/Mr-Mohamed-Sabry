@@ -62,7 +62,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     if (!configLoaded && Object.keys(siteConfig).length === 0) {
-      fetch('/api/config')
+      fetch('/api/config', { cache: 'no-store' })
         .then((r) => r.json())
         .then((data) => {
           setSiteConfig(data)

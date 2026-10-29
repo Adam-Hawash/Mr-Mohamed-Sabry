@@ -2939,7 +2939,7 @@ function ExamsTab({ exams, results, completedExamIds, onExamSubmitted, studentId
   const examAutoRefreshDoneRef = useRef(false)
   const [examMcqNotes, setExamMcqNotes] = useState<Record<string, string>>({})
   const [examMcqNotesLoading, setExamMcqNotesLoading] = useState(false)
-  const doSubmitExamRef = useRef<null | ((opts?: { auto?: boolean; cheat?: boolean }) => Promise<void>)>(null)
+  const doSubmitExamRef = useRef<null | ((opts?: { auto?: boolean; cheat?: boolean; assistant?: boolean }) => Promise<void>)>(null)
 
   /* ===== (2026-و66) نظام منع الغش والتشتت الذكي — طلب المستر:
      «يحسس لما الطالب يقلب على الجوال أو يسيب الامتحان ويودع تحذير»

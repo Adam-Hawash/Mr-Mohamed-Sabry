@@ -157,6 +157,13 @@ var DEFAULTS = {
   video_sequence_lock: '1',
 }
 
+/* (Z-30) الكونفج ديناميكي دايمًا — كان ممكن يتخزن ثابت وقت البيلد
+   فيتجمّد شكل الهيرو (الإطار/السحابة/الصور) على آخر قيم وقت النشر،
+   وتعديلات الأدمن ما تظهرش أبدًا من غير نشر جديد — دي كانت الجذر الأول
+   لشكوى «أحط الإطار ما يبقاش موجود». + من غير أي كاش CDN — التعديل
+   يبان للكل في نفس الثانية */
+export const dynamic = 'force-dynamic'
+
 export async function GET(request) {
   try {
     var configs = await db.siteConfig.findMany()
@@ -172,14 +179,11 @@ export async function GET(request) {
      * التكرار على القراءة كان بيلغي أي تعديل يعمله الأدمن فورًا فيظهرله إن
      * «التغييرات بترجع» رغم إنها متخزنة فعلًا. أي تعديل من الأدمن دلوقتي بيتخزن
      * وبيترجع زي ما هو. */
-    /* (توفير الباك إند — ص8) الكونفج بيتكاش على الـ CDN دقيقة (s-maxage=60
-       + stale-while-revalidate) بدل ما كل زيارة صفحة توقّع فانكشن.
-       الأدمن بيجيب الكونفج بـ ?fresh= اللي بتفلت الكاش دايمًا —
-       فتعديلاته بتوصل جهازه لحظيًا زي ما هي */
+    /* (توفير الباك إند — ص8) الكاش اتشال نهائيًا في (Z-30): الكاش كان
+       بيخلي تعديلات الأدمن تظهر للزوار بعد دقائق أو ما تظهرش خالص
+       (متصفح ماسك النسخة القديمة) — فالقراءة بقت live من قاعدة البيانات */
     var res = NextResponse.json(map)
-    var isFresh = false
-    try { isFresh = new URL(request.url).searchParams.has('fresh') } catch (eU) {}
-    res.headers.set('Cache-Control', isFresh ? 'private, no-store' : 'public, s-maxage=60, stale-while-revalidate=300')
+    res.headers.set('Cache-Control', 'private, no-store')
     return res
   } catch (error) {
     console.error('Config fetch error:', error)

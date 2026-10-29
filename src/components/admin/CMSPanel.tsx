@@ -795,7 +795,11 @@ export function CMSPanel() {
       if (res.ok) {
         toast.success('تم الحفظ فورًا | Saved')
         var storeState = await (await import('@/stores/app-store')).useAppStore.getState()
-        storeState.setSiteConfig(cleanConfig)
+        /* (Z-30) دمج مع الكونفج الموجود في الستور بدل الاستبدال — الاستبدال
+           كان بيتمسح بيه كل الإعدادات التانية ومتبقي بس المفتاح/المفاتيح
+           اللي اتحفظت للتو، فاللاندينج بعد كده بيرجع للنصوص الافتراضية
+           وبتبان كأن «التعديلات بترجع» */
+        storeState.setSiteConfig(Object.assign({}, storeState.siteConfig || {}, cleanConfig))
       } else {
         var errText = ''
         try { errText = await res.text() } catch(x) {}

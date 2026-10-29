@@ -12,6 +12,11 @@ import { FloatingInstallButton } from "@/components/InstallPwaButton";
 import { DeviceMessages } from "@/components/DeviceMessages";
 import { LangBoot } from "@/lib/i18n";
 
+/* (Z-30) المنصة كلها ديناميكية — الكونفج (الهيرو/الإطار/السحابة/الفافيكون)
+   بيقرا من قاعدة البيانات عند كل طلب، مش بيتجمّد وقت البيلد —
+   تعديلات الأدمن تظهر فورًا للكل بعد الحفظ */
+export const dynamic = 'force-dynamic'
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
