@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { db, safeWrite } from '@/lib/db'
 import { notifyStudents } from '@/lib/notify'
+/* (2026-و97) إشعار فوري لولي الأمر: واجب جديد نزل */
+import { notifyAssignmentPosted } from '@/lib/assignment-notify'
 import { isAdmin } from '@/lib/video-guard'
 /* (2026-و55) إخفاء إجابات الـ AI في الجداول عن الطالب — تنظيف سيرفري */
 import { questionsJsonForStudent } from '@/lib/table-sanitize'
@@ -179,6 +181,25 @@ export async function POST(request: NextRequest) {
       /* (و45) await — الإشعار بيتكتب قبل الرد */
         try { await notifyStudents({ studentIds: nIds, grade: storeGrade(String(grade || '')), type: 'homework', title: '📚 واجب جديد: ' + String(title), body: 'دخل من تاب الواجبات وسلّمه قبل ميعاده' }) } catch (nE) {}
     } catch (nE) {}
+
+    /* (2026-و97) إشعار فوري لولي الأمر: واجب جديد نزل على ابنه —
+       fire-and-forget بعد الرد (الطالب واخد إشعاره فوق من notifyStudents) */
+    try {
+      var hw97 = homework as any
+      after(async function () {
+        try {
+          await notifyAssignmentPosted({
+            kind: 'homework',
+            id: String(hw97 && hw97.id || ''),
+            title: String(title || ''),
+            grade: String(grade || ''),
+            endsAt: null,
+            targetStudentIds: targetIds,
+            targetGroupIds: targetGids,
+          })
+        } catch (e97) { console.error('[hw-post] parent posted notify error (ignored):', e97) }
+      })
+    } catch (e97) { console.error('[hw-post] after() setup error (ignored):', e97) }
 
     return NextResponse.json({ message: 'Homework added', homework }, { status: 201 })
   } catch (error: any) {
