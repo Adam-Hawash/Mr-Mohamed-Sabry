@@ -235,10 +235,25 @@ export async function checkSequentialUnlock(
     const video = await db.video.findUnique({ where: { id: videoId } })
     if (!video) return { ok: true }
     // ترتيب العرض نفسه اللي الطالب شايفه في بوابته (زي orderedVideos في الكلاينت)
-    const gradeVideos = await db.video.findMany({
+    var gradeVideos = await db.video.findMany({
       where: { grade: video.grade },
       orderBy: [{ sortIndex: 'asc' }, { orderIndex: 'asc' }, { createdAt: 'asc' }],
-      select: { id: true, title: true, url: true, filePath: true, fileType: true, price: true },
+      select: { id: true, title: true, groupKey: true, url: true, filePath: true, fileType: true, price: true },
+    })
+    /* (ز28 — طلب المستر): الدرس المخفي كامل عن الطالب (LessonHide) = مش موجود
+       — ما بيدخلش في سلسلة التسلسل خالص (الجدولة القديمة متغطية تحت في hiddenBySchedule) */
+    var hidGroups: Record<string, boolean> = {}
+    try {
+      var hLhRows: any[] = await db.$queryRawUnsafe('SELECT groupKey, studentIds FROM LessonHide')
+      for (var hli = 0; hli < (hLhRows || []).length; hli++) {
+        var hLhIds: string[] = []
+        try { hLhIds = JSON.parse(String(hLhRows[hli].studentIds || '[]')) } catch (eHL) {}
+        if (Array.isArray(hLhIds) && hLhIds.indexOf(String(studentId)) !== -1) hidGroups[String(hLhRows[hli].groupKey || '')] = true
+      }
+    } catch (eHL2) { /* جدول ناقص — من غير إخفاء دروس */ }
+    gradeVideos = gradeVideos.filter(function (hv: any) {
+      var hgk = String((hv as any).groupKey || '')
+      return !(hgk && hidGroups[hgk])
     })
     /* (2026-و67) فيديوهات المجموعات: الفيديو الموجّه لمجموعات والطالب مش منهم
        (أو لسه موعده مجاه) **مش ظاهر عنده أصلاً** في قايمته — فممنوع يكون شرط
