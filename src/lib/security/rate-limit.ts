@@ -66,6 +66,7 @@ export function clientIp(req: { headers: { get(name: string): string | null } })
 // بيرجع null والكود بيكمل بالذاكرة المحلية (fail-open للتوافر).
 // ============================================================
 var _rlTableReady = false
+export var RL_LAST = ''
 
 export async function dbRateLimit(key: string, limit: number, windowMs: number): Promise<RateResult | null> {
   try {
@@ -91,6 +92,7 @@ export async function dbRateLimit(key: string, limit: number, windowMs: number):
     } catch (e) {
       rows = []
     }
+    RL_LAST = 'rows=' + rows.length + '/lim=' + limit + '/key=' + key.slice(0, 40)
     if (rows.length >= limit) {
       var oldest = rows.length ? Number(rows[0].ts) : nowSec
       var retryAfterSec = Math.max(1, Math.ceil((oldest + Math.ceil(windowMs / 1000)) - nowSec))
@@ -98,7 +100,8 @@ export async function dbRateLimit(key: string, limit: number, windowMs: number):
     }
     try {
       await db.$executeRawUnsafe('INSERT INTO RateLimitHit (key, ts) VALUES (?, ?)', key, nowSec)
-    } catch (e) {
+    } catch (e: any) {
+      RL_LAST = 'insert-fail: ' + String(e && e.message).slice(0, 100)
       return null
     }
     // تنظيف هادئ عشوائي (~4% من النداءات) — الجدول ميبقاش ضخم

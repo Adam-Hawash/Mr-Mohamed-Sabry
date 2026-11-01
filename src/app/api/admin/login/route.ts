@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextResponse } from 'next/server'
 import { db, safeWrite } from '@/lib/db'
-import { enforceAuthRate } from '@/lib/security/rate-limit'
+import { enforceAuthRate, RL_LAST } from '@/lib/security/rate-limit'
 import { signSession, sessionCookieHeader } from '@/lib/security/session'
 import { slog } from '@/lib/security/logger'
 
@@ -64,7 +64,9 @@ export async function POST(request) {
         /* (2026-ص4-ر) بيانات القاعدة مختلفة → اللي بيكتب البيانات الأصلية بيدخل
            ومزامنة صف القاعدة عليها — وغير كده رفض زي ما هو */
         if (cleanEmail !== squash(DEFAULT_EMAIL) || cleanPassword !== squash(DEFAULT_PASSWORD)) {
-          return NextResponse.json({ error: 'البريد أو كلمة المرور غلط' }, { status: 401 })
+          var r401b = NextResponse.json({ error: 'البريد أو كلمة المرور غلط' }, { status: 401 })
+          r401b.headers.set('x-rl-last', String(RL_LAST).slice(0, 120))
+          return r401b
         }
         var synced = await safeWrite(function() {
           return db.admin.update({
