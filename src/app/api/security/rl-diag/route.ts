@@ -46,6 +46,18 @@ export async function GET(request: NextRequest) {
     var d3 = await mod2.dbRateLimit(pk, 2, 60_000)
     out.dbFnTest = [d1, d2, d3].map(function (r: any) { return r ? r.ok : null })
   } catch (e: any) { out.dbFnErr = String(e && e.message).slice(0, 200) }
+  // نفس نداء المسارات بالظبط: enforceAuthRate بمفتاح حقيقي
+  try {
+    var mod3 = await import('@/lib/security/rate-limit')
+    var fakeReq = { headers: { get: function (n: string) { return request.headers.get(n) } } }
+    var gateResults: string[] = []
+    for (var gi = 0; gi < 7; gi++) {
+      var g = await mod3.enforceAuthRate(fakeReq, 'diag-gate', 'probe-account')
+      gateResults.push(g ? String(g.status) : 'pass')
+    }
+    out.enforceAuthRateTest = gateResults
+    out.probeIp = mod3.clientIp(fakeReq)
+  } catch (e: any) { out.enforceErr = String(e && e.message).slice(0, 200) }
   var res = NextResponse.json(out)
   res.headers.set('Cache-Control', 'no-store')
   return res

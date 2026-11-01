@@ -27,7 +27,9 @@ export async function POST(request) {
   var password = body.password
 
   if (!email || !password) {
-    return NextResponse.json({ error: 'البريد وكلمة المرور مطلوبين' }, { status: 400 })
+    var mark400 = NextResponse.json({ error: 'البريد وكلمة المرور مطلوبين' }, { status: 400 })
+    mark400.headers.set('x-mg-z32', 'admin-login-live')
+    return mark400
   }
 
   /* (ز32) حد المحاولات: 5/دقيقة لكل (IP+حساب) و30/دقيقة لكل IP — منع التخمين */
