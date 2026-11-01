@@ -3,6 +3,8 @@ import { db } from '@/lib/db'
 import { resolveQuestionsForStudent } from '@/lib/exam-models'
 import { normalizeCorrectKey } from '@/lib/correct-key'
 import { resolveParentStudent } from '@/lib/parent-students'
+/* (ز32 — الأمن الموحد) حرّاس جلسات ولي الأمر */
+import { requireParent } from '@/lib/security/session'
 
 /* (2026-و38) شفاء ذاتي لجدول Parent — نفس حماية مسارات التسجيل والدخول والنتايج */
 var parentDdlDone: Promise<void> | null = null
@@ -67,6 +69,9 @@ export async function GET(request: NextRequest) {
   try {
     var sp = new URL(request.url).searchParams
     var parentId = sp.get('parentId') || ''
+    /* (ز32 — الأمن الموحد) جلسة ولي أمر موقّعة إجبارية */
+    var paDenied = await requireParent(request, parentId)
+    if (paDenied) return paDenied
     var type = String(sp.get('type') || '')
     var resultId = String(sp.get('resultId') || '')
     /* (2026-و79) ولي الأمر بعدة أبناء — الابن المطلوب من الـ query */

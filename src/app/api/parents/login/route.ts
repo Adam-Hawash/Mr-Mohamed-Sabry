@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, safeWrite } from '@/lib/db'
+/* (ز32 — الأمن الموحد) حد محاولات + جلسة ولي أمر موقّعة */
+import { enforceAuthRate } from '@/lib/security/rate-limit'
+import { signSession, sessionCookieHeader } from '@/lib/security/session'
 
 /* (2026-و38) شفاء ذاتي لجدول Parent — نفس حماية مسار التسجيل */
 var parentDdlDone: Promise<void> | null = null
@@ -60,6 +63,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'اكتب رقم تليفونك وباسوردك' }, { status: 400 })
     }
 
+    /* (ز32) حد المحاولات: 5/دقيقة لكل (IP+رقم) و30/دقيقة لكل IP */
+    var limited = enforceAuthRate(request, 'parent-login', phoneNorm)
+    if (limited) return limited
+
     try { await ensureParentTable() } catch (eDdl) {}
 
     /* (و90) بحث بكل صيغ الرقم (المطبّع + الدولي 20xx + الأرقام الخام)
@@ -87,7 +94,9 @@ export async function POST(request: NextRequest) {
     var student: any = null
     try { student = await db.student.findUnique({ where: { id: parent.studentId } }) } catch (sErr) {}
 
-    return NextResponse.json({
+    /* (ز32) جلسة ولي أمر موقّعة HttpOnly — كل مسارات ولي الأمر بتعتمد عليها */
+    var pToken = await signSession(parent.id, 'parent')
+    var pRes = NextResponse.json({
       success: true,
       parent: {
         id: parent.id,
@@ -99,6 +108,9 @@ export async function POST(request: NextRequest) {
           : null,
       },
     })
+    pRes.headers.append('Set-Cookie', sessionCookieHeader('parent', pToken))
+    pRes.headers.set('Cache-Control', 'no-store')
+    return pRes
   } catch (err: any) {
     console.error('Parent login error:', err)
     return NextResponse.json({ error: 'حدث خطأ مؤقت في السيرفر — جرب تاني بعد لحظات' }, { status: 500 })

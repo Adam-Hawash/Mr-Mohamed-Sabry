@@ -5,6 +5,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) جدولة/إخفاء الفيديوهات = أدمن موثّق بس */
+import { requireAdmin } from '@/lib/security/session'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
@@ -88,6 +90,8 @@ export async function GET(request: NextRequest) {
 // Body: { videoId, studentIds: [], unlockAt, hiddenStudentIds: [] }
 export async function POST(request: NextRequest) {
   try {
+    var vsDenied = await requireAdmin(request)
+    if (vsDenied) return vsDenied
     await ensureTable()
     var body = await request.json()
     var videoId = body.videoId
@@ -123,6 +127,8 @@ export async function POST(request: NextRequest) {
 // DELETE /api/video-schedule?id=xxx
 export async function DELETE(request: NextRequest) {
   try {
+    var vsDelDenied = await requireAdmin(request)
+    if (vsDelDenied) return vsDelDenied
     await ensureTable()
     var searchParams = new URL(request.url).searchParams
     var id = searchParams.get('id')

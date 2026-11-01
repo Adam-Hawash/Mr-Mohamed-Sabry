@@ -3,6 +3,10 @@ import { db, safeWrite } from '@/lib/db'
 import { makeLibsqlClient, ensureSchema } from '@/lib/ensure-schema'
 /* (S-4a — توحيد الصفوف) المرجع الموحد: قراءة = gradeWhere، كتابة = storeGrade */
 import { gradeWhere, storeGrade } from '@/lib/grade-names'
+/* (ز32 — الأمن الموحد) حد محاولات + جلسة موقّعة HttpOnly */
+import { enforceAuthRate, enforceRate } from '@/lib/security/rate-limit'
+import { signSession, sessionCookieHeader, requireAdmin, hasAdminSession, requireStudent } from '@/lib/security/session'
+import { slog } from '@/lib/security/logger'
 
 // ============================================================
 // نظام ربط الجهاز — إصدار 5 (البساطة نفسها)
@@ -167,6 +171,9 @@ export async function GET(request: NextRequest) {
     if (phone) {
       // ===== تسجيل الدخول =====
       var password = searchParams.get('password') || ''
+      /* (ز32) حد المحاولات: 5/دقيقة لكل (IP+رقم) و30/دقيقة لكل IP — منع التخمين */
+      var loginLimited = enforceAuthRate(request, 'student-login', phone)
+      if (loginLimited) return loginLimited
       var candidates: string[] = []
       try {
         var rawIds = JSON.parse(searchParams.get('deviceIds') || '[]')
@@ -374,7 +381,14 @@ export async function GET(request: NextRequest) {
           }
         }
 
-        return NextResponse.json({ students: [{ ...student, watchedVideoCount: 0 }], total: 1, page: 1, pageSize: 1, totalPages: 1 }, { headers: noStore })
+        /* (ز32) الباسورد ممنوع يرجع للكلاينت أبدًا + جلسة طالب موقّعة HttpOnly */
+        var safeStudent: any = Object.assign({}, student)
+        delete safeStudent.password
+        var loginToken = await signSession(student.id, 'student')
+        var loginRes = NextResponse.json({ students: [Object.assign({}, safeStudent, { watchedVideoCount: 0 })], total: 1, page: 1, pageSize: 1, totalPages: 1 }, { headers: noStore })
+        loginRes.headers.append('Set-Cookie', sessionCookieHeader('student', loginToken))
+        slog('students', 'student_login_ok', { status: 200, userId: String(student.id).slice(0, 6) + '…' })
+        return loginRes
       } catch (loginErr: any) {
         console.error('Student login error:', loginErr)
         return NextResponse.json(
@@ -385,6 +399,9 @@ export async function GET(request: NextRequest) {
     }
 
     // ===== قائمة الطلاب (لوحة التحكم) =====
+    /* (ز32) قايمة الطلاب للأدمن بس — جلسة أدمن موقّعة + الباسوردات متتشال */
+    var listDenied = await requireAdmin(request)
+    if (listDenied) return listDenied
     var where: Record<string, unknown> = {}
     /* (S-4a — توحيد الصفوف) كل صيغ نفس الصف مع بعض */
     if (grade) where.grade = gradeWhere(grade)
@@ -442,7 +459,9 @@ export async function GET(request: NextRequest) {
     }
 
     var studentsWithStats = students.map(function (s) {
-      return { ...s, watchedVideoCount: watchMap[s.id] || 0, lastDeviceBlock: blockMap[s.id] || null }
+      var safe: any = Object.assign({}, s)
+      delete safe.password
+      return { ...safe, watchedVideoCount: watchMap[s.id] || 0, lastDeviceBlock: blockMap[s.id] || null }
     })
 
     return NextResponse.json({
@@ -461,6 +480,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await ensureStudentSchema()
+    /* (ز32) حد التسجيل: 10/دقيقة لكل IP — منع إغراق الحسابات */
+    var regLimited = enforceRate(request, 'student-register', 10, 60_000)
+    if (regLimited) return regLimited
     var body = await request.json()
     var name = body.name || ''
     var phone = body.phone || ''
@@ -575,7 +597,15 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ studentName: name, studentPhone: phone, studentGrade: grade, parentName: parentName, parentPhone: parentPhone }),
     }).catch(function () {})
 
-    return NextResponse.json({ message: 'Student created', student: student }, { status: 201 })
+    /* (ز32) الباسورد ممنوع يرجع في الرد + جلسة الطالب تتفعّل فورًا */
+    var safeCreated: any = Object.assign({}, student)
+    delete safeCreated.password
+    var regToken = await signSession(student.id, 'student')
+    var regRes = NextResponse.json({ message: 'Student created', student: safeCreated }, { status: 201 })
+    regRes.headers.append('Set-Cookie', sessionCookieHeader('student', regToken))
+    regRes.headers.set('Cache-Control', 'no-store')
+    slog('students', 'student_registered', { status: 201, userId: String(student.id).slice(0, 6) + '…' })
+    return regRes
   } catch (error: any) {
     console.error('Student create error:', error)
     return NextResponse.json({ error: 'Failed to create student: ' + (error.message || 'Unknown error') }, { status: 500 })

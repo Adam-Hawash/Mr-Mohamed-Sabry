@@ -10,12 +10,19 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { finishPendingForHomeworkResult, finishPendingForExamResult } from '@/lib/finish-pending'
+/* (ز32 — الأمن الموحد) مينفش حد مجهول يشغّل تصحيح الذكاء (تكلفة) — أي جلسة موثّقة */
+import { readSessions } from '@/lib/security/session'
+import { enforceRate } from '@/lib/security/rate-limit'
 
 export const runtime = 'nodejs'
 export const maxDuration = 300
 
 export async function POST(req: NextRequest) {
   try {
+    var fpLimited = enforceRate(req, 'grading-finish', 20, 60_000)
+    if (fpLimited) return fpLimited
+    var fpSessions = await readSessions(req)
+    if (!fpSessions.length) return NextResponse.json({ error: 'انتهت الجلسة — سجّل دخولك من جديد', code: 'session' }, { status: 401 })
     var body: any = null
     try { body = await req.json() } catch (e) {}
     var kind = String((body && body.kind) || 'homework')

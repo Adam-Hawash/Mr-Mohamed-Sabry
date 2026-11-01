@@ -8,6 +8,8 @@
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) إشعارات الطالب ليه هو بس */
+import { requireStudent } from '@/lib/security/session'
 import { after } from 'next/server'
 /* (2026-و97) ماسح إشعارات الواجبات/الامتحانات — بينادي بأمان كل ما الطالب يفتح جرس الإشعارات */
 import { sweepAssignmentNotifications } from '@/lib/assignment-notify'
@@ -24,6 +26,9 @@ export async function GET(request: NextRequest) {
   try {
     var studentId = new URL(request.url).searchParams.get('studentId') || ''
     if (!studentId) return NextResponse.json({ notifications: [], unreadCount: 0 })
+    /* (ز32) قراءة إشعارات الطالب بجلسته هو بس (منع IDOR) */
+    var ntDenied = await requireStudent(request, studentId)
+    if (ntDenied) return ntDenied
     await ensureTable()
     /* (2026-و97) ماسح الإشعارات — fire-and-forget: بيولد تحذيرات الـ 24 ساعة
        والنزول الجديد (متكرر-safe بمفتاح منع تكرار) */

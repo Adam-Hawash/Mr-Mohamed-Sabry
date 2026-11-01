@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 /* (S-4a — توحيد الصفوف) المرجع الموحد */
 import { storeGrade } from '@/lib/grade-names'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) حرّاس الجلسات — منع IDOR */
+import { requireAdmin, hasAdminSession, hasStudentSession } from '@/lib/security/session'
+import { slog, shortId } from '@/lib/security/logger'
 
 export async function GET(
   _request: NextRequest,
@@ -10,6 +13,13 @@ export async function GET(
 ) {
   try {
     const { id } = await params
+    /* (ز32) RLS على مستوى التطبيق: الطالب يقرأ نفسه بس، والأدمن يقرأ أي حد */
+    var selfOk = await hasStudentSession(_request, id)
+    var adminOk = selfOk ? false : await hasAdminSession(_request)
+    if (!selfOk && !adminOk) {
+      slog('students/[id]', 'deny_get_student', { status: 401, userId: shortId(id) })
+      return NextResponse.json({ error: 'انتهت الجلسة — سجّل دخولك من جديد', code: 'session' }, { status: 401 })
+    }
     const student = await db.student.findUnique({
       where: { id },
       include: {
@@ -27,7 +37,10 @@ export async function GET(
       return NextResponse.json({ error: 'Student not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ student })
+    /* (ز32) الباسورد ممنوع يخرج من السيرفر أبدًا */
+    var safeStudent: any = Object.assign({}, student)
+    delete safeStudent.password
+    return NextResponse.json({ student: safeStudent })
   } catch (error) {
     console.error('Student detail error:', error)
     return NextResponse.json({ error: 'Failed to fetch student' }, { status: 500 })
@@ -39,6 +52,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    /* (ز32) تعديل بيانات الطالب للأدمن بس — جلسة موقّعة */
+    var putDenied = await requireAdmin(request)
+    if (putDenied) return putDenied
     const { id } = await params
     const body = await request.json()
     const { name, phone, grade, status, isPaidAccess } = body
@@ -126,10 +142,13 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    /* (ز32) حذف الطالب للأدمن بس — جلسة موقّعة */
+    var delDenied = await requireAdmin(request)
+    if (delDenied) return delDenied
     const { id } = await params
     const existing = await db.student.findUnique({ where: { id } })
     if (!existing) {

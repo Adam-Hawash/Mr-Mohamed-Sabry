@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { NextRequest, NextResponse, after } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) حرّاس الجلسات — منع IDOR */
+import { requireAdmin, hasAdminSession, hasStudentSession } from '@/lib/security/session'
 // (2026-و16) self-heal خلفي: إعادة تصحيح النتايج القديمة الناقصة بنفس مسار
 // الذكاء الاصطناعي الحاسم — بدل ما يفضل بادج «محتاج تصحيح» معلق للأبد
 import { regradeExamResult, regradeHomeworkResult, gradesLookPending, questionsHaveWriting } from '@/lib/regrade-core'
@@ -127,6 +129,12 @@ export async function GET(
 ) {
   try {
     const { id } = await params
+    /* (ز32) نتايج الطالب ليه ولولي أمره/الأدمن بس — مينفش تغيير ID يجيب نتايج حد تاني */
+    var selfOk = await hasStudentSession(request, id)
+    var adminOk = selfOk ? false : await hasAdminSession(request)
+    if (!selfOk && !adminOk) {
+      return NextResponse.json({ error: 'انتهت الجلسة — سجّل دخولك من جديد', code: 'session' }, { status: 401 })
+    }
 
     // Ensure tables exist
     await ensureTables()

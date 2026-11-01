@@ -12,6 +12,9 @@
 
 import { NextResponse, after } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) تسليم الواجب بجلسة الطالب الموثّقة — مينفش تسليم باسم حد تاني */
+import { requireStudent } from '@/lib/security/session'
+import { enforceRate } from '@/lib/security/rate-limit'
 import { gradeImageAnswer, gradeTextAnswer, extractImageMediaIds, finalAnswerCandidates } from '@/lib/ai-image-grader'
 /* (2026-و44) تسريع التصحيح — توازي محدود (اتنين) بمرحلة بداية متدرجة */
 import { runGradePool } from '@/lib/grade-pool'
@@ -119,6 +122,11 @@ function quickTextMatch(answerText: string, modelAnswer: string, acceptedAnswers
 export async function POST(request) {
   try {
     var body = await request.json()
+    /* (ز32) تحقق هوية صارم: التوكن لازم يطابق studentId اللي بيتسلم باسمه */
+    var hwDenied = await requireStudent(request, body.studentId)
+    if (hwDenied) return hwDenied
+    var hwRate = enforceRate(request, 'hw-submit|' + String(body.studentId), 12, 60_000)
+    if (hwRate) return hwRate
     var studentId = body.studentId
     var homeworkId = body.homeworkId
     var answers = body.answers

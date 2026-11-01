@@ -4,12 +4,19 @@
 //   يتأكد إن اللينك شغال («جرّب إشعار تجريبي» في بورتال ولي الأمر)
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
+/* (ز32 — الأمن الموحد) حرّاس جلسات ولي الأمر */
+import { requireParent } from '@/lib/security/session'
 import { db } from '@/lib/db'
 import { normalizeParentPhone, resolveParentPushIcon } from '@/lib/parent-notify'
 import { sendParentPush } from '@/lib/push'
 
 export async function POST(request: NextRequest) {
   try {
+    /* (ز32 — الأمن الموحد) إرسال إشعار تجريبي = لولي الأمر الموثّق بس */
+    var bodyTest: any = {}
+    try { bodyTest = await request.clone().json() } catch (e) {}
+    var ptDenied = await requireParent(request, bodyTest.parentId)
+    if (ptDenied) return ptDenied
     var body: any = null
     try { body = await request.json() } catch (e) { body = null }
     var parentIdRaw = body ? String(body.parentId || '') : ''

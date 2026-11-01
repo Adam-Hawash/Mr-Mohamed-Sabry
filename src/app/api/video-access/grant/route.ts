@@ -1,9 +1,14 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) منح الوصول المجاني = أدمن موثّق بس —
+   كانت مفتوحة لأي حد يعمل لنفسه وصول مدفوع ببلاش */
+import { requireAdmin } from '@/lib/security/session'
 
 // POST /api/video-access/grant - Admin grants free access to a student for a video
 export async function POST(request: NextRequest) {
+  var denied = await requireAdmin(request)
+  if (denied) return denied
   try {
     const { videoId, studentId } = await request.json()
 
@@ -25,6 +30,8 @@ export async function POST(request: NextRequest) {
 
 // DELETE /api/video-access/grant - Admin removes access
 export async function DELETE(request: NextRequest) {
+  var delDenied = await requireAdmin(request)
+  if (delDenied) return delDenied
   try {
     const { videoId, studentId } = await request.json()
 

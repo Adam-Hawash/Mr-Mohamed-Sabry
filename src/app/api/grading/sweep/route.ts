@@ -11,6 +11,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) الماسح الشامل للتصحيح = إجراء أدمن موثّق بس */
+import { requireAdmin } from '@/lib/security/session'
 import { ensureResultColumns, gradesLookPending, cleanupOrphanResults, questionsHaveWriting } from '@/lib/regrade-core'
 import { finishPendingForExamResult, finishPendingForHomeworkResult } from '@/lib/finish-pending'
 
@@ -68,6 +70,8 @@ async function runSweep(limit: number) {
 
 export async function POST(request: NextRequest) {
   try {
+    var sDenied = await requireAdmin(request)
+    if (sDenied) return sDenied
     var limit = 5
     try {
       var body = await request.json()
@@ -81,8 +85,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    var gDenied = await requireAdmin(request)
+    if (gDenied) return gDenied
     var result = await runSweep(3)
     return NextResponse.json(result)
   } catch (error) {

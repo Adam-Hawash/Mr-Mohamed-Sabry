@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { resolveParentStudent } from '@/lib/parent-students'
+/* (ز32 — الأمن الموحد) حرّاس جلسات ولي الأمر */
+import { requireParent } from '@/lib/security/session'
 
 /* (2026-و38) شفاء ذاتي لجدول Parent — نفس حماية مسارَي التسجيل والدخول */
 var parentDdlDone: Promise<void> | null = null
@@ -30,6 +32,9 @@ export async function GET(request: NextRequest) {
   try {
     var searchParams = new URL(request.url).searchParams
     var parentId = searchParams.get('parentId') || ''
+    /* (ز32 — الأمن الموحد) جلسة ولي أمر موقّعة إجبارية — الـ id لوحده مش كلمة سر */
+    var prDenied = await requireParent(request, parentId)
+    if (prDenied) return prDenied
     /* (2026-و79) ولي الأمر بعدة أبناء — اختيار الابن من الـ query */
     var studentIdParam = searchParams.get('studentId') || ''
     if (!parentId) {

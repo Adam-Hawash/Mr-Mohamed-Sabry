@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) تقدم المشاهدة بجلسة الطالب الموثّقة */
+import { requireStudent } from '@/lib/security/session'
 
 // GET /api/video-progress?studentId=xxx [&videoId=yyy]
 // - with videoId → returns just that video's row (player resume)
@@ -8,6 +10,9 @@ export async function GET(request: NextRequest) {
   try {
     const studentId = request.nextUrl.searchParams.get('studentId')
     if (!studentId) return NextResponse.json({ error: 'studentId required' }, { status: 400 })
+    /* (ز32) قراءة التقدم لنفس الطالب بس */
+    var vpDenied = await requireStudent(request, studentId)
+    if (vpDenied) return vpDenied
 
     const videoId = request.nextUrl.searchParams.get('videoId')
     const progress = await db.videoProgress.findMany({
@@ -49,6 +54,9 @@ export async function POST(request: NextRequest) {
     if (!studentId || !videoId) {
       return NextResponse.json({ error: 'studentId and videoId required' }, { status: 400 })
     }
+    /* (ز32) كتابة التقدم لنفس الطالب بس — التوكن لازم يطابق */
+    var vpPostDenied = await requireStudent(request, studentId)
+    if (vpPostDenied) return vpPostDenied
 
     // Cap watchedSeconds to never exceed totalSeconds
     var safeTotal = Math.max(Number(totalSeconds) || 0, 0)

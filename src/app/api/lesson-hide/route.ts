@@ -11,6 +11,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) */
+import { requireAdmin } from '@/lib/security/session'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
@@ -82,6 +84,9 @@ export async function GET(request: NextRequest) {
 // Body: { groupKey, grade, studentIds: [] } — قايمة فاضية معناها فك إخفاء الدرس
 export async function POST(request: NextRequest) {
   try {
+    /* (ز32 — الأمن الموحد) إخفاء/إظهار الدروس = أدمن موثّق بس */
+    var lhDenied = await requireAdmin(request)
+    if (lhDenied) return lhDenied
     await ensureTable()
     var body = await request.json()
     var groupKey = body.groupKey

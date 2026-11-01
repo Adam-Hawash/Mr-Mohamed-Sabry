@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 /* (S-4a — توحيد الصفوف) المرجع الموحد: كتابة = storeGrade */
 import { storeGrade } from '@/lib/grade-names'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) حرّاس الجلسات — منع IDOR */
+import { requireAdmin, requireStudent } from '@/lib/security/session'
+import { enforceRate } from '@/lib/security/rate-limit'
 
 export const runtime = 'nodejs'
 
@@ -16,6 +19,9 @@ export const runtime = 'nodejs'
    - هوية الطالب: برقم تليفونه المسجل في المنصة (زي ما هو) */
 export async function POST(request: NextRequest) {
   try {
+    /* (ز32) منع إغراق طلبات الدفع */
+    var payLimited = enforceRate(request, 'payment-submit', 8, 60_000)
+    if (payLimited) return payLimited
     var contentType = request.headers.get('content-type') || ''
     if (contentType.indexOf('multipart/form-data') === -1) {
       return NextResponse.json({ error: 'صورة وصل الدفع إجبارية — ابعت الطلب من غير صورة مش هيتقبل' }, { status: 400 })
@@ -110,6 +116,15 @@ export async function GET(request: NextRequest) {
     var status = url.searchParams.get('status') || ''
     var studentId = url.searchParams.get('studentId') || ''
     var pageSize = parseInt(url.searchParams.get('pageSize') || '100')
+
+    /* (ز32) الأدمن يشوف الكل — والطالب يشف دفعاته هو بس (منع IDOR) */
+    if (studentId) {
+      var selfDenied = await requireStudent(request, studentId)
+      if (selfDenied) return selfDenied
+    } else {
+      var adminDenied = await requireAdmin(request)
+      if (adminDenied) return adminDenied
+    }
 
     var where: any = {}
     if (status && status !== 'all') {

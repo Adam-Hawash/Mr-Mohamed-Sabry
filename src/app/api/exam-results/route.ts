@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { NextRequest, NextResponse, after } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) نتايج الامتحانات: الطالب لنفسه — والأدمن للكل */
+import { requireAdmin, requireStudent } from '@/lib/security/session'
 import { gradeImageAnswer, gradeTextAnswer, extractImageMediaIds } from '@/lib/ai-image-grader'
 import { gradesLookPending, questionsHaveWriting } from '@/lib/regrade-core'
 import { finishPendingForExamResult } from '@/lib/finish-pending'
@@ -15,8 +17,15 @@ export async function GET(request: NextRequest) {
   const examId = searchParams.get('examId')
   const studentId = searchParams.get('studentId')
 
-  // Student mode: all exam results for this student (raw SQL)
+  /* (ز32 — الأمن الموحد) فرع الأدمن (تحليلات امتحان كامل بكل إجابات الطلاب) = أدمن موثّق بس */
+  if (examId) {
+    var exAdmDenied = await requireAdmin(request)
+    if (exAdmDenied) return exAdmDenied
+  }
+  /* (ز32) فرع الطالب = جلسة الطالب نفسه بس (منع IDOR) */
   if (studentId && !examId) {
+    var exSelfDenied = await requireStudent(request, studentId)
+    if (exSelfDenied) return exSelfDenied
     try {
       // writingGrades column may not exist on old databases — ensure it first
       try { await db.$executeRawUnsafe('ALTER TABLE ExamResult ADD COLUMN writingGrades TEXT DEFAULT ""') } catch (e) {}

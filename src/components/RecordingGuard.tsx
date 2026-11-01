@@ -100,6 +100,18 @@ export function RecordingGuard() {
         e.stopPropagation()
         toast('🛡️ الخاصية دي مقفولة')
       }
+      /* (ز32 — الأمن الموحد) منع النسخ/القص من محتوى المنصة —
+         مسموح جوه الحقول (input/textarea/contenteditable) عشان الكتابة تفضل شغالة */
+      if ((e.ctrlKey || e.metaKey) && (k === 'c' || k === 'x')) {
+        var tgt: any = e.target || {}
+        var tag = String(tgt.tagName || '').toLowerCase()
+        var editable = tag === 'input' || tag === 'textarea' || tgt.isContentEditable
+        if (!editable) {
+          e.preventDefault()
+          e.stopPropagation()
+          toast('🛡️ النسخ ممنوع — المحتوى محمي')
+        }
+      }
     }
     /* منع السكرين شوت/حفظ المحتوى على الموبايل (2026-و):
        1) contextmenu ممنوع (الضغط المطول على أندرويد بينده الحدث ده)

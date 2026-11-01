@@ -14,6 +14,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) تعديل درجة سؤال يدويًا = أدمن موثّق بس */
+import { requireAdmin } from '@/lib/security/session'
 import { resolveQuestionsForStudent, parseQuestions } from '@/lib/exam-models'
 
 export const runtime = 'nodejs'
@@ -38,6 +40,8 @@ function lookupAnswer(ans: any, idx: number): any {
 
 export async function POST(request: NextRequest) {
   try {
+    var oDenied = await requireAdmin(request)
+    if (oDenied) return oDenied
     var body = await request.json()
     var kind = body.kind === 'exam' ? 'exam' : 'homework'
     var resultId = body.resultId

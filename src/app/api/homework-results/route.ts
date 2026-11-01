@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { NextRequest, NextResponse, after } from 'next/server'
 import { db, withRetry } from '@/lib/db'
+/* (ز32 — الأمن الموحد) نتايج الواجبات: الطالب لنفسه — والأدمن للكل */
+import { requireAdmin, requireStudent } from '@/lib/security/session'
 // (2026-و16) self-heal خلفي: تسليمات الواجب القديمة الناقصة التصحيح بتتصحح
 // تلقائيًا بنفس مسار الذكاء الاصطناعي الحاسم — البادج مش بيفضل معلق للأبد
 import { gradesLookPending, questionsHaveWriting } from '@/lib/regrade-core'
@@ -48,6 +50,17 @@ export async function GET(request: NextRequest) {
     var url = new URL(request.url)
     var studentId = url.searchParams.get('studentId')
     var homeworkId = url.searchParams.get('homeworkId')
+
+    /* (ز32 — الأمن الموحد) فرع الأدمن (مراجعة كل إجابات الطلاب) = أدمن موثّق بس */
+    if (homeworkId) {
+      var hwAdmDenied = await requireAdmin(request)
+      if (hwAdmDenied) return hwAdmDenied
+    }
+    /* (ز32) فرع الطالب = جلسة الطالب نفسه بس */
+    if (studentId) {
+      var hwSelfDenied = await requireStudent(request, studentId)
+      if (hwSelfDenied) return hwSelfDenied
+    }
 
     // Admin mode: results for a specific homework with full per-student answer review
     if (homeworkId) {

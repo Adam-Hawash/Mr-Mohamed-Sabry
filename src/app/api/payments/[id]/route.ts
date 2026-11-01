@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) الموافقة على الدفعات = أدمن موثّق بس */
+import { requireAdmin } from '@/lib/security/session'
 
 // PUT /api/payments/[id] - Approve or reject a payment (admin)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  var denied = await requireAdmin(request)
+  if (denied) return denied
   var id = (await params).id
 
   try {
@@ -100,6 +104,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  var delDenied = await requireAdmin(request)
+  if (delDenied) return delDenied
   var id = (await params).id
 
   try {

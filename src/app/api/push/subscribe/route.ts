@@ -10,9 +10,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { normalizeParentPhone } from '@/lib/parent-notify'
 import { saveParentPushSubscription } from '@/lib/push'
+/* (ز32 — الأمن الموحد) حرّاس جلسات ولي الأمر */
+import { requireParent } from '@/lib/security/session'
 
 export async function POST(request: NextRequest) {
   try {
+    /* (ز32 — الأمن الموحد) ربط اشتراك Push = لولي الأمر الموثّق بس */
+    var bodySub: any = {}
+    try { bodySub = await request.clone().json() } catch (e) {}
+    var psDenied = await requireParent(request, bodySub.parentId)
+    if (psDenied) return psDenied
     var body: any = null
     try { body = await request.json() } catch (e) { body = null }
     var parentIdRaw = body ? String(body.parentId || '') : ''

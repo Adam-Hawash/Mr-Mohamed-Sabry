@@ -11,6 +11,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) التذكرة بجلسة موثّقة (طالب/أدمن) + حد معدل */
+import { requireAdmin, requireStudent } from '@/lib/security/session'
+import { enforceRate } from '@/lib/security/rate-limit'
 import { computePlayback, isAdmin, ensurePlayTicketTable, checkSequentialUnlock } from '@/lib/video-guard'
 
 export const dynamic = 'force-dynamic'
@@ -46,6 +49,20 @@ export async function GET(request: NextRequest) {
     const galleryId = searchParams.get('galleryId') || ''
     const studentId = searchParams.get('studentId') || ''
     const adminId = searchParams.get('adminId') || ''
+
+    /* (ز32) حد معدل: 40 تذكرة/دقيقة لكل IP — منع استنزاف الداتابيز */
+    var vtLimited = enforceRate(request, 'video-ticket', 40, 60_000)
+    if (vtLimited) return vtLimited
+    /* (ز32) التذاكر باسم طالب = لازم جلسة الطالب نفسه؛ ومعاينة الأدمن = جلسة أدمن */
+    if (!galleryId && adminId) {
+      var vtAdmDenied = await requireAdmin(request, adminId)
+      if (vtAdmDenied) return vtAdmDenied
+    } else if (!galleryId && studentId) {
+      var vtSelfDenied = await requireStudent(request, studentId)
+      if (vtSelfDenied) return vtSelfDenied
+    } else if (!galleryId && !studentId && !adminId) {
+      /* زائر بدون حساب — مسموح بس للفيديوهات المجانية (computePlayback بترفض المدفوع) */
+    }
 
     // فيديوهات المعرض (المحتوى الترويجي على صفحة الهبوط) — تذاكر بنفس النظام
     // البادئة gal_ بتفرّق بينها وبين فيديوهات الكورسات جوه صفحة المشغل

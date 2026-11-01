@@ -3,6 +3,8 @@ import { db } from '@/lib/db'
 import { ensureParentNotificationsTable, normalizeParentPhone, resolveParentPushIcon } from '@/lib/parent-notify'
 /* (2026-و97) ماسح إشعارات الواجبات/الامتحانات — بينادي بأمان كل ما ولي الأمر يفتح إشعاراته */
 import { sweepAssignmentNotifications } from '@/lib/assignment-notify'
+/* (ز32 — الأمن الموحد) حرّاس جلسات ولي الأمر */
+import { requireParent } from '@/lib/security/session'
 
 /* (2026-و37/و38) شفاء ذاتي لجدول Parent — نفس حماية مسارَي الدخول والنتايج */
 var parentDdlDone: Promise<void> | null = null
@@ -48,6 +50,9 @@ export async function GET(request: NextRequest) {
     if (!parentId) {
       return NextResponse.json({ error: 'طلب ناقص' }, { status: 400 })
     }
+    /* (ز32 — الأمن الموحد) جلسة ولي أمر موقّعة إجبارية */
+    var pnDenied = await requireParent(request, parentId)
+    if (pnDenied) return pnDenied
     var parent = await resolveParent(parentId)
     if (!parent) {
       return NextResponse.json({ error: 'جلسة ولي الأمر منتهية — سجل دخول تاني' }, { status: 401 })
@@ -118,6 +123,9 @@ export async function PATCH(request: NextRequest) {
     if (!parentId) {
       return NextResponse.json({ error: 'طلب ناقص' }, { status: 400 })
     }
+    /* (ز32 — الأمن الموحد) جلسة ولي أمر موقّعة إجبارية */
+    var pnPatchDenied = await requireParent(request, parentId)
+    if (pnPatchDenied) return pnPatchDenied
     var parent = await resolveParent(parentId)
     if (!parent) {
       return NextResponse.json({ error: 'جلسة ولي الأمر منتهية — سجل دخول تاني' }, { status: 401 })

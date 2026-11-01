@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, safeWrite } from '@/lib/db'
 import { ensureParentStudentTable, linkParentStudent } from '@/lib/parent-students'
+/* (ز32 — الأمن الموحد) حد محاولات + جلسة ولي أمر موقّعة */
+import { enforceRate } from '@/lib/security/rate-limit'
+import { signSession, sessionCookieHeader } from '@/lib/security/session'
 
 /* (2026-و38) شفاء ذاتي لجدول Parent — درس من الإنتاج: الجدول كان نازل
  * في SCHEMA_TABLES بس مش في CORE_TABLES فالترميم التلقائي اتخطاه
@@ -40,6 +43,9 @@ function ensureParentTable(): Promise<void> {
 
 export async function POST(request: NextRequest) {
   try {
+    /* (ز32) حد التسجيل: 10/دقيقة لكل IP */
+    var regLimited = enforceRate(request, 'parent-register', 10, 60_000)
+    if (regLimited) return regLimited
     var body: any = null
     try { body = await request.json() } catch (e) { body = null }
     if (!body || typeof body !== 'object') {
@@ -317,7 +323,9 @@ export async function POST(request: NextRequest) {
       }
     } catch (eT) {}
 
-    return NextResponse.json({
+    /* (ز32) جلسة ولي أمر موقّعة فور التسجيل */
+    var regToken = await signSession(created.id, 'parent')
+    var regRes = NextResponse.json({
       success: true,
       parent: {
         id: created.id,
@@ -328,6 +336,9 @@ export async function POST(request: NextRequest) {
       },
       linkedExtraStudents: linkedExtra,
     })
+    regRes.headers.append('Set-Cookie', sessionCookieHeader('parent', regToken))
+    regRes.headers.set('Cache-Control', 'no-store')
+    return regRes
   } catch (err: any) {
     console.error('Parent register error:', err)
     return NextResponse.json({ error: 'حدث خطأ مؤقت في السيرفر — جرب تاني بعد لحظات' }, { status: 500 })

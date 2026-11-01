@@ -1,13 +1,17 @@
 // @ts-nocheck
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { db, safeWrite } from '@/lib/db'
+/* (ز32 — الأمن الموحد) إعدادات الأدمن = جلسة أدمن موثّقة بس */
+import { requireAdmin } from '@/lib/security/session'
 
 var DEFAULT_EMAIL = 'محمد صبري عربي26'
 var DEFAULT_PASSWORD = 'محمد صبري#'
 var DEFAULT_NAME = 'Mr. Mohamed Sabry'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    var stDenied = await requireAdmin(request)
+    if (stDenied) return stDenied
     var admin = await db.admin.findFirst()
     if (!admin) {
       admin = await db.admin.create({
@@ -22,8 +26,10 @@ export async function GET() {
   }
 }
 
-export async function PUT(request) {
+export async function PUT(request: NextRequest) {
   try {
+    var stPutDenied = await requireAdmin(request)
+    if (stPutDenied) return stPutDenied
     var body = await request.json()
     var oldPassword = body.oldPassword
     var newEmail = body.newEmail

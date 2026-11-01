@@ -10,14 +10,18 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server'
 import { db, safeWrite } from '@/lib/db'
+/* (ز32 — الأمن الموحد) كونفج المشغل = أدمن موثّق بس */
+import { requireAdmin } from '@/lib/security/session'
 import { sanitizePlayerConfig } from '@/lib/player-config'
 
 export const dynamic = 'force-dynamic'
 
 var KEY = 'player_config'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    var pcDenied = await requireAdmin(request)
+    if (pcDenied) return pcDenied
     var row = await db.siteConfig.findUnique({ where: { key: KEY } })
     if (!row || !row.value) return NextResponse.json({ ok: true, config: null })
     return NextResponse.json({ ok: true, config: sanitizePlayerConfig(JSON.parse(row.value)) })
@@ -28,6 +32,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    var pcPostDenied = await requireAdmin(request)
+    if (pcPostDenied) return pcPostDenied
     var body = await request.json()
     var config = sanitizePlayerConfig(body && body.config ? body.config : body)
     var value = JSON.stringify(config)

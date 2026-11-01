@@ -8,6 +8,7 @@ import { RadixDirection } from "@/components/RadixDirection";
 import { AIAssistant } from "@/components/student/AIAssistant";
 import { RecordingGuard } from "@/components/RecordingGuard";
 import { DevToolsGuard } from "@/components/DevToolsGuard";
+import { SecurityBridge } from "@/components/SecurityBridge";
 import { FloatingInstallButton } from "@/components/InstallPwaButton";
 import { DeviceMessages } from "@/components/DeviceMessages";
 import { LangBoot } from "@/lib/i18n";
@@ -147,6 +148,7 @@ export default async function RootLayout({
         <RecordingGuard />
         {/* (ز19) حارس أدوات المطوّر — شاشة سودة + عداد 35 ثانية + مسح الحساب (طلب المستر) */}
         <DevToolsGuard />
+        <SecurityBridge />
         <Toaster />
         {/* Toaster بتاع sonner — كل رسائل التنبيه في المنصة بتستخدمه (toast من sonner) */}
         <SonnerToaster position="top-center" richColors closeButton expand={false} />

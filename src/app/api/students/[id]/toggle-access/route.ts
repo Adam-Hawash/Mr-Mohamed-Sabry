@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+/* (ز32 — الأمن الموحد) تفعيل الاشتراك المجاني = إجراء أدمن بس */
+import { requireAdmin } from "@/lib/security/session";
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    var denied = await requireAdmin(req);
+    if (denied) return denied;
     const { id } = await params;
     const body = await req.json().catch(() => ({}));
 

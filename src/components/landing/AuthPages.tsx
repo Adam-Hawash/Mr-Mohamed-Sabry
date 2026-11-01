@@ -46,10 +46,10 @@ function ComplaintsLink() {
   )
 }
 
-// (ص2) البوابة المخفية للمشرفين — رقم الدخول الموحد + كلمة السر بتاعة صبري
-// دخولهم بيحوّل لصفحة دخول المشرفين زي هيئة جينيوس بالظبط
+// (ص2) البوابة المخفية للمشرفين — رقم الدخول الموحد بس.
+// (ز32 — الأمن الموحد) كلمة سر الأدمن اتشالت من كود الواجهة خالص —
+// التحقق بيتم على السيرفر عبر POST /api/admin/login (شف نافذة البوابة فوق)
 var ADMIN_PHONE = '55555555555'
-var ADMIN_PASSWORD = 'محمد صبري#'
 
 // لافتة تحذير الجهاز الواحد — فوق صفحتين الدخول والتسجيل.
 // (دي تلاتة تنبيه جديد بطلب المستر: الحساب مربوط بجهاز واحد بس —
@@ -160,14 +160,31 @@ export function LoginView() {
     setDeviceBlockMsg('')
 
     // Hidden admin entry: special phone + password redirects to admin login
+    // (ز32 — الأمن الموحد): كلمة سر الأدمن ممنوعة تتخزن في كود الواجهة —
+    // التحقق بقى على السيرفر (POST /api/admin/login) والرقم بس هو المفتاح المخفي
     var squashPw = function (v: string) { return String(v || '').replace(/\s+/g, '') }
-    if (studentPhone.trim() === ADMIN_PHONE && squashPw(studentPassword) === squashPw(ADMIN_PASSWORD)) {
-      toast.success('جاري تحويلك إلى لوحة تحكم المشرف...')
-      setStudentPhone('')
-      setStudentPassword('')
-      setShowAdminLogin(true)
-      setView('landing')
-      return
+    if (studentPhone.trim() === ADMIN_PHONE) {
+      setStudentLoading(true)
+      try {
+        var gateRes = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: studentPhone.trim(), password: studentPassword }),
+        })
+        if (gateRes.ok) {
+          toast.success('جاري تحويلك إلى لوحة تحكم المشرف...')
+          setStudentPhone('')
+          setStudentPassword('')
+          setShowAdminLogin(true)
+          setView('landing')
+          setStudentLoading(false)
+          return
+        }
+        // بيانات غلط → رسالة زي أي دخول طالب غلط تمامًا (مفيش إفشاء إن البوابة موجودة)
+      } catch (gateErr) {
+        // خطأ شبكة → نكمل كدخول طالب عادي (هيرجع رسالة الخطأ العادية)
+      }
+      setStudentLoading(false)
     }
 
     setStudentLoading(true)

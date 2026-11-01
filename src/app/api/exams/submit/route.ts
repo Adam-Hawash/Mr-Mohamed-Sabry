@@ -18,6 +18,9 @@
 import { NextResponse } from 'next/server'
 import { after } from 'next/server'
 import { db } from '@/lib/db'
+/* (ز32 — الأمن الموحد) تسليم الامتحان بجلسة الطالب الموثّقة — مينفش تسليم باسم حد تاني */
+import { requireStudent } from '@/lib/security/session'
+import { enforceRate } from '@/lib/security/rate-limit'
 import { gradeImageAnswer, gradeTextAnswer, extractImageMediaIds, finalAnswerCandidates } from '@/lib/ai-image-grader'
 import { quickSmartMatch, gradeFallbackDecisive } from '@/lib/smart-grader'
 /* (2026-و44) تسريع التصحيح — توازي محدود (اتنين) بمرحلة بداية متدرجة */
@@ -96,6 +99,11 @@ async function ensureTable() {
 export async function POST(request) {
   try {
     var body = await request.json()
+    /* (ز32) تحقق هوية صارم: التوكن لازم يطابق studentId اللي بيتسلم باسمه */
+    var exDenied = await requireStudent(request, body.studentId)
+    if (exDenied) return exDenied
+    var exRate = enforceRate(request, 'exam-submit|' + String(body.studentId), 12, 60_000)
+    if (exRate) return exRate
     var studentId = body.studentId
     var examId = body.examId
     var answers = body.answers

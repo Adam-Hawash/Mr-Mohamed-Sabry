@@ -7,6 +7,8 @@
 import { NextResponse, after } from 'next/server'
 import { db } from '@/lib/db'
 import { finishPendingForHomeworkResult, verdictNeedsWork } from '@/lib/finish-pending'
+/* (ز32 — الأمن الموحد) نتيجة الواجب لصاحبها أو للأدمن بس */
+import { hasAdminSession, hasStudentSession } from '@/lib/security/session'
 
 export const runtime = 'nodejs'
 export const maxDuration = 300
@@ -34,6 +36,15 @@ export async function GET(request, ctx) {
         ) || []
       } catch (e2) {
         rows = []
+      }
+    }
+    /* (ز32 — الأمن الموحد) النتيجة لصاحبها (طالب) أو لأي أدمن موثّق — مينفش تصفّح نتايج الناس بالـ id */
+    if (rows && rows.length) {
+      var owner = String(rows[0].studentId || '')
+      var ownOk = owner ? await hasStudentSession(request, owner) : false
+      var admOk = ownOk ? false : await hasAdminSession(request)
+      if (!ownOk && !admOk) {
+        return NextResponse.json({ ok: false, error: 'انتهت الجلسة — سجّل دخولك من جديد', code: 'session' }, { status: 401 })
       }
     }
 

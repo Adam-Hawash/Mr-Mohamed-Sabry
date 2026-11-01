@@ -1,6 +1,8 @@
 // @ts-nocheck
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { db, safeWrite } from '@/lib/db'
+/* (ز32 — الأمن الموحد) حفظ الكونفج = أدمن موثّق + إخفاء الأسرار من الـ GET */
+import { requireAdmin, hasAdminSession } from '@/lib/security/session'
 
 var DEFAULTS = {
   // === Navbar ===
@@ -164,7 +166,7 @@ var DEFAULTS = {
    يبان للكل في نفس الثانية */
 export const dynamic = 'force-dynamic'
 
-export async function GET(request) {
+export async function GET(request: NextRequest) {
   try {
     var configs = await db.siteConfig.findMany()
     var map = Object.assign({}, DEFAULTS)
@@ -182,6 +184,16 @@ export async function GET(request) {
     /* (توفير الباك إند — ص8) الكاش اتشال نهائيًا في (Z-30): الكاش كان
        بيخلي تعديلات الأدمن تظهر للزوار بعد دقائق أو ما تظهرش خالص
        (متصفح ماسك النسخة القديمة) — فالقراءة بقت live من قاعدة البيانات */
+    /* (ز32 — الأمن الموحد) إخفاء كل الأسرار عن الزوار: مفاتيح API وقنوات
+       الرسايل عمرها ما تخرج من السيرفر لغير الموثّقين. جلسة أدمن صالحة
+       (لوحة التحكم) بتشوفها عشان الإعدادات تشتغل زي ما هي */
+    var cfgAdminOk = await hasAdminSession(request)
+    if (!cfgAdminOk) {
+      var SECRET_KEY = /(api.?key|api.?secret|secret|password|token|private|msg_channel)/i
+      for (var sk in map) {
+        if (SECRET_KEY.test(sk)) map[sk] = ''
+      }
+    }
     var res = NextResponse.json(map)
     res.headers.set('Cache-Control', 'private, no-store')
     return res
@@ -195,8 +207,11 @@ export async function GET(request) {
   }
 }
 
-export async function PUT(request) {
+export async function PUT(request: NextRequest) {
   try {
+    /* (ز32) الكونفج بيتحكم في المنصة كلها — الحفظ لأدمن موثّق بس */
+    var cfgDenied = await requireAdmin(request)
+    if (cfgDenied) return cfgDenied
     var body = await request.json()
     var keys = Object.keys(body)
 

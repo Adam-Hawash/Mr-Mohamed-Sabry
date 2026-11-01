@@ -2,20 +2,31 @@ import { NextRequest, NextResponse } from "next/server";
 /* (S-4a — توحيد الصفوف) المرجع الموحد */
 import { storeGrade } from '@/lib/grade-names'
 import { db } from "@/lib/db";
+/* (ز32 — الأمن الموحد) تحقق صارم بـ Zod + حد التسجيل */
+import { studentRegisterSchema, parseWith, readJson } from "@/lib/security/validate";
+import { enforceRate } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const { name, phone, password, grade, parentName, parentPhone } = body;
+    /* (ز32) حد التسجيل: 10/دقيقة لكل IP */
+    var rateLimited = enforceRate(req, "student-register-api", 10, 60_000);
+    if (rateLimited) return rateLimited;
 
-    if (!name || !phone || !password) {
-      return NextResponse.json(
-        { error: "الرجاء إدخال الاسم، رقم الهاتف، وكلمة المرور" },
-        { status: 400 }
-      );
+    var parsed = await readJson(req, 100_000);
+    if (!parsed.ok) {
+      return NextResponse.json({ error: "طلب غير صالح" }, { status: 400 });
     }
+    var check = parseWith(studentRegisterSchema, parsed.data);
+    if (!check.ok) return check.res;
+    var v = check.data;
+    var name = v.name;
+    var phone = v.phone;
+    var password = v.password;
+    var grade = v.grade;
+    var parentName = v.parentName;
+    var parentPhone = v.parentPhone;
 
     const cleanPhone = String(phone).trim();
 
