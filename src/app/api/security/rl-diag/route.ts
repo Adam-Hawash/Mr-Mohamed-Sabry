@@ -37,6 +37,15 @@ export async function GET(request: NextRequest) {
     var mem3 = mod.rateLimit(probeKey, 2, 60_000)
     out.memTest = [mem1.ok, mem2.ok, mem3.ok]
   } catch (e: any) { out.memTestErr = String(e && e.message).slice(0, 150) }
+  // اختبار مباشر لدالة حد الداتابيز كما تشغل في الإنتاج
+  try {
+    var mod2 = await import('@/lib/security/rate-limit')
+    var pk = 'diag|dbfn|' + Math.floor(Date.now() / 30000)
+    var d1 = await mod2.dbRateLimit(pk, 2, 60_000)
+    var d2 = await mod2.dbRateLimit(pk, 2, 60_000)
+    var d3 = await mod2.dbRateLimit(pk, 2, 60_000)
+    out.dbFnTest = [d1, d2, d3].map(function (r: any) { return r ? r.ok : null })
+  } catch (e: any) { out.dbFnErr = String(e && e.message).slice(0, 200) }
   var res = NextResponse.json(out)
   res.headers.set('Cache-Control', 'no-store')
   return res

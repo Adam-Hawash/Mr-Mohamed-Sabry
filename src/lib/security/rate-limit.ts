@@ -67,7 +67,7 @@ export function clientIp(req: { headers: { get(name: string): string | null } })
 // ============================================================
 var _rlTableReady = false
 
-async function dbRateLimit(key: string, limit: number, windowMs: number): Promise<RateResult | null> {
+export async function dbRateLimit(key: string, limit: number, windowMs: number): Promise<RateResult | null> {
   try {
     if (!db) return null
     if (!_rlTableReady) {
