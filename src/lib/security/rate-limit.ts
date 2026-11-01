@@ -10,6 +10,7 @@
 // حقيقيين لأن النوافذ قصيرة (دقيقة) والاستجابة بترجع Retry-After.
 // ============================================================
 import { NextResponse } from 'next/server'
+import { db } from '@/lib/db'
 
 type Hits = number[]
 
@@ -68,8 +69,6 @@ var _rlTableReady = false
 
 async function dbRateLimit(key: string, limit: number, windowMs: number): Promise<RateResult | null> {
   try {
-    var mod = await import('@/lib/db')
-    var db = mod.db
     if (!db) return null
     if (!_rlTableReady) {
       try {
