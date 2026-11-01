@@ -1,6 +1,7 @@
 // (ز32 — مؤقت للتشخيص فقط — هيتشال بعد التحقق)
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { rateLimit } from '@/lib/security/rate-limit'
 
 export async function GET(request: NextRequest) {
   var out: Record<string, any> = {}
@@ -27,6 +28,15 @@ export async function GET(request: NextRequest) {
   } catch (e: any) {
     out.fatal = String(e && e.message).slice(0, 150)
   }
+  // اختبار الدالة الفعلية للمحدد (ميموري + داتابيز)
+  try {
+    var mod = await import('@/lib/security/rate-limit')
+    var probeKey = 'diag|fnprobe|' + Math.floor(Date.now() / 30000)
+    var mem1 = mod.rateLimit(probeKey, 2, 60_000)
+    var mem2 = mod.rateLimit(probeKey, 2, 60_000)
+    var mem3 = mod.rateLimit(probeKey, 2, 60_000)
+    out.memTest = [mem1.ok, mem2.ok, mem3.ok]
+  } catch (e: any) { out.memTestErr = String(e && e.message).slice(0, 150) }
   var res = NextResponse.json(out)
   res.headers.set('Cache-Control', 'no-store')
   return res
