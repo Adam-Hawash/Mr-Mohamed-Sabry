@@ -58,6 +58,54 @@ export function clientIp(req: { headers: { get(name: string): string | null } })
   }
 }
 
+// ============================================================
+// (ز32+) حد مشترك على قاعدة البيانات — بيشتغل صح حتى لو الطلبات
+// وزعت على نسخ Serverless متعددة (الذاكرة لوحدها لكل نسخة).
+// بيستخدم جدول RateLimitHit (key, ts) — ولو الداتابيز مش متاحة
+// بيرجع null والكود بيكمل بالذاكرة المحلية (fail-open للتوافر).
+// ============================================================
+var _rlTableReady = false
+
+async function dbRateLimit(key: string, limit: number, windowMs: number): Promise<RateResult | null> {
+  try {
+    var mod = await import('@/lib/db')
+    var db = mod.db
+    if (!db) return null
+    if (!_rlTableReady) {
+      try {
+        await db.$executeRawUnsafe('CREATE TABLE IF NOT EXISTS RateLimitHit (key TEXT NOT NULL, ts INTEGER NOT NULL)')
+        try { await db.$executeRawUnsafe('CREATE INDEX IF NOT EXISTS idx_rlhit_key_ts ON RateLimitHit(key, ts)') } catch (e) {}
+        _rlTableReady = true
+      } catch (e) { /* هيحاول تاني المرة الجاية */ }
+    }
+    var now = Date.now()
+    var cutoff = now - windowMs
+    var rows: any[] = []
+    try {
+      rows = (await db.$queryRawUnsafe('SELECT ts FROM RateLimitHit WHERE key = ? AND ts > ?', key, cutoff)) || []
+    } catch (e) {
+      rows = []
+    }
+    if (rows.length >= limit) {
+      var oldest = rows.length ? Number(rows[0].ts) : now
+      var retryAfterSec = Math.max(1, Math.ceil((windowMs - (now - oldest)) / 1000))
+      return { ok: false, remaining: 0, retryAfterSec: retryAfterSec }
+    }
+    try {
+      await db.$executeRawUnsafe('INSERT INTO RateLimitHit (key, ts) VALUES (?, ?)', key, now)
+    } catch (e) {
+      return null
+    }
+    // تنظيف هادئ عشوائي (~4% من النداءات) — الجدول ميبقاش ضخم
+    if (Math.random() < 0.04) {
+      try { await db.$executeRawUnsafe('DELETE FROM RateLimitHit WHERE ts < ?', now - 10 * 60_000) } catch (e) {}
+    }
+    return { ok: true, remaining: Math.max(0, limit - rows.length - 1), retryAfterSec: 0 }
+  } catch (e) {
+    return null
+  }
+}
+
 // رد 429 موحّد — بيوضّح للمستخدم ليه اتمنع وبيقول يجرب إمتى
 export function tooManyResponse(retryAfterSec: number): NextResponse {
   var res = NextResponse.json(
@@ -82,15 +130,25 @@ export function enforceRate(
 
 // استخدام الدخول: حد مضاعف — 5 محاولات/دقيقة لكل (IP + حساب) و30/دقيقة لكل IP
 // identifier = رقم الموبايل/الإيميل اللي بيحاول يدخل بيه
-export function enforceAuthRate(
+// (ز32+) حد الـ 5 محاولات بقى **مشترك على الداتابيز** — بيشيل التخمين
+// حتى لو الطلبات وزعت على نسخ Serverless مختلفة
+export async function enforceAuthRate(
   req: { headers: { get(name: string): string | null } },
   gate: string,
   identifier: string
-): NextResponse | null {
+): Promise<NextResponse | null> {
   var ip = clientIp(req)
   var idPart = String(identifier || '').replace(/[^0-9a-zA-Z@._-]/g, '').slice(0, 40)
-  var perAccount = rateLimit(gate + '|acct|' + ip + '|' + idPart, 5, 60_000)
-  if (!perAccount.ok) return tooManyResponse(perAccount.retryAfterSec)
+  // 1) الحد الحرج (5/دقيقة لكل حساب) — على الداتابيز المشتركة أولًا
+  var dbRes = await dbRateLimit(gate + '|acct|' + ip + '|' + idPart, 5, 60_000)
+  if (dbRes) {
+    if (!dbRes.ok) return tooManyResponse(dbRes.retryAfterSec)
+  } else {
+    // fallback: الذاكرة المحلية (لو الداتابيز مش متاحة)
+    var perAccount = rateLimit(gate + '|acct|' + ip + '|' + idPart, 5, 60_000)
+    if (!perAccount.ok) return tooManyResponse(perAccount.retryAfterSec)
+  }
+  // 2) الحد الخشن (30/دقيقة لكل IP) — ذاكرة محلية كفاية
   var perIp = rateLimit(gate + '|ip|' + ip, 30, 60_000)
   if (!perIp.ok) return tooManyResponse(perIp.retryAfterSec)
   return null

@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     /* (ز32) حد المحاولات: 5/دقيقة لكل (IP+رقم) و30/دقيقة لكل IP */
-    var limited = enforceAuthRate(request, 'parent-login', phoneNorm)
+    var limited = await enforceAuthRate(request, 'parent-login', phoneNorm)
     if (limited) return limited
 
     try { await ensureParentTable() } catch (eDdl) {}

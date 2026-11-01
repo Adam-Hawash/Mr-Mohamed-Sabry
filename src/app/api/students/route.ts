@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
       // ===== تسجيل الدخول =====
       var password = searchParams.get('password') || ''
       /* (ز32) حد المحاولات: 5/دقيقة لكل (IP+رقم) و30/دقيقة لكل IP — منع التخمين */
-      var loginLimited = enforceAuthRate(request, 'student-login', phone)
+      var loginLimited = await enforceAuthRate(request, 'student-login', phone)
       if (loginLimited) return loginLimited
       var candidates: string[] = []
       try {

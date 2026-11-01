@@ -31,7 +31,7 @@ export async function POST(request) {
   }
 
   /* (ز32) حد المحاولات: 5/دقيقة لكل (IP+حساب) و30/دقيقة لكل IP — منع التخمين */
-  var limited = enforceAuthRate(request, 'admin-login', email)
+  var limited = await enforceAuthRate(request, 'admin-login', email)
   if (limited) return limited
 
   // squash = strip ALL whitespace from both sides before comparing — the DB
