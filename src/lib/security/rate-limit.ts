@@ -66,7 +66,6 @@ export function clientIp(req: { headers: { get(name: string): string | null } })
 // بيرجع null والكود بيكمل بالذاكرة المحلية (fail-open للتوافر).
 // ============================================================
 var _rlTableReady = false
-export var RL_LAST = ''
 
 export async function dbRateLimit(key: string, limit: number, windowMs: number): Promise<RateResult | null> {
   try {
@@ -92,7 +91,6 @@ export async function dbRateLimit(key: string, limit: number, windowMs: number):
     } catch (e) {
       rows = []
     }
-    RL_LAST = 'rows=' + rows.length + '/lim=' + limit + '/key=' + key.slice(0, 40)
     if (rows.length >= limit) {
       var oldest = rows.length ? Number(rows[0].ts) : nowSec
       var retryAfterSec = Math.max(1, Math.ceil((oldest + Math.ceil(windowMs / 1000)) - nowSec))
@@ -100,8 +98,7 @@ export async function dbRateLimit(key: string, limit: number, windowMs: number):
     }
     try {
       await db.$executeRawUnsafe('INSERT INTO RateLimitHit (key, ts) VALUES (?, ?)', key, nowSec)
-    } catch (e: any) {
-      RL_LAST = 'insert-fail: ' + String(e && e.message).slice(0, 100)
+    } catch (e) {
       return null
     }
     // تنظيف هادئ عشوائي (~4% من النداءات) — الجدول ميبقاش ضخم
@@ -156,7 +153,11 @@ export async function enforceAuthRate(
     var perAccount = rateLimit(gate + '|acct|' + ip + '|' + idPart, 5, 60_000)
     if (!perAccount.ok) return tooManyResponse(perAccount.retryAfterSec)
   }
-  // 2) الحد الخشن (30/دقيقة لكل IP) — ذاكرة محلية كفاية
+  // 2) حد الحساب عالميًا (أي IP): 20/دقيقة — على الداتابيز المشتركة
+  //    ده اللي بيصد هجمات التخمين الموزعة بتغيير الـ IPs
+  var perAcctGlobal = await dbRateLimit(gate + '|acct-any-ip|' + idPart, 20, 60_000)
+  if (perAcctGlobal && !perAcctGlobal.ok) return tooManyResponse(perAcctGlobal.retryAfterSec)
+  // 3) الحد الخشن (30/دقيقة لكل IP) — ذاكرة محلية كفاية كحاجز إضافي
   var perIp = rateLimit(gate + '|ip|' + ip, 30, 60_000)
   if (!perIp.ok) return tooManyResponse(perIp.retryAfterSec)
   return null
