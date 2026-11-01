@@ -6,7 +6,8 @@ import { requireAdmin, hasAdminSession } from '@/lib/security/session'
 
 var DEFAULTS = {
   // === Navbar ===
-  navbar_brand: 'Mr. Mohamed Sabry',
+  /* (ز34) البراند الموحد: منصة الأوائل — اسم المستر فضل في السبتايتل */
+  navbar_brand: 'منصة الأوائل',
 
   /* (ز29 — طلب المستر) القبول التلقائي للتسجيلات:
      «1» = أي طالب يعمل حساب بيتقبل تلقائي (مفعّل دلوقتي) | «0» = التسجيلات تستنى موافقة الأستر */
@@ -122,7 +123,7 @@ var DEFAULTS = {
   whatsapp_number: '',
 
   // === Footer ===
-  footer_brand: 'Mr. Mohamed Sabry',
+  footer_brand: 'منصة الأوائل',
   footer_copyright: 'جميع الحقوق محفوظة لـ أدهم حواش',
 
   // === Favicon ===

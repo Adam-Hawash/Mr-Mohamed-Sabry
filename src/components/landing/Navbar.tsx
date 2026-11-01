@@ -136,8 +136,8 @@ export function Navbar() {
               </div>
             )}
             <div className="hidden sm:block">
-              {/* Mr. Mohamed Sabry — بالإنجليزي زي اسم المنصة (طلب المستر) */}
-              <h1 dir="ltr" className="text-sm font-bold leading-tight text-foreground whitespace-nowrap">
+              {/* (ز34 — طلب المستر) البراند «منصة الأوائل» بالخط العربي (رقعة) */}
+              <h1 className="font-ruqaa text-base font-bold leading-tight text-foreground whitespace-nowrap">
                 {navName}
               </h1>
             </div>
