@@ -15,7 +15,7 @@ var DEFAULTS = {
   navbar_subtitle: 'مستر محمد صبري',
 
   // === Hero Section ===
-  hero_badge: 'منصّة اللغة العربية | Arabic Language Platform',
+  hero_badge: 'منصّة اللغة العربية',
   hero_title_line1: 'Mr. Mohamed Sabry',
   hero_title_line2: 'مستر محمد صبري',
   hero_subtitle: 'نُحبّ العربية ونقرّبها لابنك! نحو وبلاغة وإعراب وإملاء بأسلوب مبسّط — دروس مشروحة، واجبات أسبوعية، امتحانات منتظمة، ومتابعة مستمرة لتقدّمه الأكاديمي.',
@@ -40,7 +40,7 @@ var DEFAULTS = {
 
   // === Instructor ===
   instructor_name: 'مستر محمد صبري',
-  instructor_title: 'معلم اللغة العربية المتخصص | Arabic Language Specialist',
+  instructor_title: 'معلم اللغة العربية المتخصص',
   instructor_photo: '/images/teacher.jpg',
 
   // === (ص119) شكل صورة المستر في الهيرو ===
@@ -54,15 +54,15 @@ var DEFAULTS = {
   hero_photo_cloud: '0',
 
   // === Features Section ===
-  features_title: 'لماذا تختارنا؟ | Why Choose Us?',
+  features_title: 'لماذا تختارنا؟',
   features_subtitle: 'نقدّم تجربة تعليمية فريدة تجمع بين الشرح المبسّط والتطبيق العملي في النحو والبلاغة والأدب',
-  feature1_title: 'شرح مبسط | Simplified Explanations',
+  feature1_title: 'شرح مبسط',
   feature1_desc: 'شرح واضح ومبسط لكل درس اللغة العربية بطريقة تساعد الطالب على الفهم السريع والاستيعاب العميق لقواعد النحو والإعراب الأساسية.',
-  feature2_title: 'فهم عميق | Deep Understanding',
+  feature2_title: 'فهم عميق',
   feature2_desc: 'نركّز على فهم اللغة من الجذور وليس الحفظ فقط — القراءة والاستيعاب والتحليل الأدبي يبني قدرة حقيقية على التعبير والإعراب الصحيح.',
-  feature3_title: 'تدريبات وتطبيق | Step-by-Step Practice',
+  feature3_title: 'تدريبات وتطبيق',
   feature3_desc: 'تدريبات متدرجة على الإعراب والتعبير مع ملخصات بصرية تسهّل الفهم والتذكّر.',
-  feature4_title: 'تحضير وامتحانات | Reviews & Exams',
+  feature4_title: 'تحضير وامتحانات',
   feature4_desc: 'تحضير شامل ومراجعات دورية واختبارات أسبوعية لضمان التفوّق والاستعداد الكامل للامتحانات النهائية.',
 
   // === Grades Section ===
@@ -70,48 +70,48 @@ var DEFAULTS = {
   grades_subtitle: 'اختر صفك الدراسي للوصول إلى المحتوى التعليمي المخصص لك',
 
   // === Tips Section ===
-  tips_badge: 'نصائح للتفوّق | Tips for Excellence',
-  tips_title: 'نصائح المستر | Tips',
-  tips_subtitle: 'نصائح ذهبية من مستر محمد صبري للتفوّق في اللغة العربية — Golden advice from Mr. Mohamed Sabry',
+  tips_badge: 'نصائح للتفوّق',
+  tips_title: 'نصائح المستر',
+  tips_subtitle: 'نصائح ذهبية من مستر محمد صبري للتفوّق في اللغة العربية',
   tips_card1_title: 'اقرأ كل يوم قليلا',
   tips_card1_title_en: 'Read Daily',
-  tips_card1_desc: 'خصص 20-30 دقيقة كل يوم للقراءة — قصص ومقالات وشعر. الاستمرارية هي مفتاح التفوّق في اللغة. Dedicate 20-30 minutes daily for reading.',
+  tips_card1_desc: 'خصص 20-30 دقيقة كل يوم للقراءة — قصص ومقالات وشعر. الاستمرارية هي مفتاح التفوّق في اللغة.',
   tips_card2_title: 'افهم القاعدة لا تحفظها',
   tips_card2_title_en: "Understand, Don\u2019t Memorize",
-  tips_card2_desc: 'حاول فهم لماذا وليس كيف فقط. فهم القاعدة النحوية يبقيها معك لفترة أطول ويصحح إعرابك في كل جملة. Understand the rule, not just memorize it.',
+  tips_card2_desc: 'حاول فهم لماذا وليس كيف فقط. فهم القاعدة النحوية يبقيها معك لفترة أطول ويصحح إعرابك في كل جملة.',
   tips_card3_title: 'تدرب على التعبير كل يوم',
   tips_card3_title_en: 'Practice Writing Daily',
-  tips_card3_desc: 'اكتب فقرة قصيرة كل يوم — تعبير أو وصف أو خاطرة. الكتابة اليومية تصقل لغتك وتثري مفرداتك. Write daily to strengthen your language.',
+  tips_card3_desc: 'اكتب فقرة قصيرة كل يوم — تعبير أو وصف أو خاطرة. الكتابة اليومية تصقل لغتك وتثري مفرداتك.',
   tips_card4_title: 'لا تتردد في السؤال',
   tips_card4_title_en: 'Never Hesitate to Ask',
-  tips_card4_desc: 'إذا لم تفهم شيئاً اسأل فوراً. السؤال الجيد هو بداية الفهم العميق. Ask immediately when something is unclear.',
+  tips_card4_desc: 'إذا لم تفهم شيئاً اسأل فوراً. السؤال الجيد هو بداية الفهم العميق.',
 
   // === Guide Section ===
-  guide_badge: 'دليلك التعليمي | Learning Guide',
-  guide_title: 'كيف تستخدم المنصة؟ | How to Use the Platform',
-  guide_subtitle: 'ست خطوات بسيطة لتبدأ رحلتك التعليمية في منصة الأوائل — Six simple steps to begin your learning journey',
+  guide_badge: 'دليلك التعليمي',
+  guide_title: 'كيف تستخدم المنصة؟',
+  guide_subtitle: 'ست خطوات بسيطة لتبدأ رحلتك التعليمية في منصة الأوائل',
   guide_card1_title: 'تسجيل حسابك',
   guide_card1_title_en: 'Register',
-  guide_card1_desc: 'أنشئ حسابك في المنصة بسرعة وسهولة. اختر صفّك الدراسي وابدأ رحلتك التعليمية فوراً. Create your account quickly and start learning.',
+  guide_card1_desc: 'أنشئ حسابك في المنصة بسرعة وسهولة. اختر صفّك الدراسي وابدأ رحلتك التعليمية فوراً.',
   guide_card2_title: 'مشاهدة الدروس',
   guide_card2_title_en: 'Watch Lessons',
-  guide_card2_desc: 'تابع شروحات مبسّطة ومتسلسلة لكل درس من دروس اللغة العربية بأسلوب تفاعلي يجعل الفهم أسهل. Watch simplified, step-by-step video lessons.',
+  guide_card2_desc: 'تابع شروحات مبسّطة ومتسلسلة لكل درس من دروس اللغة العربية بأسلوب تفاعلي يجعل الفهم أسهل.',
   guide_card3_title: 'حل الواجبات',
   guide_card3_title_en: 'Homework',
-  guide_card3_desc: 'أكمل واجباتك الأسبوعية وحلّ التمارين لتثبيت المعلومات واختبار فهمك. Complete weekly homework to reinforce your learning.',
+  guide_card3_desc: 'أكمل واجباتك الأسبوعية وحلّ التمارين لتثبيت المعلومات واختبار فهمك.',
   guide_card4_title: 'أداء الامتحانات',
   guide_card4_title_en: 'Take Exams',
-  guide_card4_desc: 'شارك في الامتحانات الدورية لمتابعة مستوايك والاستعداد للامتحانات النهائية. Take periodic exams to track your progress.',
+  guide_card4_desc: 'شارك في الامتحانات الدورية لمتابعة مستوايك والاستعداد للامتحانات النهائية.',
   guide_card5_title: 'بطاقات تعليمية',
   guide_card5_title_en: 'Flashcards',
-  guide_card5_desc: 'استخدم البطاقات التعليمية لمراجعة القواعد النحوية والمصطلحات البلاغية بشكل سريع. Review grammar and terms with flashcards.',
+  guide_card5_desc: 'استخدم البطاقات التعليمية لمراجعة القواعد النحوية والمصطلحات البلاغية بشكل سريع.',
   guide_card6_title: 'تحديات ومسابقات',
   guide_card6_title_en: 'Challenges',
-  guide_card6_desc: 'تنافس مع زملائك في تحديات لغوية ممتعة واربح مراكز متقدمة. Compete in fun language challenges with your classmates.',
+  guide_card6_desc: 'تنافس مع زملائك في تحديات لغوية ممتعة واربح مراكز متقدمة.',
 
   // === Gallery ===
-  gallery_title: 'صور طلابي الأعزاء | My Beloved Students',
-  gallery_subtitle: 'لحظات مميزة من رحلتنا التعليمية — Moments from our educational journey',
+  gallery_title: 'صور طلابي الأعزاء',
+  gallery_subtitle: 'لحظات مميزة من رحلتنا التعليمية',
 
   // === Social Links ===
   social_facebook: '',

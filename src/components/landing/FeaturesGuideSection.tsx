@@ -123,25 +123,14 @@ export default function FeaturesGuideSection() {
                     </Badge>
                   </div>
 
-                  {/* Title */}
+                  {/* Title — (ز35) منصة عربي بس */}
                   <h3 className="font-semibold text-base leading-snug text-foreground">
-                    {/* (و72) حسب اللغة */}
-                    {lang === 'en' ? (
-                      <>
-                        <span className="block">{card.titleEn}</span>
-                        <span className="block text-sm text-muted-foreground font-normal mt-0.5" dir="rtl">{card.titleAr}</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="block">{card.titleAr}</span>
-                        <span className="block text-sm text-muted-foreground font-normal mt-0.5" dir="ltr">{card.titleEn}</span>
-                      </>
-                    )}
+                    <span className="block">{card.titleAr}</span>
                   </h3>
 
                   {/* Description */}
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {lang === 'en' ? card.descriptionEn : card.description}
+                    {card.description}
                   </p>
                 </CardContent>
               </Card>

@@ -228,9 +228,14 @@ export default function HeroSection() {
           transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto w-full max-w-[340px] sm:max-w-[380px] lg:max-w-[420px]"
         >
-          <div className="animate-float-slow">
+          <div className="animate-float-slow relative">
+            {/* (ز35 — طلب المستر) الإطار الدهبي والسحابة يشتغلوا مع بعض:
+                قبل كده السحابة كانت بتترسم في وضع «بدون إطار» بس — لو الأدمن
+                فعّل الاتنين (hero_photo_frame=1 + hero_photo_cloud=1)
+                السحابة ما كانتش تظهر خالص. دلوقتي سحابة الحروف (ضباب
+                المخطوطة ورا + جسم السحابة قدّام تحت) بتترسم في الوضعين */}
             {framed ? (
-              <div className="rounded-2xl bg-gradient-to-b from-gold-400 via-gold-600 to-gold-400 p-[3px] shadow-[0_25px_80px_rgba(0,0,0,0.5)]">
+              <div className="relative z-10 rounded-2xl bg-gradient-to-b from-gold-400 via-gold-600 to-gold-400 p-[3px] shadow-[0_25px_80px_rgba(0,0,0,0.5)]">
                 <div className="rounded-[13px] bg-night-700 p-2">
                   <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-night-800">
                     <img
@@ -251,22 +256,19 @@ export default function HeroSection() {
                 </div>
               </div>
             ) : (
-              /* (ص121+ص122) بدون إطار — القصاصة بتطلع عايمة نضيفة، وسحابة
-                 الحروف المخطوطة **اختيارية** بتحكم الأدمن (hero_photo_cloud):
-                 لو مفعّلة بتبقى سحابة حقيقية تحت الصورة (جسم مخطوطة كريمي
-                 بحدود ذهبية وكلمات عربية — زي سحابة شعبان بهويتنا) + ضباب
-                 كلمات خافت وراها. الصورة بـ object-contain عشان متتقصش */
-              <div className="relative">
-                {cloudOn ? <CalligraphyMist className="-inset-[14%]" /> : null}
-                <img
-                  src={photo}
-                  alt={'صورة ' + teacherName}
-                  className="relative z-10 mx-auto max-h-[520px] w-full object-contain object-bottom drop-shadow-[0_24px_45px_rgba(0,0,0,0.55)]"
-                />
-                {/* السحابة قدّام تحت الصورة (z-20) — القصاصة بتتخطف جواها */}
-                {cloudOn ? <ManuscriptCloud className="absolute bottom-[-4%] left-1/2 z-20 w-[116%] -translate-x-1/2" /> : null}
-              </div>
+              /* (ص121+ص122) بدون إطار — القصاصة بتطلع عايمة نضيفة.
+                 الصورة بـ object-contain عشان متتقصش */
+              <img
+                src={photo}
+                alt={'صورة ' + teacherName}
+                className="relative z-10 mx-auto max-h-[520px] w-full object-contain object-bottom drop-shadow-[0_24px_45px_rgba(0,0,0,0.55)]"
+              />
             )}
+            {/* (ز35) سحابة الحروف المخطوطة — بتحكم الأدمن (hero_photo_cloud)
+                وبتشتغل مع الإطار الدهبي وبدونه: ضباب كلمات خافت ورا الصورة/
+                الإطار + جسم السحابة قدّام تحت */}
+            {cloudOn ? <CalligraphyMist className="-inset-[14%] z-0" /> : null}
+            {cloudOn ? <ManuscriptCloud className="absolute bottom-[-4%] left-1/2 z-20 w-[116%] -translate-x-1/2" /> : null}
           </div>
         </motion.div>
       </div>

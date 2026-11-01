@@ -125,21 +125,11 @@ export default function TipsSection() {
           )}
           <div className="space-y-1.5 min-w-0">
             <h3 className="font-semibold text-sm sm:text-base text-foreground leading-snug">
-              {/* (و72) حسب اللغة: إنجليزي = العنوان الإنجليزي رئيسي والعربي تحته، والعكس */}
-              {lang === 'en' ? (
-                <>
-                  <span className="block">{tip.titleEn}</span>
-                  <span className="block text-xs sm:text-sm text-muted-foreground font-normal mt-0.5" dir="rtl">{tip.titleAr}</span>
-                </>
-              ) : (
-                <>
-                  <span className="block">{tip.titleAr}</span>
-                  <span className="block text-xs sm:text-sm text-muted-foreground font-normal mt-0.5" dir="ltr">{tip.titleEn}</span>
-                </>
-              )}
+              {/* (ز35) منصة عربي بس — مفيش إنجليزي في العناوين */}
+              <span className="block">{tip.titleAr}</span>
             </h3>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              {lang === 'en' ? tip.descriptionEn : tip.description}
+              {tip.description}
             </p>
           </div>
         </CardContent>

@@ -734,9 +734,16 @@ export function CMSPanel() {
         console.warn('CMSPanel: config API returned error shape, using defaults')
         data = data.defaults || {}
       }
-      setConfig(data)
+      /* (ز35) منصة عربي بس — مفاتيح الإنجليزي *_en ما تتحملش في اللوحة أصلًا */
+      var arOnly: Record<string, string> = {}
+      var dkeys = Object.keys(data || {})
+      for (var di = 0; di < dkeys.length; di++) {
+        if (dkeys[di].slice(-3) === '_en') continue
+        arOnly[dkeys[di]] = data[dkeys[di]]
+      }
+      setConfig(arOnly)
       var pvs: Record<string, string> = {}
-      IMAGE_SLOTS.forEach(function(slot) { pvs[slot.configKey] = data[slot.configKey] || '' })
+      IMAGE_SLOTS.forEach(function(slot) { pvs[slot.configKey] = arOnly[slot.configKey] || '' })
       setPreviews(pvs)
     } catch(e) { toast.error('خطأ في تحميل الإعدادات') }
     setLoading(false)
@@ -753,7 +760,9 @@ export function CMSPanel() {
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i]
         /* (ز16) مفاتيح الصفوف والمواعيد حصراً للوحة GradesSchedulePanel — ما تترجعش قديمة من هنا */
+        /* (ز35) منصة عربي بس — مفاتيح الإنجليزي *_en ما تتحفظش خالص */
         if (key === 'error' || key === 'defaults' || key === 'grades_data' || key === 'schedule_data' || key === 'favicon_reset_v1') continue
+        if (key.slice(-3) === '_en') continue
         cleanConfig[key] = config[key]
       }
       var res = await fetch('/api/config', {
@@ -784,7 +793,9 @@ export function CMSPanel() {
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i]
         /* (ز16) مفاتيح الصفوف والمواعيد حصراً للوحة GradesSchedulePanel — ما تترجعش قديمة من هنا */
+        /* (ز35) منصة عربي بس — مفاتيح الإنجليزي *_en ما تتحفظش خالص */
         if (key === 'error' || key === 'defaults' || key === 'grades_data' || key === 'schedule_data' || key === 'favicon_reset_v1') continue
+        if (key.slice(-3) === '_en') continue
         cleanConfig[key] = newConfig[key]
       }
       var res = await fetch('/api/config', {
@@ -1017,15 +1028,7 @@ export function CMSPanel() {
             <CardContent>
               <div className="grid gap-5 sm:grid-cols-2">
                 {section.fields.map(function(field) {
-                  /* (و72) ثنائية اللغة: كل خانة نص بيتولد تحتها خانة **إنجليزي**
-                     تلقائيًا (مفتاح key_en) — المستر يكتب العربي والإنجليزي كل واحد
-                     لوحده، والطالب بيشوف لغته على الموقع. استثناءات: المفاتيح
-                     اللي هي أصلًا *_en أو روابط/أرقام/JSON مش بتتزوج. */
-                  var isEnField = field.key.slice(-3) === '_en'
-                  var paired = section.fields.some(function(f) { return f.key === field.key + '_en' })
-                  var noPair = /(_url$|_number$|^schedule_data$|^payment_)/.test(field.key)
-                  var showEn = !isEnField && !paired && !noPair
-                  var enKey = field.key + '_en'
+                  /* (ز35) منصة عربي بس — خانة الإنجليزي المزدوجة اتشالت نهائيًا */
                   return (
                     <div key={field.key} className={field.type === 'textarea' ? 'sm:col-span-2' : ''}>
                       <Label className="text-xs mb-1 block">{field.label}</Label>
@@ -1041,26 +1044,9 @@ export function CMSPanel() {
                           onChange={function(e) { var n = Object.assign({}, config); n[field.key] = e.target.value; setConfig(n) }}
                         />
                       )}
-                      {showEn && (
-                        <div className="mt-1.5">
-                          <Label className="text-[10px] mb-1 block text-muted-foreground" dir="ltr">English — {field.label}</Label>
-                          {field.type === 'textarea' ? (
-                            <Textarea
-                              value={config[enKey] || ''}
-                              onChange={function(e) { var n = Object.assign({}, config); n[enKey] = e.target.value; setConfig(n) }}
-                              rows={3}
-                              dir="ltr"
-                              className="text-sm"
-                            />
-                          ) : (
-                            <Input
-                              value={config[enKey] || ''}
-                              onChange={function(e) { var n = Object.assign({}, config); n[enKey] = e.target.value; setConfig(n) }}
-                              dir="ltr"
-                            />
-                          )}
-                        </div>
-                      )}
+                      {/* (ز35) منصة عربي بس — خانة الإنجليزي المزدوجة اتشالت
+                          نهائيًا من لوحة الأدمن، ومفاتيح *_en بتتنقّي عند
+                          التحميل والحفظ */}
                     </div>
                   )
                 })}
@@ -1068,7 +1054,7 @@ export function CMSPanel() {
               <div className="mt-4 flex justify-end">
                 <Button onClick={handleSave} disabled={saving}>
                   {saving ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <Save className="h-4 w-4 ml-1" />}
-                  {saving ? 'جاري الحفظ...' : 'حفظ | Save'}
+                  {saving ? 'جاري الحفظ...' : 'حفظ'}
                 </Button>
               </div>
             </CardContent>

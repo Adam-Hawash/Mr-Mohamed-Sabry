@@ -28,60 +28,64 @@ const ROLE_TTL_DAYS: Record<SessionRole, number> = { student: 30, parent: 30, ad
 
 // ---------------- المفتاح السري (Server-side فقط) ----------------
 var _secret: string | null = null
-var _secretTried = false
+/* (ز35) إصلاح «انتهت صلاحية الجلسة» المتقطعة في لوحة الأدمن:
+   قبل كده أول نداء بعد cold start لو قعدة الداتابيز فشلت (حاجة شائعة على
+   Vercel/Turso) كان بيكاش سر الـ fallback للأبد — فبتبقى نسختين على
+   Vercel بسرين مختلفين: تسجيل الدخول على نسخة والتحقق على نسخة تانية
+   = 401 عشوائي «انتهت الجلسة». دلوقتي:
+   - سر البيئة/الصف بيتكاش بس لما يتنجح فعلاً
+   - فشل الداتابيز بيرجّع fallback مؤقت **من غير تخزين** ويجرب تاني في
+     النداء الجاي — فكل النسخ بتركع على نفس سر الصف أول ما الداتابيز تظبط */
 
 async function getServerSecret(): Promise<string> {
   if (_secret) return _secret
-  if (_secretTried && !_secret) {
-    return deterministicFallback()
-  }
-  _secretTried = true
   // 1) متغير بيئة لو موجود
   var envSecret = process.env.SESSION_SECRET
   if (envSecret && String(envSecret).length >= 16) {
     _secret = String(envSecret)
     return _secret
   }
-  // 2) مفتاح عشوائي متخزن في SiteConfig (بيتبني مرة واحدة بس)
-  try {
-    var row: any = null
+  // 2) مفتاح عشوائي متخزن في SiteConfig — بمحاولتين لو الداتابيز بتتلخبط
+  for (var attempt = 0; attempt < 2; attempt++) {
     try {
-      row = await (db as any).siteConfig.findUnique({ where: { key: 'session_secret' } })
-    } catch (e) {}
-    if (row && row.value) {
-      _secret = String(row.value)
-      return _secret
-    }
-    var fresh = crypto.randomBytes(32).toString('hex')
-    try {
-      await (db as any).siteConfig.create({ data: { key: 'session_secret', value: fresh } })
-      _secret = fresh
-      return _secret
-    } catch (e2) {
-      // لو الصف اتعمل في نفس اللحظة من نسخة تانية — اقراه
+      var row: any = await (db as any).siteConfig.findUnique({ where: { key: 'session_secret' } })
+      if (row && row.value) {
+        _secret = String(row.value)
+        return _secret
+      }
+      // الصف مش موجود — حاول تعمله مرة واحدة
+      var fresh = crypto.randomBytes(32).toString('hex')
       try {
-        var again: any = await (db as any).siteConfig.findUnique({ where: { key: 'session_secret' } })
-        if (again && again.value) {
-          _secret = String(again.value)
-          return _secret
-        }
-      } catch (e3) {}
+        await (db as any).siteConfig.create({ data: { key: 'session_secret', value: fresh } })
+        _secret = fresh
+        return _secret
+      } catch (e2) {
+        // اتعمل في نفس اللحظة من نسخة تانية — اقراه
+        try {
+          var again: any = await (db as any).siteConfig.findUnique({ where: { key: 'session_secret' } })
+          if (again && again.value) {
+            _secret = String(again.value)
+            return _secret
+          }
+        } catch (e3) {}
+        break
+      }
+    } catch (e) {
+      // فشل شبكة — محاولة تانية قبل fallback
     }
-  } catch (e) {}
-  // 3) fallback مستقر (مش معروف للعامة — بيعتمد على URL قاعدة البيانات)
-  return deterministicFallback()
+  }
+  // 3) fallback مستقر لكن **مؤقت** — مش بيتكاش عشان النسخ متتفرقش
+  return buildFallbackSecret()
 }
 
-function deterministicFallback(): string {
-  if (_secret) return _secret
+function buildFallbackSecret(): string {
   var base = String(
     process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || 'local-db'
   )
-  _secret = crypto
+  return crypto
     .createHash('sha256')
     .update(base + '|mg-session-v1|' + String(process.env.VERCEL_URL || ''))
     .digest('hex')
-  return _secret
 }
 
 // ---------------- التوقيع والتحقق ----------------
