@@ -78,27 +78,33 @@ async function dbRateLimit(key: string, limit: number, windowMs: number): Promis
         _rlTableReady = true
       } catch (e) { /* هيحاول تاني المرة الجاية */ }
     }
-    var now = Date.now()
-    var cutoff = now - windowMs
+    /* (ز32) بنشتغل بالثواني مش المللي ثانية — لأن Prisma بيقيد
+       باراميترات الأرقام في INT32 (أقصى 2,147,483,647) والمللي ثانية
+       بتوفرفلوو. الثواني آمنة لحد 2038. */
+    var nowSec = Math.floor(Date.now() / 1000)
+    var cutoffSec = nowSec - Math.ceil(windowMs / 1000)
     var rows: any[] = []
     try {
-      rows = (await db.$queryRawUnsafe('SELECT ts FROM RateLimitHit WHERE key = ? AND ts > ?', key, cutoff)) || []
+      rows = (await db.$queryRawUnsafe(
+        'SELECT ts FROM RateLimitHit WHERE key = ? AND ts > ? ORDER BY ts ASC',
+        key, cutoffSec
+      )) || []
     } catch (e) {
       rows = []
     }
     if (rows.length >= limit) {
-      var oldest = rows.length ? Number(rows[0].ts) : now
-      var retryAfterSec = Math.max(1, Math.ceil((windowMs - (now - oldest)) / 1000))
+      var oldest = rows.length ? Number(rows[0].ts) : nowSec
+      var retryAfterSec = Math.max(1, Math.ceil((oldest + Math.ceil(windowMs / 1000)) - nowSec))
       return { ok: false, remaining: 0, retryAfterSec: retryAfterSec }
     }
     try {
-      await db.$executeRawUnsafe('INSERT INTO RateLimitHit (key, ts) VALUES (?, ?)', key, now)
+      await db.$executeRawUnsafe('INSERT INTO RateLimitHit (key, ts) VALUES (?, ?)', key, nowSec)
     } catch (e) {
       return null
     }
     // تنظيف هادئ عشوائي (~4% من النداءات) — الجدول ميبقاش ضخم
     if (Math.random() < 0.04) {
-      try { await db.$executeRawUnsafe('DELETE FROM RateLimitHit WHERE ts < ?', now - 10 * 60_000) } catch (e) {}
+      try { await db.$executeRawUnsafe('DELETE FROM RateLimitHit WHERE ts < ?', nowSec - 600) } catch (e) {}
     }
     return { ok: true, remaining: Math.max(0, limit - rows.length - 1), retryAfterSec: 0 }
   } catch (e) {
