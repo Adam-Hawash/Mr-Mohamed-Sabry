@@ -27,7 +27,7 @@ export function normalizeWaPhone(raw: string): string {
 export const DEFAULT_PARENT_TEMPLATE = [
   'أهلاً حضرتكم 🌹',
   'الطالب/ة: {student}',
-  'إحنا من منصة Mr. Mohamed Sabry بنتابع معاكم خطوة بخطوة، ودي آخر حالة للمستوى:',
+  'إحنا من منصة الأوائل بنتابع معاكم خطوة بخطوة، ودي آخر حالة للمستوى:',
   '',
   '📘 الامتحانات:',
   '{exams}',

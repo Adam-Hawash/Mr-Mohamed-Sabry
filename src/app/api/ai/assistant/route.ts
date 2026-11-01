@@ -208,8 +208,8 @@ export async function POST(request: Request) {
     }
 
     var systemPrompt = buildSystemPrompt(
-      'منصة مستر محمد صبري (Mr. Mohamed Sabry)',
-      isSherinePersona(persona) ? 'مدرّبة رياضيات شاطرة بتشرح بالعامية وبتساعد الطلاب في الـ Math.' : 'مدرّب رياضيات شاطر بيساعد الطلاب في الـ Math.',
+      'منصة الأوائل (Mr. Mohamed Sabry)',
+      isSherinePersona(persona) ? 'مدرّبة لغة عربية شاطرة بتشرح بالعامية وبتساعد الطلاب في النحو والبلاغة والأدب.' : 'مدرّب لغة عربية شاطر بيساعد الطلاب في النحو والبلاغة والأدب.',
       persona
     )
     if (context.page) systemPrompt += '\nالصفحة اللي الطالب واقف فيها: ' + context.page

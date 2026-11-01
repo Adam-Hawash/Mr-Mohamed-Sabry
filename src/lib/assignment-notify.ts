@@ -29,7 +29,7 @@ import { resolveParentPushIcon, normalizeParentPhone } from '@/lib/parent-notify
 import { notifyStudent } from '@/lib/notify'
 
 /* ✏️ اسم المنصة في نصوص الإشعارات — بتتقرأ من إعدادات المنصة ولو ناقصة بيرجع للاسم ده */
-var FALLBACK_PLATFORM_NAME = 'Mr. Mohamed Sabry'
+var FALLBACK_PLATFORM_NAME = 'منصة الأوائل'
 
 function nid(): string {
   return 'asg' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8)

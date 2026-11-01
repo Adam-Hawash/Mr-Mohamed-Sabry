@@ -58,8 +58,8 @@ export function Footer() {
   var primeUrl = cfg.prime_developer_url || FALLBACK_PORTFOLIO_URL
   var heroDevLabel = cfg.hero_developer_label || 'Hero Developer'
   var madeByLabel = cfg.footer_made_by_label || 'Developed by Adam Hawash'
-  var brandName = pickConfig(cfg, 'footer_brand', lang, 'Mr. Mohamed Sabry', 'Mr. Mohamed Sabry')
-  var copyrightText = pickConfig(cfg, 'footer_copyright', lang, 'جميع الحقوق محفوظة لـ Mr. Mohamed Sabry', 'All rights reserved to Mr. Mohamed Sabry')
+  var brandName = pickConfig(cfg, 'footer_brand', lang, 'منصة الأوائل', 'منصة الأوائل')
+  var copyrightText = pickConfig(cfg, 'footer_copyright', lang, 'جميع الحقوق محفوظة لـ آدم حواوش', 'All rights reserved to Adam Hawash')
 
   var fb = cfg.social_facebook || ''
   var wa = cfg.social_whatsapp_channel || ''

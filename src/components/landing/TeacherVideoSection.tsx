@@ -37,7 +37,7 @@ export function TeacherVideoSection() {
 
         <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
           <div className="aspect-video w-full bg-black">
-            <ConfigVideoPlayer url={url} title="فيديو عن المستر — منصة مستر محمد صبري" />
+            <ConfigVideoPlayer url={url} title="فيديو عن المستر — منصة الأوائل" />
           </div>
         </div>
       </div>

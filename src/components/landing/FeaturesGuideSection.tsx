@@ -95,7 +95,7 @@ export default function FeaturesGuideSection() {
             {pickConfig(cfg, 'guide_title', lang, 'كيف تستخدم المنصة؟ | How to Use the Platform', 'How to Use the Platform')}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base">
-            {pickConfig(cfg, 'guide_subtitle', lang, 'ست خطوات بسيطة لتبدأ رحلتك التعليمية في Mr. Mohamed Sabry — Six simple steps to begin your learning journey', 'Six simple steps to begin your learning journey with Mr. Mohamed Sabry')}
+            {pickConfig(cfg, 'guide_subtitle', lang, 'ست خطوات بسيطة لتبدأ رحلتك التعليمية في منصة الأوائل — Six simple steps to begin your learning journey', 'Six simple steps to begin your learning journey with Mr. Mohamed Sabry')}
           </p>
         </div>
 

@@ -18,7 +18,7 @@ export function Emblem({
       fill="none"
       className={className}
       role="img"
-      aria-label="شعار منصة مستر محمد صبري"
+      aria-label="شعار منصة الأوائل"
     >
       {/* الدائرة الخارجية */}
       <circle cx="60" cy="60" r="57" stroke="#D4A843" strokeWidth="2" />

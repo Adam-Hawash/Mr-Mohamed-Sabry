@@ -261,7 +261,7 @@ export function PlayerSettingsPanel() {
   async function testSend() {
     setTesting(true)
     try {
-      const r = await fetch('/api/admin/messages/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind: 'test', message: 'رسالة تجربة من منصة Mr. Mohamed Sabry — لو وصلتك يبقى الإرسال شغال ✅' }) })
+      const r = await fetch('/api/admin/messages/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind: 'test', message: 'رسالة تجربة من منصة الأوائل — لو وصلتك يبقى الإرسال شغال ✅' }) })
       const d = await r.json()
       if (d && d.ok && d.mode === 'manual') {
         toast.info('الإرسال التلقائي مش مفعّل — فتحتلك واتساب جاهز على موبايل الأدمن')

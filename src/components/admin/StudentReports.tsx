@@ -77,7 +77,7 @@ function ReportPaper({ title, titleEn, children }: { title: string; titleEn: str
 
       {/* فوتر */}
       <div style={{ marginTop: 22, paddingTop: 8, borderTop: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between', fontSize: 9.5, color: '#64748b' }}>
-        <span>تقرير آلي من منصة Mr. Mohamed Sabry</span>
+        <span>تقرير آلي من منصة الأوائل</span>
         <span></span>
       </div>
     </div>

@@ -501,7 +501,7 @@ export function GrammarRules() {
         <footer className="mt-12 text-center">
           <div className="mx-auto mb-4 h-px w-24 bg-gradient-to-l from-transparent via-gold-500/50 to-transparent" aria-hidden="true" />
           <p className="text-xs text-cream/40">
-            منصة مستر محمد صبري — اللغة العربية | Developed by Adam Hawash
+            منصة الأوائل — اللغة العربية | Developed by Adam Hawash
           </p>
         </footer>
       </main>

@@ -208,7 +208,7 @@ export default function HomePage() {
         </div>
         <div className="text-center space-y-3">
           <h1 className="text-2xl font-bold text-foreground tracking-wide">
-            <span className="text-[#8B6914] dark:text-[#E5BE5A]">مستر محمد</span> صبري
+            منصة <span className="text-[#8B6914] dark:text-[#E5BE5A]">الأوائل</span>
           </h1>
           {/* (ص2) إيموجيز اللغة العربية بدل الرياضيات */}
           <div className="flex items-end justify-center gap-3 text-3xl leading-none" dir="ltr">

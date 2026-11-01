@@ -35,7 +35,7 @@ var DEFAULTS = {
   schedule_subtitle: 'جدول مواعيد الحصص الأسبوعية لكل الصفوف الدراسية — اختر اليوم المناسب لك وتابع موعد حصتك',
   schedule_badge: 'جدول الحصص الأسبوعي',
   schedule_footer_note: 'جميع المواعيد بتوقيت القاهرة. لو عندك أي استفسار عن موعد حصتك تواصل معنا عبر واتساب.',
-  schedule_brand: 'Mr. Mohamed Sabry — اللغة العربية',
+  schedule_brand: 'منصة الأوائل — اللغة العربية',
   schedule_data: '',
 
   // === Instructor ===
@@ -89,7 +89,7 @@ var DEFAULTS = {
   // === Guide Section ===
   guide_badge: 'دليلك التعليمي | Learning Guide',
   guide_title: 'كيف تستخدم المنصة؟ | How to Use the Platform',
-  guide_subtitle: 'ست خطوات بسيطة لتبدأ رحلتك التعليمية في Mr. Mohamed Sabry — Six simple steps to begin your learning journey',
+  guide_subtitle: 'ست خطوات بسيطة لتبدأ رحلتك التعليمية في منصة الأوائل — Six simple steps to begin your learning journey',
   guide_card1_title: 'تسجيل حسابك',
   guide_card1_title_en: 'Register',
   guide_card1_desc: 'أنشئ حسابك في المنصة بسرعة وسهولة. اختر صفّك الدراسي وابدأ رحلتك التعليمية فوراً. Create your account quickly and start learning.',
@@ -124,7 +124,7 @@ var DEFAULTS = {
 
   // === Footer ===
   footer_brand: 'منصة الأوائل',
-  footer_copyright: 'جميع الحقوق محفوظة لـ أدهم حواش',
+  footer_copyright: 'جميع الحقوق محفوظة لـ آدم حواوش',
 
   // === Favicon ===
   favicon_url: '',

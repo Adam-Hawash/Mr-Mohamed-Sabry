@@ -187,7 +187,7 @@ var TEXT_SECTIONS: SectionDef[] = [
     titleEn: 'Contact & Footer',
     icon: Globe,
     fields: [
-      { key: 'whatsapp_number', label: 'رقم واتساب (بدون +)', type: 'text' },
+      { key: 'whatsapp_number', label: 'رقم واتساب (بالصيغة الدولية من غير + زي 201012345678) — لو فاضي زر الواتساب العائم مش هيظهر', type: 'text' },
       { key: 'social_facebook', label: 'رابط فيسبوك', type: 'text' },
       { key: 'social_whatsapp_channel', label: 'رابط قناة واتساب', type: 'text' },
       { key: 'social_instagram', label: 'رابط انستجرام', type: 'text' },
