@@ -43,9 +43,6 @@ const GradesSection = dynamic(() => import('@/components/landing/GradesSection')
 const TipsSection = dynamic(() => import('@/components/landing/TipsSection'), {
   loading: () => <div className="h-20" />,
 })
-const GallerySection = dynamic(() => import('@/components/landing/GallerySection'), {
-  loading: () => <div className="h-20" />,
-})
 const LessonsSection = dynamic(() => import('@/components/landing/LessonsSection'), {
   loading: () => <div className="h-20" />,
   ssr: false,
@@ -87,7 +84,6 @@ var MAX_LOADING_MS = 3000
 export default function HomePage() {
   var store = useAppStore()
   var currentView = store.currentView || 'landing'
-  var setGalleryImages = (store as any).setGalleryImages || function(){}
   var siteConfig = store.siteConfig || {}
   var configLoaded = store.configLoaded
   var setSiteConfig = store.setSiteConfig
@@ -106,7 +102,7 @@ export default function HomePage() {
      حماية شاشة الحل (و38: mg_active_solve + المسودات) شغالة زي ما هي
      وبتتفعل بعد الدخول اليدوي. */
 
-  // Load config + gallery + stats on mount
+  // Load config + stats on mount
   useEffect(function() {
     /* (2026-و88) لينك إشعار ولي الأمر الخارجي (واتساب/SMS) بييجي بالشكل
        /#parent-login — أول ما الصفحة تفتح بننتقل على طول لشاشة تسجيل
@@ -157,21 +153,16 @@ export default function HomePage() {
 
     Promise.all([
       fetch('/api/config').then(function(r) { return r.json() }).catch(function() { return {} }),
-      fetch('/api/gallery').then(function(r) { return r.json() }).catch(function() { return {} }),
       fetch('/api/stats').then(function(r) { return r.json() }).catch(function() { return {} }),
     ]).then(function(results) {
       var cfg = results[0]
-      var gal = results[1]
-      var sta = results[2]
+      var sta = results[1]
       if (cfg && cfg.error && cfg.defaults) {
         cfg = cfg.defaults
       }
       if (cfg && !configLoaded) {
         setSiteConfig(cfg)
         setConfigLoaded(true)
-      }
-      if (gal && gal.images) {
-        setGalleryImages(gal.images)
       }
       if (sta && sta.totalStudents !== undefined) {
         setStats(sta)
@@ -249,9 +240,9 @@ export default function HomePage() {
           {/* (2026-و29) أفضل 3 طلاب بقوا في النافبار (زرار أوائل الطلبة) بدل الرئيسية */}
           <Reveal><LessonsSection /></Reveal>
           <Reveal><TipsSection /></Reveal>
-          {/* (ص119) فيديو تعريف المستر — قبل المعرض بالظبط (زي زيكولا) */}
+          {/* (ص119) فيديو تعريف المستر — آخر سكشن في الصفحة
+              (ز23: معرض الصور اتشال من المنصة بطلب المستر) */}
           <Reveal><TeacherVideoSection /></Reveal>
-          <Reveal><GallerySection /></Reveal>
         </main>
       )}
 

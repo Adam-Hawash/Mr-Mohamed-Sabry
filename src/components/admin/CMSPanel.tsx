@@ -162,16 +162,7 @@ var TEXT_SECTIONS: SectionDef[] = [
       { key: 'guide_card6_desc', label: 'خطوة 6 - الوصف', type: 'textarea' },
     ],
   },
-  {
-    id: 'gallery',
-    title: 'معرض الصور',
-    titleEn: 'Gallery Section',
-    icon: ImageIcon,
-    fields: [
-      { key: 'gallery_title', label: 'عنوان معرض الصور', type: 'text' },
-      { key: 'gallery_subtitle', label: 'وصف معرض الصور', type: 'textarea' },
-    ],
-  },
+  /* (ز23: قسم معرض الصور اتشال بطلب المستر) */
   /* (و78) قسم المحتوى الديناميكي — مش حقول ثابتة، بيرسم CustomContentSection
      (نصائح/مميزات إضافية من غير حدود) — والقديم فضل زي ما هو احتياطي */
   {

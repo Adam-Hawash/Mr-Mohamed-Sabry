@@ -61,17 +61,6 @@ export interface ExamResult {
   student?: { name: string; phone: string; grade: string; status: string }
 }
 
-export interface GalleryImage {
-  id: string
-  title: string
-  filePath: string
-  type: string
-  videoUrl: string
-  thumbnail?: string // (و45) صورة مصغرة لعناصر الفيديو (أوتوماتيك من اليوتيوب)
-  sortOrder: number
-  createdAt: string
-}
-
 export interface Admin {
   id: string
   email: string
@@ -325,9 +314,6 @@ interface AppState {
   stats: Stats | null
   setStats: (stats: Stats | null) => void
 
-  galleryImages: GalleryImage[]
-  setGalleryImages: (images: GalleryImage[]) => void
-
   pendingPaymentVideo: { id: string; title: string; price: number; grade: string } | null
   setPendingPaymentVideo: (v: { id: string; title: string; price: number; grade: string } | null) => void
 
@@ -396,9 +382,6 @@ export const useAppStore = create<AppState>((set) => ({
 
   stats: null,
   setStats: (stats) => set({ stats }),
-
-  galleryImages: [],
-  setGalleryImages: (images) => set({ galleryImages: images }),
 
   pendingPaymentVideo: null,
   setPendingPaymentVideo: (v) => set({ pendingPaymentVideo: v }),
