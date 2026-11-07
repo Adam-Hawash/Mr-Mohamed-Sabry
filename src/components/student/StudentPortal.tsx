@@ -1242,7 +1242,10 @@ function VideosTab({ videos, watchedIds, approvedVideoIds, studentId, grade, vid
               .then(function (d) {
                 var row = (d.progress || [])[0]
                 if (row && row.totalSeconds > 0) {
-                  var pct = Math.min(100, Math.round((row.watchedSeconds / row.totalSeconds) * 100))
+                  /* نفس تسنية GET /api/video-progress بالحرف: 97%+ بتتحسب 100%
+                     — عشان القفل يتحدّث فورًا بنفس حكم السيرفر (مفيش قفل كاذب) */
+                  var ratio = row.watchedSeconds / row.totalSeconds
+                  var pct = ratio >= 0.97 ? 100 : Math.min(100, Math.round(ratio * 100))
                   setProgressOverrides(function (prev) {
                     var n = Object.assign({}, prev)
                     n[vid] = pct

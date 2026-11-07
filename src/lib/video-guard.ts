@@ -234,27 +234,14 @@ export async function checkSequentialUnlock(
   try {
     const video = await db.video.findUnique({ where: { id: videoId } })
     if (!video) return { ok: true }
-    // ترتيب العرض نفسه اللي الطالب شايفه في بوابته (زي orderedVideos في الكلاينت)
-    var gradeVideos = await db.video.findMany({
+    // ترتيب العرض نفسه اللي الطالب شايفه في بوابته (زي orderedVideos بالحرف:
+    // الترتيب اليدوي للمستر أولاً ثم الأحدث فوق) + أعمدة الدروس المتعددة
+    const gradeVideos = await db.video.findMany({
       where: { grade: video.grade },
-      orderBy: [{ sortIndex: 'asc' }, { orderIndex: 'asc' }, { createdAt: 'asc' }],
-      select: { id: true, title: true, groupKey: true, url: true, filePath: true, fileType: true, price: true },
+      orderBy: [{ sortIndex: 'asc' }, { createdAt: 'desc' }],
+      select: { id: true, title: true, url: true, filePath: true, fileType: true, price: true, groupKey: true, orderIndex: true },
     })
-    /* (ز28 — طلب المستر): الدرس المخفي كامل عن الطالب (LessonHide) = مش موجود
-       — ما بيدخلش في سلسلة التسلسل خالص (الجدولة القديمة متغطية تحت في hiddenBySchedule) */
-    var hidGroups: Record<string, boolean> = {}
-    try {
-      var hLhRows: any[] = await db.$queryRawUnsafe('SELECT groupKey, studentIds FROM LessonHide')
-      for (var hli = 0; hli < (hLhRows || []).length; hli++) {
-        var hLhIds: string[] = []
-        try { hLhIds = JSON.parse(String(hLhRows[hli].studentIds || '[]')) } catch (eHL) {}
-        if (Array.isArray(hLhIds) && hLhIds.indexOf(String(studentId)) !== -1) hidGroups[String(hLhRows[hli].groupKey || '')] = true
-      }
-    } catch (eHL2) { /* جدول ناقص — من غير إخفاء دروس */ }
-    gradeVideos = gradeVideos.filter(function (hv: any) {
-      var hgk = String((hv as any).groupKey || '')
-      return !(hgk && hidGroups[hgk])
-    })
+    var gkOf = function (v: any): string { return String((v && v.groupKey) || '') }
     /* (2026-و67) فيديوهات المجموعات: الفيديو الموجّه لمجموعات والطالب مش منهم
        (أو لسه موعده مجاه) **مش ظاهر عنده أصلاً** في قايمته — فممنوع يكون شرط
        في التسلسل، وإلا هيقفل على الفيديو اللي بعده للأبد وهو أصلاً مش شايف
@@ -301,9 +288,41 @@ export async function checkSequentialUnlock(
         if (hiddenIds.indexOf(String(studentId)) !== -1) hiddenBySchedule[String(vRow.videoId || '')] = true
       }
     } catch (e) { /* جدول ناقص — من غير جدولة قديمة */ }
+    /* (2026-ز13) إخفاء درس كامل (LessonHide): درس متخفي عن الطالب ده مش
+       ظاهر عنده في قايمته — فأجزاؤه كلها ممنوعة تكون حلقة في السلسلة */
+    var hiddenByLesson: Record<string, boolean> = {}
+    try {
+      var lhRows: any[] = await db.$queryRawUnsafe('SELECT groupKey, studentIds FROM LessonHide')
+      for (var li = 0; li < (lhRows || []).length; li++) {
+        var lRow = lhRows[li]
+        var lIds: string[] = []
+        try { lIds = JSON.parse(String(lRow.studentIds || '[]')) } catch (e) {}
+        if (lIds.indexOf(String(studentId)) !== -1) hiddenByLesson[String(lRow.groupKey || '')] = true
+      }
+    } catch (e) { /* جدول ناقص — من غير إخفاء دروس */ }
     var visibleToStudent = function (vid: string): boolean {
       if (hiddenBySchedule[vid]) return false
       return groupVisible(vid)
+    }
+    // الفيديو الظاهر للطالب = مش مخفي بفيديو + مش جزء من درس متخفي + ظاهر بجدولة المجموعات
+    var visibleVideo = function (v: any): boolean {
+      if (!visibleToStudent(v.id)) return false
+      var k = gkOf(v)
+      if (k && hiddenByLesson[k]) return false
+      return true
+    }
+    /* الهدف نفسه متخفي صراحةً عن الطالب؟ القايمة بتشيله عنده خالص —
+       أي محاولة تشغيل مباشرة (تاب قديم مثلًا) ترفض برسالة واضحة */
+    var targetRow: any = null
+    for (var ti = 0; ti < gradeVideos.length; ti++) { if (gradeVideos[ti].id === videoId) { targetRow = gradeVideos[ti]; break } }
+    if (targetRow) {
+      if (hiddenBySchedule[videoId]) {
+        return { ok: false, code: 403, reason: 'الفيديو ده مش متاح ليك حالياً — اتحذف من قايمتك' }
+      }
+      var tgk = gkOf(targetRow)
+      if (tgk && hiddenByLesson[tgk]) {
+        return { ok: false, code: 403, reason: 'الدرس ده مش متاح ليك حالياً — اتحذف من قايمتك' }
+      }
     }
     // كل نسب مشاهدة الطالب في طلبة واحدة (بدل استعلام لكل فيديو)
     var ratioOf: Record<string, number> = {}
@@ -317,51 +336,74 @@ export async function checkSequentialUnlock(
         ratioOf[pRow.videoId] = pRow.totalSeconds > 0 ? pRow.watchedSeconds / pRow.totalSeconds : 0
       }
     } catch (e) { /* جدول ناحص — مفيش نسب مسجلة، السلسلة هتطلب المشاهدة عادي */ }
-    const idx = gradeVideos.findIndex((v) => v.id === videoId)
-    // أول فيديو في الترتيب دايمًا مفتوح
-    if (idx <= 0) return { ok: true }
+    /* نفس سلسلة البوابة بالحرف (seqInfoMap): الدروس المتعددة مجمعة زي
+       lessons — الجروب على مكان أول جزء ظاهر والأجزاء بينهم بـ orderIndex،
+       والمخفي عن الطالب (فيديو/درس/جدولة مجموعات) مش بيدخل السلسلة أصلًا
+       — فأول فيديو شايفه الطالب = أول فيديو في السلسلة ومفتوح دايمًا */
+    var byKey: Record<string, any[]> = {}
+    for (var bi = 0; bi < gradeVideos.length; bi++) {
+      var bv: any = gradeVideos[bi]
+      if (!visibleVideo(bv)) continue
+      var bk = gkOf(bv)
+      if (!bk) continue
+      ;(byKey[bk] = byKey[bk] || []).push(bv)
+    }
+    var chain: { id: string; title: string }[] = []
+    var groupInserted: Record<string, boolean> = {}
+    for (var ci2 = 0; ci2 < gradeVideos.length; ci2++) {
+      var cv: any = gradeVideos[ci2]
+      if (!visibleVideo(cv)) continue
+      var ck = gkOf(cv)
+      var parts: any[]
+      if (!ck) {
+        parts = [cv]
+      } else {
+        if (groupInserted[ck]) continue
+        groupInserted[ck] = true
+        parts = (byKey[ck] || []).slice().sort(function (a: any, b: any) {
+          return (Number(a.orderIndex) || 0) - (Number(b.orderIndex) || 0)
+        })
+      }
+      for (var pi2 = 0; pi2 < parts.length; pi2++) {
+        var pv: any = parts[pi2]
+        var pYt = Boolean(getYouTubeId(pv.url || ''))
+        var pFile = Boolean(pv.filePath || pv.fileType)
+        if (!pYt && !pFile) continue // لينك خارجي — مش قابل للتتبع، نتخطاه
+        /* (ز22) المُسعّر من غير وصول = اختياري صامت — مش بيدخل السلسلة أصلاً */
+        if (pv.price && Number(pv.price) > 0) {
+          var acc = await db.videoAccess.findUnique({
+            where: { videoId_studentId: { videoId: pv.id, studentId: String(studentId) } },
+          }).catch(() => null)
+          if (!acc) {
+            var pay = await db.payment.findFirst({
+              where: { studentId: String(studentId), videoId: pv.id, status: 'approved' },
+            }).catch(() => null)
+            if (!pay) continue
+          }
+        }
+        chain.push({ id: pv.id, title: pv.title || '' })
+      }
+    }
+    const idx = chain.findIndex((v) => v.id === videoId)
+    // الهدف مش في سلسلة الطالب (لينك خارجي/اختياري صامت/مش ظاهر له) — الوصول بيتحكم فيه computePlayback
+    if (idx < 0) return { ok: true }
     /* القاعدة الأهم: اللي الطالب شافه أو بدأه قبل كده عمره ما يتقفل تاني.
        بدأ مشاهدة الفيديو ده (أي نسبة > 0) ⇒ يكمّل عادي حتى لو المستر نزل
        فيديو جديد قبله في الترتيب — دي الحماية من «فيديوهات متشافة اتقفلت». */
     if ((ratioOf[videoId] || 0) > 0) return { ok: true }
-    /* (2026-ص2) سقف الحاجز: أبعد فيديو (ظاهر وقابل للتتبع) الطالب بدأه —
+    /* (2026-ص2) سقف الحاجز: أبعد فيديو الطالب بدأه —
        ممنوع أي حاجز يرجع قبل منه. ده اللي بيمنع «لازم تشوف الفيديوهات
        كلها من الأول» لو الترتيب اتغير أو فيديوهات قديمة اتمسحت/اتعاد رفعها */
     var frontierIdx = -1
-    for (var fi = 0; fi < gradeVideos.length; fi++) {
-      var fv = gradeVideos[fi]
-      if (!visibleToStudent(fv.id)) continue
-      var fYt = Boolean(getYouTubeId(fv.url || ''))
-      var fFile = Boolean(fv.filePath || fv.fileType)
-      if (!fYt && !fFile) continue
-      if ((ratioOf[fv.id] || 0) > 0) frontierIdx = fi
+    for (var fi = 0; fi < chain.length; fi++) {
+      if ((ratioOf[chain[fi].id] || 0) > 0) frontierIdx = fi
     }
     // ندوّر على **أول** فيديو قبله لسه مخلصش (ده «الحاجز» — ومفتوح مضمون
-    // لأن كل اللي قبله في الترتيب مخلص، فمفيش قفل دائري ولا رسالة كاذبة)
+    // لأن كل اللي قبله في السلسلة مخلص، فمفيش قفل دائري ولا رسالة كاذبة)
     var blockerFound = false
     for (let i = 0; i < idx; i++) {
       if (i <= frontierIdx) continue // (2026-ص2) قبل حد الطالب — عمره ما يترجع له
-      const v = gradeVideos[i]
-      if (!visibleToStudent(v.id)) continue // مش ظاهر للطالب أصلاً — نتخطاه
-      const isYT = Boolean(getYouTubeId(v.url || ''))
-      const isFile = Boolean(v.filePath || v.fileType)
-      if (!isYT && !isFile) continue // لينك خارجي — مش قابل للتتبع، نتخطاه
-      /* (ز22) الفيديو اللي بفلوس والطالب مالوش وصول له — اختياري صامت
-         (طلب المستر: «الفيديو اللي بفلوس ده يكون اختياري عادي بس متكتبش
-         ان هو اختياري — لو الطالب مشافش الفيديو الفيديو اللي بعده يتفتح»):
-         مفيش VideoAccess ولا دفعة معتمدة → نتخطاه، الترتيب ما يقفش بياه */
-      if (v.price && Number(v.price) > 0) {
-        const acc = await db.videoAccess.findUnique({
-          where: { videoId_studentId: { videoId: v.id, studentId: String(studentId) } },
-        }).catch(() => null)
-        if (!acc) {
-          const pay = await db.payment.findFirst({
-            where: { studentId: String(studentId), videoId: v.id, status: 'approved' },
-          }).catch(() => null)
-          if (!pay) continue
-        }
-      }
-      if ((ratioOf[v.id] || 0) < SEQ_UNLOCK_RATIO) {
+      if ((ratioOf[chain[i].id] || 0) < SEQ_UNLOCK_RATIO) {
         blockerFound = true
         break
       }
