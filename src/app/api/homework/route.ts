@@ -6,6 +6,8 @@ import { notifyAssignmentPosted } from '@/lib/assignment-notify'
 import { isAdmin } from '@/lib/video-guard'
 /* (2026-و55) إخفاء إجابات الـ AI في الجداول عن الطالب — تنظيف سيرفري */
 import { questionsJsonForStudent } from '@/lib/table-sanitize'
+/* (وN5) تنظيف تلقائي وقت القراءة — إبادة حرف الـ N والـ \na. الحرفية */
+import { autoCleanHomework } from '@/lib/stored-questions-clean'
 
 /* (25-ب1) جدولة الظهور للواجبات — defensive ALTER بنفس نمط المشروع
    (ممنوع db:push — كل قاعدة بيانات بتترقّى تلقائيًا هنا) */
@@ -101,6 +103,13 @@ export async function GET(request: NextRequest) {
         return byStudent || byGroup
       })
     }
+
+    /* (وN5) تنظيف تلقائي وقت القراءة — حرف الـ N والـ \na. بيموتوا هنا
+       والنسخة النضيفة بتتكتب في القاعدة في الخلفية — البيانات القديمة بتتنضف لوحدها.
+       بنعملها على الصفوف الخام (قبل بادج الأدمن وتفريغ جداول الطالب) —
+       عشان الكتابة للقاعدة تفضل من الصف الخام مش من نسخة معدلة للعرض */
+    var outCleanHwN5 = (visibleHw as any[]).map(function (h: any) { return autoCleanHomework(h && h.id, h) })
+    visibleHw = outCleanHwN5
 
     /* (25-ب1) للأدمن بس: بادج «مجدول» — العناصر اللي موعدها في المستقبل
        بترجع مع flag scheduled: true عشان اللوحة تعرضها بوضوح */

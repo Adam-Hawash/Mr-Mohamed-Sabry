@@ -6,6 +6,8 @@ import { notifyAssignmentPosted } from '@/lib/assignment-notify'
 import { isAdmin } from '@/lib/video-guard'
 /* (2026-و55) إخفاء إجابات الـ AI في الجداول عن الطالب — تنظيف سيرفري */
 import { questionsJsonForStudent } from '@/lib/table-sanitize'
+/* (وN5) تنظيف تلقائي وقت القراءة — إبادة حرف الـ N والـ \na. الحرفية */
+import { autoCleanExam } from '@/lib/stored-questions-clean'
 
 /* (25-ب1) أعمدة الميزات الجديدة (إظهار الإجابات / المؤقت / جدولة الظهور) —
    defensive ALTERs بنفس نمط الكود في المشروع: لو العمود موجود الأصلًا
@@ -180,6 +182,13 @@ export async function GET(request: NextRequest) {
         return byStudent || byGroup
       })
     }
+
+    /* (وN5) تنظيف تلقائي وقت القراءة — حرف الـ N والـ \na. بيموتوا هنا
+       والنسخة النضيفة بتتكتب في القاعدة في الخلفية — البيانات القديمة بتتنضف لوحدها.
+       بنعملها على الصفوف الخام (قبل توزيع النماذج للطالب وتفريغ جداول الطالب) —
+       عشان الكتابة للقاعدة تفضل من الصف الخام مش من نسخة معدلة للعرض */
+    var outCleanExN5 = (visibleExams as any[]).map(function (e: any) { return autoCleanExam(e && e.id, e) })
+    visibleExams = outCleanExN5
 
     // توزيع النموذج للطالب (عشوائي ثابت أو نموذج واحد ثابت للكل حسب اختيار
     // المستر) — وإلا الامتحان زي ما هو

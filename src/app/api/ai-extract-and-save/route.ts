@@ -16,6 +16,10 @@ import { repairModelJson, repairCorruptMath } from '@/lib/math-text'
 import { callGemini as callGeminiCentral, hasGeminiKey } from '@/lib/gemini'
 /* (و51) parser مقاوم لأي JSON مكسور */
 import { parseAIJsonRobust } from '@/lib/ai-json'
+/* (وN5) إبادة حرف الـ N وبقايا escapes الاستخراج (\na. \nb. الحرفية) */
+import { cleanTextDeep } from '@/lib/math-text-n5'
+/* (وN5) تفكيك الاختيارات المدموجة جوه نص السؤال — «…\na. 2\nb. …» → A B C */
+import { splitEmbeddedOptions } from '@/lib/question-split'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -152,6 +156,12 @@ export async function POST(request) {
     if (extractedQuestions.length === 0) {
       return NextResponse.json({ error: 'No questions extracted. Make sure the file has clear questions.' }, { status: 400 })
     }
+
+    /* (وN5) إبادة حرف الـ N وبقايا escapes + تفكيك الاختيارات المدموجة —
+       آخر طبقة قبل الحفظ في القاعدة */
+    extractedQuestions = extractedQuestions.map(function(q: any) {
+      return splitEmbeddedOptions(cleanTextDeep(q).val)
+    })
 
     // Shuffle questions and options
     for (var si = extractedQuestions.length - 1; si > 0; si--) {

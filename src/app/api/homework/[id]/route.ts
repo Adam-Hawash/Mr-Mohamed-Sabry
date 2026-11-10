@@ -5,6 +5,8 @@ import { isAdmin } from '@/lib/video-guard'
 /* (S-4a — توحيد الصفوف) المرجع الموحد: كتابة = storeGrade */
 import { storeGrade } from '@/lib/grade-names'
 import { collectMediaIds, deleteMediaByIds, examHomeworkMediaTexts } from '@/lib/media-cleanup'
+/* (وN5) تنظيف تلقائي وقت القراءة — إبادة حرف الـ N والـ \na. الحرفية */
+import { autoCleanHomework } from '@/lib/stored-questions-clean'
 
 /* (25-ب1) جدولة الظهور — defensive ALTER بنفس نمط المشروع (ممنوع db:push) */
 /* (2026-و29) كاش على مستوى الموديول: كل ALTER = نداء شبكة لقاعدة البيانات — تنفيذها في كل ريكوست كان بيدفع نداءات ضاية في كل تحميل (من أكبر أسباب بطء المنصة) — دلوقتي مرة واحدة لكل instance */
@@ -35,7 +37,11 @@ export async function GET(
       return NextResponse.json({ error: 'الواجب غير موجود' }, { status: 404 })
     }
 
-    return NextResponse.json({ homework })
+    /* (وN5) تنظيف تلقائي وقت القراءة — حرف الـ N والـ \na. بيموتوا هنا
+       والنسخة النضيفة بتتكتب في القاعدة في الخلفية */
+    var hwCleanN5 = autoCleanHomework(String(id), homework)
+
+    return NextResponse.json({ homework: hwCleanN5 })
   } catch (error) {
     console.error('فشل جلب الواجب:', error)
     return NextResponse.json({ error: 'حدث خطأ في السيرفر' }, { status: 500 })
