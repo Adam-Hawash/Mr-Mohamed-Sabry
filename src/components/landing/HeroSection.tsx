@@ -27,6 +27,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Emblem, OrnamentDivider, CornerOrnament, SmallRosette } from './Ornaments'
 import ManuscriptCloud, { CalligraphyMist } from './CalligraphyCloud'
+import { DadBackdrop } from './DadEmblem'
 
 const FEATURES = [
   { icon: BookOpenText, label: 'دروس مشروحة' },
@@ -235,13 +236,21 @@ export default function HeroSection() {
                 السحابة ما كانتش تظهر خالص. دلوقتي سحابة الحروف (ضباب
                 المخطوطة ورا + جسم السحابة قدّام تحت) بتترسم في الوضعين */}
             {framed ? (
+              /* (ر5 — طلب المستر: «انا عايز يكون صورة المستر كاملة، المعلم
+                 كاملا، انت قاصص لي جايب لي وشه بس... الباكجروند عايزها
+                 صورة المستر كاملة... خليها مربع يعني... لغة الضاد... أفخم»)
+                 الكارت بقى **مربع** والصورة بتعرض **كاملة من غير أي قص**
+                 (object-contain) فوق خلفية «لغة الضاد» الفخمة */
               <div className="relative z-10 rounded-2xl bg-gradient-to-b from-gold-400 via-gold-600 to-gold-400 p-[3px] shadow-[0_25px_80px_rgba(0,0,0,0.5)]">
                 <div className="rounded-[13px] bg-night-700 p-2">
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-night-800">
+                  <div className="relative aspect-square overflow-hidden rounded-lg bg-night-800">
+                    {/* خلفية لغة الضاد — ض عملاق دهبي + زخارف */}
+                    <DadBackdrop />
+                    {/* صورة المعلم كاملة من غير قص — object-contain */}
                     <img
                       src={photo}
                       alt={'صورة ' + teacherName}
-                      className="absolute inset-0 h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-contain object-bottom"
                     />
                     {/* لمعة التذهيب على حافة الصورة */}
                     <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-gold-500/30" />

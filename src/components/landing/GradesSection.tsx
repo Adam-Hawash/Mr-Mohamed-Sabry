@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { useAppStore, gradesFromConfig } from '@/stores/app-store'
+import { gradeBadgeParts } from '@/lib/grade-badge'
 import { toast } from 'sonner'
 /* (و72) ترجمة عناوين القسم حسب لغة الزائر */
 import { useT, useLangStore } from '@/lib/i18n'
@@ -35,6 +36,9 @@ export function GradesSection() {
         {/* (و72) سبعة صفوف بعد إضافة رابعة وخمسة ابتدائي */}
         <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
           {grades.map(function(grade) {
+            /* (ر6) شارة موحدة واحدة: الحرف والرقم في سوا واحد بأرقام كيبورد
+               «❹ ب» / «٤ ب» / «4️⃣ ب» → «ب4» — مش دايرتين منفصلين */
+            var badge = gradeBadgeParts(grade)
             return (
               <Card
                 key={grade.ar}
@@ -43,9 +47,16 @@ export function GradesSection() {
               >
                 <CardContent className="p-4 sm:p-6 text-center space-y-3">
                   <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <span className="text-2xl leading-none" role="img" aria-label={grade.ar}>
-                      {grade.emoji || grade.short || grade.ar[0]}
-                    </span>
+                    {badge.emoji ? (
+                      <span className="text-2xl leading-none" role="img" aria-label={grade.ar}>
+                        {badge.text || grade.ar.charAt(0)}
+                      </span>
+                    ) : (
+                      /* أرقام كيبورد حقيقية 1234567890 + حرف الصف — نص واحد في سوا واحد */
+                      <span className="kbd-digits text-xl font-extrabold leading-none" dir="rtl" aria-label={grade.ar}>
+                        {badge.text || grade.ar.charAt(0)}
+                      </span>
+                    )}
                   </div>
                   <div className="space-y-0.5">
                     {/* (و72) اسم الصف حسب لغة الزائر — والاسم باللغة التانية تحته */}

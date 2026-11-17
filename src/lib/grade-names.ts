@@ -70,6 +70,28 @@ export const PRIMARY_GRADE_FAMILIES: PrimaryGradeFamily[] = [
   },
 ]
 
+/* ============================================================
+   (ر6 — طلب المستر: «عملت الصفوف لقيته ما غيرش حاجة غير يا دوبك
+   الإيموجيهات») قايمة عرض الأسماء — لوحة الصفوف بتاعت الأدمن هي
+   مصدر العرض: displayGrade بيرجّع اسم الأدمن المحفوظ بالحرف
+   (مثلًا «الصف الرابع الابتدائي» زي ما كتبه، مش «رابعة ابتدائي»)
+   المطابقة والتخزين زي ما هما (normalizeGrade/storeGrade بالاسم
+   المعتمد) — التغيير ده للعرض بس، فمفيش أي خطر على الامتحانات
+   والواجبات اللي بتتطابق بالاسم المعتمد.
+   ============================================================ */
+var displayList: string[] | null = null
+
+export function setGradeDisplayList(items: string[] | null | undefined): void {
+  var clean: string[] = []
+  if (Array.isArray(items)) {
+    for (var i = 0; i < items.length; i++) {
+      var v = String(items[i] || '').trim()
+      if (v) clean.push(v)
+    }
+  }
+  displayList = clean.length > 0 ? clean : null
+}
+
 /* تطبيع مفتاح المقارنة: شيل «الصف» + وحّد الهمزات والتاء المربوطة/الألف
    المقصورة والتطويل والتشكيل + اطوي المسافات + lowercase (للاتيني) */
 function gradeKey(name: any): string {
@@ -216,10 +238,28 @@ export function gradeVariants(grade: string): string[] {
 export function displayGrade(grade?: string | null): string {
   var g = String(grade || '').trim()
   if (!g) return ''
-  if (g.indexOf('كالوريا') !== -1) return GRADE_S1
-  var fam = primaryGradeCanonical(g)
-  if (fam) return fam.ar
-  return g
+  /* (ر6) الاسم الخام لو هو نفسه اسم من قايمة الأدمن بيرجع زي ما هو */
+  if (displayList) {
+    for (var d = 0; d < displayList.length; d++) {
+      if (displayList[d] === g) return g
+    }
+  }
+  var canon = ''
+  if (g.indexOf('كالوريا') !== -1) canon = GRADE_S1
+  else {
+    var fam = primaryGradeCanonical(g)
+    canon = fam ? fam.ar : ''
+  }
+  if (!canon) {
+    canon = normalizeGrade(g) || g
+  }
+  /* (ر6) اسم الأدمن المعتمد — نفس الصف بالاسم اللي كتبه المستر بالحرف */
+  if (displayList && canon) {
+    for (var k = 0; k < displayList.length; k++) {
+      if (normalizeGrade(displayList[k]) === canon) return displayList[k]
+    }
+  }
+  return canon || g
 }
 
 /* قيمة بتتخزن (كتابة جديدة دايمًا بالاسم المعتمد الكامل) */

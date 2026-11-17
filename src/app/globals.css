@@ -592,3 +592,17 @@ img {
 .sabry-v1 .bg-\[\#0F3D3E\]:hover {
   background-color: #34d399 !important;
 }
+
+/* ============================================================
+   (ر6) خط أرقام الكيبورد — طلب المستر: «خط الارقام العربية بحيث
+   تكون زي الحقيقية بالظبط، زي اللي في الكيبورد»
+   أي شارة/رقم بيتعرض بالكلاس ده بيطبع الأرقام بخط نظام نضيف
+   مستقيم (زي أرقام الكيبورد بالظبط) — مش الدينبات المكيّرة ولا
+   خط الزخرفة — وأرقام لاتينية موحّدة 1234567890 في كل المنصة.
+   ============================================================ */
+.kbd-digits {
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Cairo', sans-serif;
+  font-variant-numeric: lining-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  letter-spacing: 0.02em;
+}

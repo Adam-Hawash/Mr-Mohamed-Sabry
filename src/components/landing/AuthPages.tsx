@@ -8,10 +8,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { useAppStore, gradesFromConfig } from '@/stores/app-store'
+import { gradeOptionLabel } from '@/lib/grade-badge'
+import { DadEmblem } from './DadEmblem'
 /* (و64) الترجمة الحقيقية عربي/إنجليزي */
 import { useT } from '@/lib/i18n'
 import { getDeviceId, getDeviceCandidates, getDeviceType, getDeviceTraits } from '@/lib/device'
-import { ArrowRight, Phone, Lock, GraduationCap, Users, Loader2, AlertCircle, AlertTriangle, Eye, EyeOff } from 'lucide-react'
+import { ArrowRight, Phone, Lock, GraduationCap, Loader2, AlertCircle, AlertTriangle, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 
 var fadeInUp = {
@@ -295,7 +297,11 @@ export function LoginView() {
       <div className="w-full max-w-md">
         <DeviceWarningBanner mode="login" />
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 mb-4"><GraduationCap className="h-8 w-8 text-primary" /></div>
+          {/* (ر5 — طلب المستر) الدخلة بقى فيها حرف الضاد — لغة الضاد — أفخم */}
+          <div className="inline-flex flex-col items-center gap-1.5 mb-3">
+            <DadEmblem size={76} />
+            <span className="text-sm font-bold" style={{ fontFamily: "'Aref Ruqaa', 'Amiri', serif", color: '#C49A38' }}>لغة الضاد</span>
+          </div>
           <h1 className="text-2xl font-bold text-foreground mb-2">{T('تسجيل الدخول', 'Login')}</h1>
           <p className="text-sm text-muted-foreground">{T('ادخل لحسابك وكمل تعلم', 'Log in and keep learning')}</p>
         </div>
@@ -407,7 +413,11 @@ export function RegisterView() {
       <motion.div className="w-full max-w-lg" initial="hidden" animate="visible" variants={fadeInUp} transition={{ duration: 0.5, ease: 'easeOut' }}>
         <DeviceWarningBanner mode="register" />
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-primary/10 mb-3"><Users className="h-7 w-7 text-primary" /></div>
+          {/* (ر5 — طلب المستر) التسجيل برضه بشارة لغة الضاد — نفس الهوية */}
+          <div className="inline-flex flex-col items-center gap-1.5 mb-3">
+            <DadEmblem size={68} />
+            <span className="text-sm font-bold" style={{ fontFamily: "'Aref Ruqaa', 'Amiri', serif", color: '#C49A38' }}>لغة الضاد</span>
+          </div>
           <h1 className="text-2xl font-bold text-foreground mb-1">{T('اعمل حساب جديد', 'Create Account')}</h1>
           <p className="text-sm text-muted-foreground">سجل بياناتك وابدأ رحلتك معنا</p>
         </div>
@@ -440,7 +450,7 @@ export function RegisterView() {
                     <GraduationCap className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <select id="reg-grade" value={grade} onChange={function (e) { setGrade(e.target.value) }} className={'flex h-11 w-full rounded-md border border-input bg-transparent pr-10 pl-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[44px] appearance-none cursor-pointer' + (errors.grade ? ' border-destructive' : '')}>
                       <option value="">اختر الصف الدراسي</option>
-                      {gradesFromConfig(store.siteConfig).map(function (g) { return <option key={g.ar} value={g.ar}>{(g.emoji ? g.emoji + ' ' : '') + g.ar}</option> })}
+                      {gradesFromConfig(store.siteConfig).map(function (g) { return <option key={g.ar} value={g.ar}>{gradeOptionLabel(g)}</option> })}
                     </select>
                   </div>
                   {errors.grade && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.grade}</p>}

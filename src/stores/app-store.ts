@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 /* (S-4a — توحيد الصفوف) المرجع الموحد لأسماء الصفوف — وظيفة صرفة من غير
-   أي حاجة سيرفر — عشان القايمة المعروضة تتوحّد على الاسم المعتمد الكامل */
-import { normalizeGrade as canonicalGradeName } from '@/lib/grade-names'
+   أي حاجة سيرفر — المطابقة والتخزين بالاسم المعتمد */
+import { setGradeDisplayList } from '@/lib/grade-names'
 
 export type AppView =
   | 'landing'
@@ -213,44 +213,34 @@ export function gradesFromConfig(siteConfig: SiteConfig | null | undefined): Gra
           if (items[j].ar.trim() !== '') { hasAny = true; break }
         }
         if (hasAny) {
-          /* (ص123) اتشال حقن «رابعة/خمسة ابتدائي» القديم (و72) — طلب المستر:
-             «اللي موجودة في صفحة الادمن هي اللي تبقى موجودة» — قايمة الصفوف
-             في كل المنصة = grades_data بتاعت الأدمن بالظبط من غير أي إضافة
-             تلقائية من الكود. لو عايز الصفين دول هيضيفهم من لوحة الصفوف. */
-          /* ============================================================
-             (S-4a — توحيد الصفوف — طلب المستر: «ما تخلي البيانات كلها زي بعض»)
-             كل صيغ صفوف الابتدائي بتترجع للاسم المعتمد الكامل + دمج المكرر —
-             «الخامس» و«خمسة ابتدائي» و«الخامسة الابتدائي» بيبقوا صف واحد
-             «خمسة ابتدائي» — فالقوائم المنسدلة بقت أسماء موحدة (مفيش
-             «الخامس، السادس، الرابع» جنب الأسماء الكاملة) والامتحان المضاف
-             لصف بيتطابق مع طالب نفس الصف مهما كانت الصيغة القديمة.
-             دمج عرض بس — مفيش أي كتابة على تخصيص الأدمن في الداتابيز.
-             ============================================================ */
-          var uniSeen: Record<string, boolean> = {}
-          var unified: GradeItem[] = []
-          for (var ui = 0; ui < items.length; ui++) {
-            var uAr = (items[ui].ar || '').trim()
-            if (!uAr) continue
-            var uCanon = canonicalGradeName(uAr) || uAr
-            if (uniSeen[uCanon]) {
-              for (var um = 0; um < unified.length; um++) {
-                if ((canonicalGradeName(unified[um].ar) || unified[um].ar) === uCanon) {
-                  if (!String(unified[um].en || '').trim() && String(items[ui].en || '').trim()) unified[um].en = items[ui].en
-                  if (!String(unified[um].emoji || '').trim() && String(items[ui].emoji || '').trim()) unified[um].emoji = items[ui].emoji
-                  if (!String(unified[um].short || '').trim() && String(items[ui].short || '').trim()) unified[um].short = items[ui].short
-                  break
-                }
-              }
-              continue
-            }
-            uniSeen[uCanon] = true
-            unified.push({ ar: uCanon, en: items[ui].en, emoji: items[ui].emoji, short: items[ui].short })
+          /* (ص123 + ر6) طلب المستر: «اللي موجودة في صفحة الادمن هي اللي تبقى
+             موجودة» — وفعلاً لما عمل الصفوف لقى العرض ما غيرش حاجة غير
+             الإيموجيهات لأن التوحيد كان بيرجّع أسماءه للأسماء المعتمدة.
+             من دلوقتي: **قايمة العرض = grades_data بتاعت الأدمن بالحرف**
+             من غير أي توحيد أو دمج أو إعادة ترتيب. المطابقة والتخزين في
+             الـAPIs بيفضلوا بالاسم المعتمد (storeGrade/gradeWhere) فمفيش
+             أي تأثير على الامتحانات والواجبات. */
+          var exact: GradeItem[] = []
+          var exactNames: string[] = []
+          var exactSeen: Record<string, boolean> = {}
+          for (var ei = 0; ei < items.length; ei++) {
+            var eAr = (items[ei].ar || '').trim()
+            if (!eAr) continue
+            /* مكرر حرفي بالظبط = نتساق بس (حماية من JSON مكرر) */
+            if (exactSeen[eAr]) continue
+            exactSeen[eAr] = true
+            exact.push({ ar: eAr, en: (items[ei].en || '').trim(), emoji: (items[ei].emoji || '').trim(), short: (items[ei].short || '').trim() })
+            exactNames.push(eAr)
           }
-          return unified
+          if (exact.length > 0) {
+            setGradeDisplayList(exactNames)
+            return exact
+          }
         }
       }
     }
   } catch (e) { /* فولباك تحت */ }
+  setGradeDisplayList(DEFAULT_GRADES.map(function (g) { return g.ar }))
   return DEFAULT_GRADES
 }
 

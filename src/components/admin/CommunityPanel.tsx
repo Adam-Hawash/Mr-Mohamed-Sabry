@@ -8,6 +8,7 @@ import { Send, Loader2, MessageSquare, Users, Pencil, Trash2, Check, X } from 'l
 import { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { gradesFromConfig, useAppStore, type Discussion } from '@/stores/app-store'
+import { gradeOptionLabel } from '@/lib/grade-badge'
 
 export function CommunityPanel() {
   // (24-b) قايمة الصفوف بقت ديناميكية من لوحة الأدمن بدل القايمة المحلية الثابتة
@@ -118,7 +119,7 @@ export function CommunityPanel() {
             >
               <option value="">اختر صف دراسي لإدارة مجتمعه | Select a grade</option>
               {GRADES.map((g) => (
-                <option key={g.ar} value={g.ar}>{(g.emoji ? g.emoji + ' ' : '') + g.ar}</option>
+                <option key={g.ar} value={g.ar}>{gradeOptionLabel(g)}</option>
               ))}
             </select>
             {selectedGrade && (

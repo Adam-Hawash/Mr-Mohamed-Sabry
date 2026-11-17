@@ -22,6 +22,7 @@ import { ArrowUpToLine, CalendarClock, CalendarPlus, ChevronDown, ChevronUp, Clo
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { gradesFromConfig, useAppStore, type GradeItem } from '@/stores/app-store'
+import { gradeOptionLabel } from '@/lib/grade-badge'
 
 // ===== مواعيد السنتر — نفس شكل src/app/schedule/page.tsx =====
 interface ScheduleSlot {
@@ -272,12 +273,32 @@ export function GradesSchedulePanel() {
         body: JSON.stringify({ key: 'grades_data', value: value }),
       })
       if (!res.ok) throw new Error('save failed')
-      // تحديث الكونفج في الستور فورًا (كل شاشات المنصة بتقرأ منه)
-      var st = useAppStore.getState()
-      st.setSiteConfig({ ...st.siteConfig, grades_data: value })
-      setOriginalGrades(grades.map(function (g) { return { ...g } }))
+      /* (ر6 — طلب المستر: «لما ادوس حفظ الصفوف تتحفظ بجد كلها، بيحفظ لي
+         حبة وحبة») بعد الحفظ بنجيب الكونفج من السيرفر من جديد ونزامن
+         اللوحة والستور عليه — يعني اللي بيظهر بعد الحفظ هو اللي اتخزن
+         بجد على السيرفر لكل الصفوف مرة واحدة، مش نسخة محلية */
+      var serverGrades: GradeItem[] | null = null
+      try {
+        var verify = await fetch('/api/config?fresh=' + Date.now(), { cache: 'no-store' })
+        if (verify.ok) {
+          var serverCfg = await verify.json()
+          if (serverCfg && typeof serverCfg.grades_data === 'string' && serverCfg.grades_data.trim() !== '') {
+            useAppStore.getState().setSiteConfig(serverCfg)
+            serverGrades = gradesFromConfig(serverCfg)
+          }
+        }
+      } catch (vE) { /* فولباك تحت — مزامنة محلية عادية */ }
+      if (!serverGrades) {
+        var st = useAppStore.getState()
+        st.setSiteConfig({ ...st.siteConfig, grades_data: value })
+        serverGrades = grades.map(function (g) { return { ...g } })
+      }
+      setOriginalGrades(serverGrades.map(function (g) { return { ...g } }))
+      if (!gradesDirtyRef.current) setGrades(serverGrades)
       gradesDirtyRef.current = false
-      toast.success('تم حفظ الصفوف الدراسية | Grades saved')
+      toast.success('تم حفظ الصفوف الدراسية كلها مرة واحدة | All ' + serverGrades.length + ' grades saved', {
+        description: 'القايمة اللي ظاهرة دلوقتي هي اللي اتخزنت على السيرفر بالحرف',
+      })
       // نشر إعادة التسمية على كل الطلاب والواجبات والامتحانات
       if (renames.length > 0) {
         try {
@@ -448,7 +469,8 @@ export function GradesSchedulePanel() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            الإيموجي بيظهر جنب اسم الصف في كل المنصة (فوق الصورة). لو غيرت اسم صف بالعربي واحفظت،
+            اكتب في خانة الشارة الحرف والرقم مع بعض (مثال: <span className="kbd-digits font-bold">ب4</span> أو <span className="kbd-digits font-bold">ع1</span> أو إيموجي 🎓)
+            — الشارة بتظهر في كل المنصة كلها في سوا واحد بأرقام كيبورد حقيقية. لو غيرت اسم صف بالعربي واحفظت،
             الاسم الجديد بيتنشر تلقائيًا على كل الطلاب والفيديوهات والواجبات والامتحانات.
           </p>
           {grades.map(function (g, idx) {
@@ -460,10 +482,10 @@ export function GradesSchedulePanel() {
                 <Input
                   value={g.emoji}
                   onChange={function (e) { updateGrade(idx, { emoji: e.target.value }) }}
-                  placeholder="6️⃣"
-                  maxLength={4}
-                  title="إيموجي الصف — اللي بيظهر فوق الصورة"
-                  className="w-14 text-center text-lg px-1 min-h-[38px]"
+                  placeholder="ب4"
+                  maxLength={8}
+                  title="شارة الصف — اكتب الحرف والرقم مع بعض (ب4) أو إيموجي — بتظهر في سوا واحد بأرقام كيبورد"
+                  className="w-16 text-center text-lg px-1 min-h-[38px]"
                 />
                 <Input
                   value={g.ar}
@@ -595,7 +617,7 @@ export function GradesSchedulePanel() {
                           >
                             <option value="">اختر الصف</option>
                             {slotGradeOptions.map(function (g) {
-                              return <option key={g.ar} value={g.ar}>{(g.emoji ? g.emoji + ' ' : '') + g.ar}</option>
+                              return <option key={g.ar} value={g.ar}>{gradeOptionLabel(g)}</option>
                             })}
                           </select>
                           <Button

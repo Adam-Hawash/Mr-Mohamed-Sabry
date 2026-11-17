@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { gradeVariants, storeGrade } from '@/lib/grade-names'
 
 // ============================================================
 // (24-b) نشر إعادة تسمية الصف الدراسي — طلب المستر:
@@ -53,12 +54,29 @@ export async function POST(request: NextRequest) {
       // ممنوع نغير اسم فاضي أو نعمل rename لنفس الاسم
       if (!from || !to || from === to) continue
 
+      /* (ر6) الاستبدال بي spread على كل الصيغ المخزنة للاسم القديم
+         (الخام + المعتمد + كل المفاتيح) والقيمة الجديدة بتتخزن
+         بالاسم المعتمد — فالتسمية بتنتشر بجد على كل البيانات */
+      var fromVariants: string[] = []
+      try {
+        fromVariants = gradeVariants(from)
+      } catch (vE) { fromVariants = [from] }
+      if (fromVariants.indexOf(from) === -1) fromVariants.push(from)
+      var toCanonical = storeGrade(to) || to
+      if (toCanonical === from) continue
+
+      var inList = ''
+      for (var v = 0; v < fromVariants.length; v++) {
+        if (inList !== '') inList += ', '
+        inList += "'" + esc(fromVariants[v]) + "'"
+      }
+
       for (var t = 0; t < GRADE_TABLES.length; t++) {
         var target = GRADE_TABLES[t]
         try {
           var sql =
-            'UPDATE "' + target.table + '" SET "' + target.column + '" = \'' + esc(to) +
-            '\' WHERE "' + target.column + '" = \'' + esc(from) + '\''
+            'UPDATE "' + target.table + '" SET "' + target.column + '" = \'' + esc(toCanonical) +
+            '\' WHERE "' + target.column + '" IN (' + inList + ')'
           var n = await db.$executeRawUnsafe(sql)
           var prev = typeof updated[target.table] === 'number' ? updated[target.table] : 0
           updated[target.table] = prev + Number(n || 0)
