@@ -56,7 +56,9 @@ export function Footer() {
   var cfg = siteConfig
   var portfolioUrl = cfg.hero_developer_url || FALLBACK_PORTFOLIO_URL
   var primeUrl = cfg.prime_developer_url || FALLBACK_PORTFOLIO_URL
-  var heroDevLabel = cfg.hero_developer_label || 'Hero Developer'
+  /* (ر5) توحيد اسم المطوّر بطلب المستر: Prime Developer في كل حتة —
+     والتوقيعين (سطر الفوتر + Powered by) مرتبطين بنفس القيمة */
+  var heroDevLabel = cfg.hero_developer_label || 'Prime Developer'
   var madeByLabel = cfg.footer_made_by_label || 'Developed by Adam Hawash'
   var brandName = pickConfig(cfg, 'footer_brand', lang, 'منصة الأوائل', 'منصة الأوائل')
   var copyrightText = pickConfig(cfg, 'footer_copyright', lang, 'جميع الحقوق محفوظة لـ آدم حواوش', 'All rights reserved to Adam Hawash')
@@ -145,6 +147,8 @@ export function Footer() {
         {/* Powered by Prime Developer + Developed by Adam Hawash */}
         <div className="mt-6 pt-4 border-t border-border/40 text-center">
           {/* (2026-و79) طلب المستر: الخط أكبر في الموبايل واللابتوب */}
+          {/* (ر5) Powered by بياخد نفس اسم المطوّر الموحّد — الاتنين مرتبطين ببعض:
+              لما الأدمن يكتب برايم ديفيلوبر يبقى كل الفوتر برايم ديفيلوبر */}
           <p className="text-sm sm:text-base font-bold text-foreground flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1">
             <span>Powered by</span>
             <a
@@ -153,7 +157,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="font-bold text-[#C49A38] hover:underline underline-offset-2 transition-colors"
             >
-              Prime Developer
+              {heroDevLabel}
             </a>
             <span className="text-muted-foreground">•</span>
             <a

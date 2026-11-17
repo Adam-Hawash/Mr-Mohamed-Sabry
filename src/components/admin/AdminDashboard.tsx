@@ -553,10 +553,10 @@ export function AdminDashboard() {
                     <Input value={resendApiKey} onChange={(e) => setResendApiKey(e.target.value)} placeholder="re_xxxxxxxxxxxx" dir="ltr" type="password" className="font-mono text-xs" />
                     <p className="text-[10px] text-muted-foreground">يُستخدم لإرسال إشعارات بالبريد للطلاب. احصل عليه من resend.com</p>
                   </div>
-                  {/* Hero Developer Portfolio URL */}
+                  {/* (ر5) Prime Developer Portfolio URL — توحيد اسم المطوّر بطلب المستر */}
                   <div className="border-t pt-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <p className="text-xs font-semibold text-muted-foreground">رابط Hero Developer Portfolio</p>
+                      <p className="text-xs font-semibold text-muted-foreground">رابط Prime Developer Portfolio</p>
                       <Button size="sm" variant="outline" onClick={async () => {
                         setHeroDevSaving(true)
                         try {
@@ -565,7 +565,7 @@ export function AdminDashboard() {
                             // Update siteConfig in store so footer/hero reflect instantly
                             const cfg = useAppStore.getState().siteConfig
                             useAppStore.getState().setSiteConfig({ ...cfg, hero_developer_url: heroDevUrl })
-                            toast.success('تم حفظ رابط Hero Developer')
+                            toast.success('تم حفظ رابط Prime Developer')
                           } else { toast.error('خطأ في الحفظ') }
                         } catch { toast.error('خطأ في الحفظ') }
                         setHeroDevSaving(false)
@@ -573,8 +573,8 @@ export function AdminDashboard() {
                         {heroDevSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
                       </Button>
                     </div>
-                    <Input value={heroDevUrl} onChange={(e) => setHeroDevUrl(e.target.value)} placeholder="https://hero-developer-portfolio-11.vercel.app" dir="ltr" type="url" className="font-mono text-xs" />
-                    <p className="text-[10px] text-muted-foreground">الرابط يظهر في الهيدر (Hero Developer) والفوتر (Developed by Adam Hawash). غيّره في أي وقت وبيتنعكس فوراً.</p>
+                    <Input value={heroDevUrl} onChange={(e) => setHeroDevUrl(e.target.value)} placeholder="https://prime-developer-portfolio-11.vercel.app" dir="ltr" type="url" className="font-mono text-xs" />
+                    <p className="text-[10px] text-muted-foreground">الرابط يظهر في الفوتر (Prime Developer + Powered by) والتوقيع (Developed by Adam Hawash). غيّره في أي وقت وبيتنعكس فوراً.</p>
                   </div>
                   {/* Payment Numbers */}
                   <div className="border-t pt-4 space-y-3">

@@ -213,6 +213,13 @@ var SCHEMA_FIXES = [
   // ===== (2026-و79) تصحيح اسم المطور (التهجئة المطلوبة من المستر: **Adam Hawash**) =====
   // أي قيمة مخزنة فيها 'Adham Hawash' (التهجئة القديمة) بتتصحح مرة واحدة هنا (idempotent)
   "UPDATE SiteConfig SET value = REPLACE(value, 'Adham Hawash', 'Adam Hawash') WHERE (key LIKE '%made_by%' OR key LIKE '%developer_label%') AND value LIKE '%Adham Hawash%'",
+  // ===== (ر5) توحيد اسم المطوّر — طلب المستر: «لما أكتب برايم ديفيلوبر يبقى
+  // كل اللي في المنصة برايم ديفيلوبر» — أي قيمة مخزنة فيها Hero Developer
+  // بتتصحح لـ Prime Developer مرة واحدة هنا (idempotent)
+  "UPDATE SiteConfig SET value = REPLACE(value, 'Hero Developer', 'Prime Developer') WHERE key = 'hero_developer_label' AND value LIKE '%Hero Developer%'",
+  /* (ر5) الفافيكون الرسمي اتحسم في layout.tsx على /pwa-icon-192.png (الصورة
+     الكاملة الجديدة) — favicon_url نفسها فاضلة لاستخدامها الشرعي في
+     إشعارات ولي الأمر (parent-notify) ومن غير أي ترحيل إجباري عليها */
   // ===== (2026-و31) صورة المعلم = الأساسية والبديلة (طلب المستر حرفيًا: «صورة المعلم
   // تكون هي الأساسية والبديلة، ما تحطش حاجة من دماغك») =====
   // روابط الصور القديمة (i.imghos.co) كانت متخزنة في الكاش عند الطلاب بصورة مش

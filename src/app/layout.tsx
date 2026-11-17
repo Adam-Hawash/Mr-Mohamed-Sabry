@@ -69,14 +69,10 @@ export default async function RootLayout({
     /* DB not available yet — client will fetch via /api/config */
   }
 
-  // Favicon: أيقونة المنصة الرسمية (صورة المستر باسم Mr. Mohamed Sabry) —
-  /* (2026-و112) أي favicon_url قديمة فيها لوجو Z = الأيقونة الرسمية
-     (نفس ترميم Zicola و73) — عشان نافذة كلمات السر في كروم تعرض
-     أيقونة كل منصة بتاعتها مش لوجو Z المشترك (طلب المستر) */
-  var faviconUrl = initialConfig.favicon_url || "/pwa-icon-192.png";
-  if (typeof faviconUrl !== "string" || faviconUrl === "" || faviconUrl.indexOf("logo.svg") !== -1) {
-    faviconUrl = "/pwa-icon-192.png";
-  }
+  /* (ر5) الفافيكون الرسمي = صورة المعلم الكاملة مربعة — طلب المستر حرفيًا:
+     «البابيكون عايزها صورة المستر كاملة... خليها مربع» — بقى ثابت مش بيتقرأ
+     من favicon_url القديمة المخزنة (اللي كانت صورة قاصصة وشه بس) */
+  var faviconUrl = "/pwa-icon-192.png";
 
   return (
     <html lang="ar" dir="rtl" translate="no" suppressHydrationWarning>

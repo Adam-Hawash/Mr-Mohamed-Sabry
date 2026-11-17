@@ -26,7 +26,9 @@ var DEFAULTS = {
   hero_stat3_value: '24/7',
   hero_stat3_label: 'Progress Tracking',
   hero_developer_url: 'https://prime-developer-portfolio-11.vercel.app',
-  hero_developer_label: 'Hero Developer',
+  /* (ر5) اسم المطوّر الموحّد — طلب المستر: «لما أكتب برايم ديفيلوبر يبقى
+     كل اللي في المنصة برايم ديفيلوبر» — Prime Developer مش Hero Developer */
+  hero_developer_label: 'Prime Developer',
   footer_made_by_label: 'Developed by Adam Hawash',
   prime_developer_url: 'https://prime-developer-portfolio-11.vercel.app',
 

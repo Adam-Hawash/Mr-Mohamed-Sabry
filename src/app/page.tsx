@@ -183,34 +183,58 @@ export default function HomePage() {
   const showFooter = currentView === 'landing'
   const showWhatsApp = currentView === 'landing' || currentView === 'auth-login' || currentView === 'auth-register'
 
-  // Full-page loading screen
+  /* (ر5) شاشة الدخلة الفخمة — طلب المستر حرفيًا:
+     «صورة المستر كاملة، المعلم كاملا، انت قاصص لي جايب لي وشه بس»
+     + «خليها مربع» + «الدخلة يكون فيها حرف الضاد أو لغة الضاد وحاجات بالعربي»
+     + «وتكون أفخم كده» — المعلم كامل في إطار مذهب مربع + ميدالية الضاد + لغة الضاد */
   if (!appReady) {
     return (
-      <div className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center gap-6">
-        <div className="relative">
-          <div className="absolute -inset-6 rounded-full bg-[#C49A38]/10 blur-xl" />
-          <div className="relative w-20 h-20 rounded-2xl bg-muted border border-[#C49A38]/30 flex items-center justify-center overflow-hidden">
-            {/* (2026-و97) صورة الفافيكون بتاعة المنصة بدل قبعة التخرج — طلب المستر
-                (2026-و97-B) الفافيكون الحقيقي = صورة المستر (زي الإنتاج بالظبط)
-                — مش لوجو Z: الفالب هنا لازم يكون نفس صورة الإنتاج */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={String(siteConfig.favicon_url || '/favicon.png')} alt="Mr. Mohamed Sabry" className="h-12 w-12 object-cover rounded-xl" />
+      <div className="fixed inset-0 z-[9999] overflow-hidden bg-[#0d0a07] flex flex-col items-center justify-center">
+        {/* خلفية فخمة: تدرج داكن + زخرفة المخطوطة العربية + توهجات مذهبة */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#241b10_0%,#0d0a07_70%)]" />
+        <div className="absolute inset-0 bg-[url('/images/hero-pattern.jpg')] bg-cover bg-center opacity-[0.07]" />
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[#C49A38]/10 blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-[#C49A38]/10 blur-3xl" />
+
+        <div className="relative z-10 flex flex-col items-center gap-5 px-6">
+          {/* وسم «لغة الضاد» — هوية عربية فخمة */}
+          <div className="flex items-center gap-2 rounded-full border border-[#C49A38]/50 bg-[#C49A38]/10 px-4 py-1.5">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-[#E9C766] to-[#8B6914] text-[15px] font-bold leading-none text-[#171208]" style={{ fontFamily: 'Amiri, serif' }}>ض</span>
+            <span className="text-sm font-bold text-[#E5BE5A]" style={{ fontFamily: 'Amiri, serif' }}>لغة الضاد</span>
           </div>
-        </div>
-        <div className="text-center space-y-3">
-          <h1 className="text-2xl font-bold text-foreground tracking-wide">
-            منصة <span className="text-[#8B6914] dark:text-[#E5BE5A]">الأوائل</span>
-          </h1>
-          {/* (ص2) إيموجيز اللغة العربية بدل الرياضيات */}
-          <div className="flex items-end justify-center gap-3 text-3xl leading-none" dir="ltr">
-            <span className="animate-bounce">📖</span>
-            <span className="animate-bounce [animation-delay:0.15s]">✍️</span>
-            <span className="animate-bounce [animation-delay:0.3s]">📚</span>
-            <span className="animate-bounce [animation-delay:0.45s]">🕌</span>
+
+          {/* صورة المستر كاملة — مربع بإطار مذهب مزدوج مش قاصصة وشه بس */}
+          <div className="relative mt-2">
+            <div className="absolute -inset-4 rounded-[1.75rem] bg-[#C49A38]/20 blur-2xl" />
+            <div className="relative h-40 w-40 rounded-[1.4rem] bg-gradient-to-br from-[#E9C766] via-[#C49A38] to-[#8B6914] p-[3px] shadow-[0_0_40px_rgba(196,154,56,0.35)]">
+              <div className="h-full w-full rounded-[1.3rem] border border-[#C49A38]/40 bg-[#0d0a07] p-[2px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/teacher-square.png" alt="مستر محمد صبري" className="h-full w-full rounded-[1.15rem] object-cover" />
+              </div>
+            </div>
+            {/* ميدالية حرف الضاد على ركن الإطار */}
+            <div className="absolute -top-3 -right-3 flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#171208] bg-gradient-to-br from-[#E9C766] to-[#8B6914] shadow-lg">
+              <span className="text-xl font-bold leading-none text-[#171208]" style={{ fontFamily: 'Amiri, serif' }}>ض</span>
+            </div>
           </div>
+
+          <div className="text-center space-y-1.5">
+            <h1 className="text-3xl font-bold tracking-wide text-[#E5BE5A] sm:text-4xl" style={{ fontFamily: 'Amiri, serif' }}>
+              منصة الأوائل
+            </h1>
+            <p className="text-sm text-[#C9B48A]" style={{ fontFamily: 'Amiri, serif' }}>مستر محمد صبري — اللغة العربية</p>
+          </div>
+
+          {/* فاصل زخرفي مذهب */}
+          <div className="flex items-center gap-2 text-[#C49A38]/70" aria-hidden="true">
+            <span className="h-px w-14 bg-gradient-to-l from-transparent to-[#C49A38]/70" />
+            <span className="text-lg leading-none" style={{ fontFamily: 'Amiri, serif' }}>✦</span>
+            <span className="h-px w-14 bg-gradient-to-r from-transparent to-[#C49A38]/70" />
+          </div>
+
           <div className="flex items-center gap-3 justify-center">
             <Loader2 className="h-4 w-4 animate-spin text-[#C49A38]" />
-            <p className="text-muted-foreground text-sm">جاري التحميل...</p>
+            <p className="text-sm text-[#C9B48A]">جاري التحميل...</p>
           </div>
         </div>
       </div>
