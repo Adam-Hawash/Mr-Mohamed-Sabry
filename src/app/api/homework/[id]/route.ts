@@ -72,7 +72,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'الواجب غير موجود' }, { status: 404 })
     }
 
-    if (body.scheduledAt === undefined && body.targetStudentIds === undefined && body.targetGroupIds === undefined) {
+    if (body.scheduledAt === undefined && body.targetStudentIds === undefined && body.targetGroupIds === undefined && body.grade === undefined && body.title === undefined) {
       return NextResponse.json({ error: 'لا توجد حقول للتعديل' }, { status: 400 })
     }
 
@@ -84,6 +84,16 @@ export async function PATCH(
       if (!tiN) return NextResponse.json({ error: 'الاسم مطلوب — اكتب الاسم الجديد' }, { status: 400 })
       if (tiN.length > 200) tiN = tiN.slice(0, 200)
       data.title = tiN
+    }
+
+    /* (ر1 — طلب المستر) تغيير صف الواجب بعد النشر: مثال سادسة → رابعة.
+       الأسئلة والتسليمات متتلمسش — الواجب بس بيتنقل للصف الجديد ويظهر
+       لطلاب الصف الجديد فورًا. */
+    if (body.grade !== undefined) {
+      var grN = String(body.grade == null ? '' : body.grade).trim()
+      if (!grN) return NextResponse.json({ error: 'الصف مطلوب — اختار الصف الجديد' }, { status: 400 })
+      if (grN.length > 120) grN = grN.slice(0, 120)
+      data.grade = grN
     }
 
     /* (2026-و26) استهداف الطلاب: array ids → JSON string (فاضي = الكل) */
