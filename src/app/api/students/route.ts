@@ -399,7 +399,11 @@ export async function GET(request: NextRequest) {
     }
 
     // ===== قائمة الطلاب (لوحة التحكم) =====
-    /* (ز32) قايمة الطلاب للأدمن بس — جلسة أدمن موقّعة + الباسوردات متتشال */
+    /* (ز32) قايمة الطلاب للأدمن بس — جلسة أدمن موقّعة.
+       (ر7 — طلب المستر) باسورد كل طالب ظاهر للأدمن زي بقية المنصات —
+       الزر 🔑 في اللوحة بيقريه وبيتيح نسخه وابعاده للطالب لما ينساه.
+       الفرع ده محمي بـ requireAdmin، وفرع دخول الطالب نفسه (فوق) لسه
+       بيشيل الباسورد من رده عادي — الباسورد مش بيوصل للطالب أبدًا. */
     var listDenied = await requireAdmin(request)
     if (listDenied) return listDenied
     var where: Record<string, unknown> = {}
@@ -460,7 +464,7 @@ export async function GET(request: NextRequest) {
 
     var studentsWithStats = students.map(function (s) {
       var safe: any = Object.assign({}, s)
-      delete safe.password
+      /* (ر7) الباسورد بيفضل موجود هنا عشان زر 🔑 في لوحة الأدمن — مسح فرع الطالب بس */
       return { ...safe, watchedVideoCount: watchMap[s.id] || 0, lastDeviceBlock: blockMap[s.id] || null }
     })
 

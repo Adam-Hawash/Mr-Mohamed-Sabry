@@ -23,6 +23,17 @@ var fadeInUp = {
 
 var TEXT_ONLY_REGEX = /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFFa-zA-Z\s]+$/
 var PHONE_REGEX = /^\d{11}$/
+/* (ر7 — عطل تأكيد الباسورد والأرقام العربية — طلب المستر):
+   الكيبورد العربي بيكتب ٠١٢٣٤٥٦٧٨٩ و`\d` في جافاسكريبت بيمسك اللاتيني بس،
+   فكان رقم التليفون بيتشال كله من الخانة وبتقول المنصة «مش مكتوب صح»،
+   والباسورد بيتكتب مرتين بأرقام شكلها واحد لكن قيمتهم مختلفة
+   فبتطلع «غير متطابقتين» رغم إنها متكتبة صح.
+   الحل: توحيد كل الأرقام (عربية + فارسية) للاتيني لحظة الكتابة. */
+function toLatinDigits(v) {
+  return String(v || '')
+    .replace(/[٠-٩]/g, function (d) { return String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)) })
+    .replace(/[۰-۹]/g, function (d) { return String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)) })
+}
 
 /* (2026-و29) تطبيع كلمة السر: أرقام عربية/فارسية ← لاتيني + شيل المسافات
    الطالب اللي كاتب باسورده بأرقام عربية (١٢٣٤٥٦) كان بياخد «الرقم أو الباسورد غلط»
@@ -86,7 +97,7 @@ function PhoneField(props) {
       <Label htmlFor={id} className="text-foreground">{placeholder} <span className="text-destructive">*</span></Label>
       <div className="relative">
         <Phone className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input id={id} placeholder={placeholder} value={value} onChange={function (e) { var v = e.target.value.replace(/[^\d]/g, ''); if (v.length <= 11) onChange(v) }} dir="ltr" className={'pr-10 min-h-[44px]' + (error ? ' border-destructive focus-visible:ring-destructive' : '')} maxLength={11} />
+        <Input id={id} placeholder={placeholder} value={value} onChange={function (e) { var v = toLatinDigits(e.target.value).replace(/[^\d]/g, ''); if (v.length <= 11) onChange(v) }} dir="ltr" className={'pr-10 min-h-[44px]' + (error ? ' border-destructive focus-visible:ring-destructive' : '')} maxLength={11} />
       </div>
       {error && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{error}</p>}
     </div>
@@ -122,7 +133,7 @@ function PasswordField(props) {
       <Label htmlFor={id} className="text-foreground">{placeholder} <span className="text-destructive">*</span></Label>
       <div className="relative">
         <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input id={id} type={show ? 'text' : 'password'} placeholder={placeholder} value={value} onChange={function (e) { onChange(e.target.value) }} dir="ltr" className={'pr-10 pl-10 min-h-[44px]' + (error ? ' border-destructive focus-visible:ring-destructive' : '')} autoComplete={id.includes('login') ? 'current-password' : 'new-password'} />
+        <Input id={id} type={show ? 'text' : 'password'} placeholder={placeholder} value={value} onChange={function (e) { onChange(toLatinDigits(e.target.value)) }} dir="ltr" className={'pr-10 pl-10 min-h-[44px]' + (error ? ' border-destructive focus-visible:ring-destructive' : '')} autoComplete={id.includes('login') ? 'current-password' : 'new-password'} />
         <button type="button" onClick={function() { setShow(!show) }} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer">
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
@@ -367,7 +378,7 @@ export function RegisterView() {
     if (!name4.trim()) e.name4 = 'مطلوب'; else if (!TEXT_ONLY_REGEX.test(name4.trim())) e.name4 = 'حروف فقط'
     if (!phone.trim()) e.phone = 'مطلوب'; else if (!PHONE_REGEX.test(phone.trim())) e.phone = 'يجب أن يكون 11 رقم بالضبط'
     if (!password.trim()) e.password = 'مطلوب'; else if (password.trim().length < 4) e.password = 'كلمة المرور يجب أن تكون 4 أحرف على الأقل'
-    if (password.trim() !== password2.trim()) e.password2 = 'كلمتا المرور غير متطابقتين'
+    if (toLatinDigits(password).trim() !== toLatinDigits(password2).trim()) e.password2 = 'كلمتا المرور غير متطابقتين'
     if (!grade) e.grade = 'مطلوب'
     if (!parentName1.trim()) e.parentName1 = 'مطلوب'; else if (!TEXT_ONLY_REGEX.test(parentName1.trim())) e.parentName1 = 'حروف فقط'
     if (!parentName2.trim()) e.parentName2 = 'مطلوب'; else if (!TEXT_ONLY_REGEX.test(parentName2.trim())) e.parentName2 = 'حروف فقط'

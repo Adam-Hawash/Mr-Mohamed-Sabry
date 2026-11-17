@@ -22,6 +22,16 @@ var fadeInUp = {
   visible: { opacity: 1, y: 0 },
 }
 
+/* (ر7 — عطل تأكيد الباسورد والأرقام العربية — طلب المستر): الكيبورد العربي
+   بيكتب ٠١٢٣٤٥٦٧٨٩ و`\d` بيمسك اللاتيني بس — فكان الرقم بيتشال من الخانة
+   («مش مكتوب صح») والباسورد بيتقارن بأرقام شكلها واحد وقيمتها مختلفة
+   («مش مطابق» رغم إنه مكتوب صح). الحل: توحيد كل الأرقام للاتيني لحظة الكتابة. */
+function toLatinDigits(v) {
+  return String(v || '')
+    .replace(/[٠-٩]/g, function (d) { return String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)) })
+    .replace(/[۰-۹]/g, function (d) { return String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)) })
+}
+
 function ParentPhoneField(props: any) {
   var value = props.value
   var onChange = props.onChange
@@ -33,7 +43,7 @@ function ParentPhoneField(props: any) {
       <Label htmlFor={id} className="text-foreground">{placeholder} <span className="text-destructive">*</span></Label>
       <div className="relative">
         <Phone className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input id={id} inputMode="numeric" placeholder={placeholder} value={value} onChange={function (e) { var v = e.target.value.replace(/[^\d]/g, ''); if (v.length <= 11) onChange(v) }} dir="ltr" className={'pr-10 min-h-[44px]' + (error ? ' border-destructive focus-visible:ring-destructive' : '')} maxLength={13} />
+        <Input id={id} inputMode="numeric" placeholder={placeholder} value={value} onChange={function (e) { var v = toLatinDigits(e.target.value).replace(/[^\d]/g, ''); if (v.length <= 11) onChange(v) }} dir="ltr" className={'pr-10 min-h-[44px]' + (error ? ' border-destructive focus-visible:ring-destructive' : '')} maxLength={13} />
       </div>
       {error && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{error}</p>}
     </div>
@@ -54,7 +64,7 @@ function ParentPasswordField(props: any) {
       <Label htmlFor={id} className="text-foreground">{placeholder} <span className="text-destructive">*</span></Label>
       <div className="relative">
         <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input id={id} type={show ? 'text' : 'password'} placeholder={placeholder} value={value} onChange={function (e) { onChange(e.target.value) }} dir="ltr" className={'pr-10 pl-10 min-h-[44px]' + (error ? ' border-destructive focus-visible:ring-destructive' : '')} autoComplete="new-password" />
+        <Input id={id} type={show ? 'text' : 'password'} placeholder={placeholder} value={value} onChange={function (e) { onChange(toLatinDigits(e.target.value)) }} dir="ltr" className={'pr-10 pl-10 min-h-[44px]' + (error ? ' border-destructive focus-visible:ring-destructive' : '')} autoComplete="new-password" />
         <button type="button" onClick={function () { setShow(!show) }} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer" aria-label="إظهار كلمة المرور">
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
@@ -113,7 +123,7 @@ export function ParentRegisterView() {
     if (!parentPhone.trim()) e.parentPhone = 'مطلوب'
     if (!parentPassword.trim()) e.parentPassword = 'مطلوب'
     else if (parentPassword.trim().length < 4) e.parentPassword = '4 أحرف على الأقل'
-    if (parentPassword2.trim() && parentPassword.trim() !== parentPassword2.trim()) e.parentPassword2 = 'مش مطابق'
+    if (parentPassword2.trim() && toLatinDigits(parentPassword).trim() !== toLatinDigits(parentPassword2).trim()) e.parentPassword2 = 'مش مطابق'
     setErrors(e)
     if (Object.keys(e).length > 0) { toast.error('الرجاء إكمال الحقول المشار إليها'); return }
     setLoading(true)

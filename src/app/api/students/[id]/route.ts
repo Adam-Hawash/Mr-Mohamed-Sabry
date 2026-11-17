@@ -37,9 +37,10 @@ export async function GET(
       return NextResponse.json({ error: 'Student not found' }, { status: 404 })
     }
 
-    /* (ز32) الباسورد ممنوع يخرج من السيرفر أبدًا */
+    /* (ز32 + ر7 — طلب المستر) جلسة الطالب نفسه: الباسورد ممنوع يخرج بيها أبدًا.
+       الأدمن: يشوف باسورد الطالب زي بقية المنصات (زر 🔑 في اللوحة). */
     var safeStudent: any = Object.assign({}, student)
-    delete safeStudent.password
+    if (!adminOk) delete safeStudent.password
     return NextResponse.json({ student: safeStudent })
   } catch (error) {
     console.error('Student detail error:', error)
