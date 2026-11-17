@@ -56,11 +56,8 @@ export function Footer() {
   var cfg = siteConfig
   var portfolioUrl = cfg.hero_developer_url || FALLBACK_PORTFOLIO_URL
   var primeUrl = cfg.prime_developer_url || FALLBACK_PORTFOLIO_URL
-<<<<<<< HEAD
   /* (ر5) توحيد اسم المطوّر بطلب المستر: Prime Developer في كل حتة —
      والتوقيعين (سطر الفوتر + Powered by) مرتبطين بنفس القيمة */
-=======
->>>>>>> ae4201f (ر6: طلب المستر حرفيًا — «خط الارقام العربية زي الحقيقية بالظبط زي اللي في الكيبورد» + «مكتوب 6 ب مش كلها في سوا واحد — عايزهم كلهم في سوا واحد» + «لما ادوس حفظ الصفوف تتحفظ بجد كلها، بيحفظ لي حبة وحبة»)
   var heroDevLabel = cfg.hero_developer_label || 'Prime Developer'
   var madeByLabel = cfg.footer_made_by_label || 'Developed by Adam Hawash'
   var brandName = pickConfig(cfg, 'footer_brand', lang, 'منصة الأوائل', 'منصة الأوائل')
