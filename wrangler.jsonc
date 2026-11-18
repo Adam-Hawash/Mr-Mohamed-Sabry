@@ -1,0 +1,20 @@
+/* (ر8) إعداد نشر منصة مستر محمد صبري على Cloudflare Workers عبر OpenNext:
+   - main: ناتج البناء .open-next/worker.js (بيصنعه @opennextjs/cloudflare)
+   - assets: الملفات الثابتة (/_next/static وpublic) بتتصفر من CDN مجانًا بلا حدود
+   - nodejs_compat: عشان Prisma/web-push/SDK تشتغل في بيئة Workers
+   - اسم الجوب والمتغيرات البيئية (TURSO_DATABASE_URL وTURSO_AUTH_TOKEN) بتتحط
+     من لوحة كلاود فلير أو من ملف .dev.vars محليًا — مش هنا. */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mr-mohamed-sabry",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

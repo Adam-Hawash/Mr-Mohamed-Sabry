@@ -29,6 +29,16 @@ export async function withRetry(fn, retries, delayMs) {
 }
 
 function createPrismaClient() {
+  /* (ر8) حارس كلاود فلير — في Workers مفيش قرص وملف SQLite مستحيل يشتغل؛
+     لازم قاعدة Turso سحابية (مجانية 100% من غير بطاقة) — لو متغيرات Turso مش موجودة
+     بنرمي رسالة عربية واضحة بدل خطأ Prisma غامض */
+  if (typeof navigator !== 'undefined' && (navigator as any).userAgent === 'Cloudflare-Workers') {
+    var cfUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || ''
+    if (cfUrl.indexOf('libsql://') !== 0 && cfUrl.indexOf('https://') !== 0) {
+      throw new Error('منصة المستر على كلاود فلير محتاجة قاعدة بيانات Turso — ضيف TURSO_DATABASE_URL و TURSO_AUTH_TOKEN في متغيرات البيئة (Settings → Variables and Secrets)')
+    }
+  }
+
   var dbUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || 'file:./db/custom.db'
 
   // Prisma's generated client still reads DATABASE_URL at runtime. Mirror

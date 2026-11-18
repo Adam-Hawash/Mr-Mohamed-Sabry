@@ -16,6 +16,8 @@ import { db } from '@/lib/db'
 import { splitMergedRegion } from '@/lib/figure-demerger'
 /* (ز42) حارس الحبر — لصق القص الفاضي على أقرب رسمة حقيقية (نفس منطق المتصفح) */
 import { snapCropFromPx } from '@/lib/figure-locator'
+/* (ر8) استيراد معتم للباكدجات الـ Node-only — عشان بناء كلاود فلير ما يقعش على ملفات .node */
+import { importNodeOnly } from '@/lib/node-only-import'
 
 /* تطبيع bbox ذكي — النموذج ساعات بيرجع مقياس 0..1000 (بروتوكول Gemini)
    بدل 0..1 — بنكتشف ده ونحوّله، وإلا بيتقفل في sanitize (قيمة >1) والقص
@@ -161,14 +163,14 @@ export async function cropFiguresServerSide(
     /* (و50) وضع الصفحات الجاهزة (مسار ai-extract-pages) — قص مباشر من صور الصفحات */
     if (Array.isArray(src.pages) && src.pages.length > 0) {
       var canvasByPage: Record<number, any> = {}
-      var { createCanvas: cc1 } = await import('@napi-rs/canvas')
+      var { createCanvas: cc1 } = await importNodeOnly('@napi-rs/canvas')
       for (var pi = 0; pi < src.pages.length; pi++) {
         var pg = src.pages[pi]
         if (!pg || typeof pg.n !== 'number' || !pg.base64) continue
         try {
           var pbuf = Buffer.from(pg.base64, 'base64')
           if (!pbuf || pbuf.length === 0) continue
-          var { loadImage: li1 } = await import('@napi-rs/canvas')
+          var { loadImage: li1 } = await importNodeOnly('@napi-rs/canvas')
           var pimg = await li1(pbuf)
           var pc = cc1(pimg.width, pimg.height)
           var pctx = pc.getContext('2d')
@@ -213,16 +215,16 @@ export async function cropFiguresServerSide(
        pdf.js — pdf.js بياخد نسخة من الكلاسات العالمية وقت الاستيراد، لو
        Path2D/DOMMatrix مش موجودين بيستخدم شكله الداخلي وnapi canvas يرفضه
        بخطأ «Value is none of these types String, Path» والقص يفشل كله) */
-    var { createCanvas, DOMMatrix, Path2D, ImageData } = await import('@napi-rs/canvas')
+    var { createCanvas, DOMMatrix, Path2D, ImageData } = await importNodeOnly('@napi-rs/canvas')
     if (!(globalThis as any).DOMMatrix) (globalThis as any).DOMMatrix = DOMMatrix
     if (!(globalThis as any).Path2D) (globalThis as any).Path2D = Path2D
     if (!(globalThis as any).ImageData) (globalThis as any).ImageData = ImageData
-    var pdfjs: any = await import('pdfjs-dist/legacy/build/pdf.mjs')
+    var pdfjs: any = await importNodeOnly('pdfjs-dist/legacy/build/pdf.mjs')
     /* (Z-40e) تسجيل worker الـ pdf.js صراحة — على فيرسل الـ import الداخلي
        بتاع pdf.worker.mjs مش بيتتبع فالملف بيتبعد عن النشر ويقع «fake worker»
        — الاستيراد الصريح بيخلي الباندلر يشمله وبنسجله في globalThis زي ما pdf.js بيفحصه الأول */
     try {
-      var wmod: any = await import('pdfjs-dist/legacy/build/pdf.worker.mjs')
+      var wmod: any = await importNodeOnly('pdfjs-dist/legacy/build/pdf.worker.mjs')
       if (wmod && !(globalThis as any).pdfjsWorker) (globalThis as any).pdfjsWorker = wmod
     } catch (eW) {}
 
@@ -303,7 +305,7 @@ async function cropOne(
     var pageCanvas = await getPageCanvas(page)
     if (!pageCanvas) return false
 
-    var { createCanvas } = await import('@napi-rs/canvas')
+    var { createCanvas } = await importNodeOnly('@napi-rs/canvas')
     /* (و52) padding حوالين bbox — رسمة السؤال هامش أكبر، رسومات الاختيارات
        أقل (العناوين جنب بعض عشان ماحضنش رسمة الاختيار اللي جنبه) */
     /* (2026-و109) 5% بدل 2.5% — لو bbox الـ AI أصغر من الرسمة الحقيقية،
@@ -336,7 +338,7 @@ async function cropOne(
        في مكان غلط على الصفحة) بنلصقها على أقرب كتلة محتوى حقيقية مكشوفة
        من بكسلات الصفحة نفسها — نفس منطق المتصفح بالظبط */
     try {
-      var { createCanvas: ccA } = await import('@napi-rs/canvas')
+      var { createCanvas: ccA } = await importNodeOnly('@napi-rs/canvas')
       var longestA = Math.max(pageCanvas.width, pageCanvas.height) || 1
       var scaleA = Math.min(1, 760 / longestA)
       var wA = Math.max(8, Math.round(pageCanvas.width * scaleA))
@@ -391,7 +393,7 @@ async function cropOne(
 /* صورة مفردة → canvas (صفحة 1) */
 async function imageToCanvas(buf: Buffer): Promise<any | null> {
   try {
-    var { createCanvas, loadImage } = await import('@napi-rs/canvas')
+    var { createCanvas, loadImage } = await importNodeOnly('@napi-rs/canvas')
     var img = await loadImage(buf)
     var canvas = createCanvas(img.width, img.height)
     var ctx = canvas.getContext('2d')

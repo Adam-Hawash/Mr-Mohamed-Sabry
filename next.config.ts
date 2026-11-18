@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 
+/* (ر8) بناء كلاود فلير — لما CLOUDFLARE=1:
+   - الصور unoptimized (تحسين الصور بتاع next/image محتاج R2 وبطاقة)
+   - منستثنيش ملفات التتبع الـ Node-only (canvas/pdfjs) عشان ما تدخلش في حزمة Workers */
+var isCfBuild = process.env.CLOUDFLARE === '1'
+
 const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
   reactStrictMode: false,
@@ -9,7 +14,7 @@ const nextConfig: NextConfig = {
      من الدومين ده → الصفحة بتفضل بنسخة قديمة/ناقصة وأي عملية حفظ بتقرا HTML
      بدل JSON. اسمحنا بكل نطاقات البريفيو هنا. */
   allowedDevOrigins: ['localhost', '127.0.0.1', '**.space-z.ai', '*.space-z.ai', 'space-z.ai'],
-  serverExternalPackages: [
+  serverExternalPackages: isCfBuild ? [] : [
     '@libsql/client',
     '@prisma/adapter-libsql',
     '@libsql/isomorphic-fetch',
@@ -21,7 +26,7 @@ const nextConfig: NextConfig = {
   /* (و50) كل أصول القص السيرفري لازم توصل مع الدالة على Vercel:
      خطوط pdf.js + باكجات napi canvas الأصلية (.node binaries) — من غيرها
      import('@napi-rs/canvas') بيقع في اللambda والقص بيفشل بصمت بالكامل */
-  outputFileTracingIncludes: {
+  outputFileTracingIncludes: isCfBuild ? {} : {
     /* (ص2) قاعدة SQLite المرفوعة لازم توصل مع كل راوتات الـ API على Vercel
        — db.ts بينسخها لـ /tmp ويكتب فيها */
     '/api/**': ['./db/custom.db'],
@@ -51,6 +56,8 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion', 'embla-carousel-react', 'react-day-picker', 'date-fns'],
   },
   images: {
+    /* (ر8) على كلاود فلير: unoptimized — تحسين الصور السيرفري مش متاح من غير R2 (محتاج بطاقة) */
+    ...(isCfBuild ? { unoptimized: true } : {}),
     remotePatterns: [
       { protocol: 'https', hostname: '**' },
       { protocol: 'http', hostname: '**' },

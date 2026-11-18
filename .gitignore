@@ -15,3 +15,6 @@ Caddyfile
 public/uploads/
 prisma/upload/
 /upload/
+.open-next/
+.vercel/
+.wrangler/

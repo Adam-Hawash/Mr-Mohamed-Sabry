@@ -12,6 +12,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdmin } from '@/lib/video-guard'
+/* (ر8) استيراد معتم للباكدجات الـ Node-only — عشان بناء كلاود فلير ما يقعش على ملفات .node */
+import { importNodeOnly } from '@/lib/node-only-import'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -54,7 +56,7 @@ export async function GET(request: NextRequest) {
     }
 
     /* PDF → رندر سيرفري بنفس طبقة /api/crop-figures (napi canvas قبل استيراد pdf.js) */
-    var { createCanvas, DOMMatrix, Path2D, ImageData } = await import('@napi-rs/canvas')
+    var { createCanvas, DOMMatrix, Path2D, ImageData } = await importNodeOnly('@napi-rs/canvas')
     if (!(globalThis as any).DOMMatrix) (globalThis as any).DOMMatrix = DOMMatrix
     if (!(globalThis as any).Path2D) (globalThis as any).Path2D = Path2D
     if (!(globalThis as any).ImageData) (globalThis as any).ImageData = ImageData
@@ -63,10 +65,10 @@ export async function GET(request: NextRequest) {
        الاستيراد الصريح بيخلي الباندلر يشمله + بنسجله في globalThis زي ما
        pdf.js بيفحصه الأول في setupFakeWorkerGlobal */
     try {
-      var wmod: any = await import('pdfjs-dist/legacy/build/pdf.worker.mjs')
+      var wmod: any = await importNodeOnly('pdfjs-dist/legacy/build/pdf.worker.mjs')
       if (wmod && !(globalThis as any).pdfjsWorker) (globalThis as any).pdfjsWorker = wmod
     } catch (eW) {}
-    var pdfjs: any = await import('pdfjs-dist/legacy/build/pdf.mjs')
+    var pdfjs: any = await importNodeOnly('pdfjs-dist/legacy/build/pdf.mjs')
 
     var pathMod = await import('path')
     var fsMod = await import('fs')
