@@ -6,6 +6,8 @@ import { Footer } from '@/components/landing/Footer'
 /* (ص5) الديزاين الأصلي: شريط الحكم المتحرك + تأثير الظهور مع السكرول */
 import { ProverbsMarquee } from '@/components/landing/ProverbsMarquee'
 import { Reveal } from '@/components/landing/Reveal'
+/* (ر10) معلومة/حكمة اليوم — عامة للكل على الرئيسية وتفضل ثابتة بعد الدخول — X يقفلها بس */
+import { DailyInfoToast } from '@/components/student/DailyInfoToast'
 import { StudentPendingView } from '@/components/landing/StudentPendingView'
 import { StudentPaymentView } from '@/components/landing/StudentPaymentView'
 import { LoginView, RegisterView } from '@/components/landing/AuthPages'
@@ -245,6 +247,11 @@ export default function HomePage() {
     <div className={'min-h-screen flex flex-col' + (currentView === 'landing' ? ' sabry-v1' : '')}>
       <VideoProtection />
       <Navbar />
+
+      {/* (ر10) معلومة/حكمة اليوم بطلب المستر — عامة للكل على الصفحة الرئيسية
+          جنب الهيرو سيكشن حتى اللي مش مسجلين، وبتفضل ثابتة معاه حتى بعد تسجيل
+          الدخول — وبتتقفل بس لما يدوس على الـ X — من غير أي وقت خالص */}
+      {currentView !== 'admin-dashboard' && <DailyInfoToast />}
 
       {currentView === 'landing' && (
         <main className="flex-1">
