@@ -22,8 +22,10 @@ import {
   PlayCircle, Pause, Film, Search, FileDown, PictureInPicture2, Save, Sparkles, Wallet,
   Video as VideoIcon, LinkIcon, MonitorPlay, Send,
   MessageCircle, Copy,
-  ChevronLeft, CheckCircle2, Smartphone, RotateCcw, ShieldCheck, Monitor, Tablet, Flag, GraduationCap, UsersRound, PieChart, BookOpen, ChevronDown, Wrench, Brain, Swords
+  ChevronLeft, CheckCircle2, Smartphone, RotateCcw, ShieldCheck, Monitor, Tablet, Flag, GraduationCap, UsersRound, PieChart, BookOpen, ChevronDown, Wrench, Brain, Swords, Lightbulb
 } from 'lucide-react'
+/* (ر9) معلومة اليوم / حكمة اليوم — منقولة من منصة مستر شريف بالحرف */
+import { DailyInfoAdmin } from './DailyInfoAdmin'
 import { AdminComplaints } from './AdminComplaints'
 import { CMSPanel } from './CMSPanel'
 /* (و64) الترجمة الحقيقية عربي/إنجليزي — الزراير الموحدة في النافبار */
@@ -468,6 +470,8 @@ export function AdminDashboard() {
             <TabsTrigger value="mindmaps" className="text-xs sm:text-sm gap-1 text-violet-600 dark:text-violet-400"><Brain className="h-4 w-4" /><span className="hidden sm:inline">{T('الخرائط الذهنية', 'Mind Maps')}</span></TabsTrigger>
             {/* (2026-و66) تحدي المستر — نزّل تحدي وادخل بنفسك */}
             <TabsTrigger value="teacher-challenge" className="text-xs sm:text-sm gap-1 text-amber-600 dark:text-amber-400"><Swords className="h-4 w-4" /><span className="hidden sm:inline">{T('تحدي المستر', 'Challenge')}</span></TabsTrigger>
+            {/* (ر9) معلومة اليوم / حكمة اليوم — كتابة/ملف كامل + عدد أيام + تقسيم تلقائي */}
+            <TabsTrigger value="daily-info" className="text-xs sm:text-sm gap-1 text-sky-600 dark:text-sky-400"><Lightbulb className="h-4 w-4" /><span className="hidden sm:inline">{T('معلومة اليوم', 'Daily Info')}</span></TabsTrigger>
           </TabsList>
 
           <TabsContent value="students"><StudentsManager onStatsRefresh={fetchStats} onViewImage={setImageModalSrc} /></TabsContent>
@@ -506,6 +510,8 @@ export function AdminDashboard() {
           <TabsContent value="mindmaps"><MindMapStudio /></TabsContent>
           {/* (2026-و66) تحدي المستر — سؤال صعب أسبوعي + لوحة ترتيب + دخول المستر بنفسه */}
           <TabsContent value="teacher-challenge"><TeacherChallengePanel /></TabsContent>
+          {/* (ر9) معلومة اليوم / حكمة اليوم — معلومة واحدة أو ملف كامل يتقسم معلومة لكل يوم */}
+          <TabsContent value="daily-info"><DailyInfoAdmin adminId={(currentAdmin && currentAdmin.id) || ''} /></TabsContent>
         </Tabs>
 
         {/* Admin Settings Dialog */}

@@ -35,6 +35,8 @@ import { MindMapView } from '@/components/student/MindMapView'
 import type { MindMapData } from '@/lib/question-gen'
 import { FractionText } from '@/components/FractionText'
 import BidiText from '@/components/BidiText'
+/* (ر9) معلومة اليوم / حكمة اليوم — إشعار كبير من الشمال أول ما الطالب يفتح */
+import { DailyInfoToast } from '@/components/student/DailyInfoToast'
 /* (و64) الترجمة الحقيقية عربي/إنجليزي — الزراير الموحدة في النافبار */
 import { useT } from '@/lib/i18n'
 /* (2026-و59) الشارات الحمراء جنب التابات — بدل الجرس المشيل نهائيًا
@@ -545,6 +547,8 @@ function StudentPortalInner() {
 
   return (
     <div className="flex-1 flex flex-col">
+      {/* (ر9) معلومة/حكمة اليوم — إشعار كبير ينزلق من الشمال + X + إغلاق تلقائي 30 ثانية */}
+      <DailyInfoToast studentId={studentId} />
       {/* Top Bar */}
       <div className="border-b px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
