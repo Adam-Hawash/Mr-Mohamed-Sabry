@@ -81,7 +81,9 @@ export default function HeroSection() {
   var teacherName = C('hero_title_line2', 'مستر محمد صبري')
   var badge = C('hero_badge', 'منصّة اللغة العربية | Arabic Language Platform')
   var subtitle = C('hero_subtitle', 'نُحبّ العربية ونقرّبها لابنك! نحو وبلاغة وإعراب وإملاء بأسلوب مبسّط — دروس مشروحة، واجبات أسبوعية، امتحانات منتظمة، ومتابعة مستمرة لتقدّمه الأكاديمي.')
-  var photo = C('instructor_photo', '/images/hero-bg.png')
+  /* (ر14) الافتراضي بقى teacher.jpg (زي /api/config بالظبط) بدل hero-bg.png
+     (265KB) — ولو الأدمن مغيرش الصورة التحميل يبقى أخف */
+  var photo = C('instructor_photo', '/images/teacher.jpg')
   /* (ص119) شكل صورة المستر: '1' بإطار التذهيب / '0' بدون إطار (الافتراضي —
      زي منصة مستر أحمد شعبان) — بيتغير من لوحة الأدمن لحظيًا */
   var framed = C('hero_photo_frame', '0') === '1'
@@ -246,10 +248,13 @@ export default function HeroSection() {
                   <div className="relative aspect-square overflow-hidden rounded-lg bg-night-800">
                     {/* خلفية لغة الضاد — ض عملاق دهبي + زخارف */}
                     <DadBackdrop />
-                    {/* صورة المعلم كاملة من غير قص — object-contain */}
+                    {/* صورة المعلم كاملة من غير قص — object-contain
+                        (ر14) fetchPriority=high — المتصفح بيجهزها قبل أي حاجة تانية */}
                     <img
                       src={photo}
                       alt={'صورة ' + teacherName}
+                      fetchPriority="high"
+                      decoding="async"
                       className="absolute inset-0 h-full w-full object-contain object-bottom"
                     />
                     {/* لمعة التذهيب على حافة الصورة */}
@@ -266,10 +271,13 @@ export default function HeroSection() {
               </div>
             ) : (
               /* (ص121+ص122) بدون إطار — القصاصة بتطلع عايمة نضيفة.
-                 الصورة بـ object-contain عشان متتقصش */
+                 الصورة بـ object-contain عشان متتقصش
+                 (ر14) fetchPriority=high — المتصفح بيجهزها قبل أي حاجة تانية */
               <img
                 src={photo}
                 alt={'صورة ' + teacherName}
+                fetchPriority="high"
+                decoding="async"
                 className="relative z-10 mx-auto max-h-[520px] w-full object-contain object-bottom drop-shadow-[0_24px_45px_rgba(0,0,0,0.55)]"
               />
             )}

@@ -74,6 +74,14 @@ export default async function RootLayout({
      من favicon_url القديمة المخزنة (اللي كانت صورة قاصصة وشه بس) */
   var faviconUrl = "/pwa-icon-192.png";
 
+  /* (ر14) صورة المستر في الهيرو — بنعملها preload من الـ head نفسه عشان
+     التحميل يبدأ مع أول سطر HTML (طلب المستر: «عاوزها اول ما تفتح تحمل
+     تكون سريعة») — كانت بتستنى الهيدريشن والديناميك إمبرت بتاع الهيرو
+     وبتظهر متأخرة على صورة النقاط. الرابط نفس اللي الهيرو بيقراه:
+     instructor_photo من قاعدة البيانات (حاليًا /api/files/...)
+     أو teacher.jpg الافتراضية */
+  var heroPhotoUrl = String(initialConfig.instructor_photo || "/images/teacher.jpg");
+
   return (
     <html lang="ar" dir="rtl" translate="no" suppressHydrationWarning>
       <head>
@@ -115,6 +123,9 @@ export default async function RootLayout({
         <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="/splash-1125x2436.png" />
         <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="/splash-828x1792.png" />
         <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/splash-750x1334.png" />
+
+        {/* (ر14) تحميل صورة المستر يبدأ فورًا مع الـ HTML — مش بعد الهيدريشن */}
+        <link rel="preload" as="image" href={heroPhotoUrl} fetchPriority="high" />
 
         {/* Inject config server-side for instant client access */}
         <script

@@ -162,9 +162,12 @@ export async function GET(
         'Content-Type': contentType,
         'Content-Disposition': disposition,
         // الفيديو محمي فمفيش كاش عام عليه — الصور تنكاش عادي
+        // (ر14) سماحية الكاش على إيدج Vercel كمان (s-maxage): صورة المستر
+        // بتتخزن على الحافة فأول ما المنصة تفتح التحميل بيبقى سريع —
+        // ومحتوى الملف بإيد ثابت (كل ملف جديد بياخد id جديد) ف immutable سليم
         'Cache-Control': String(contentType).startsWith('video/')
           ? 'private, no-store'
-          : 'public, max-age=31536000, immutable',
+          : 'public, max-age=31536000, s-maxage=31536000, immutable',
         'Accept-Ranges': 'bytes',
       },
     })
