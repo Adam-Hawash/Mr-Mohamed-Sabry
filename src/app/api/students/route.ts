@@ -255,11 +255,11 @@ export async function GET(request: NextRequest) {
         if (!password || normPwd(student.password) !== normPwd(password)) {
           return NextResponse.json({ students: [], total: 0, page: 1, pageSize: 1, totalPages: 0, reason: 'wrong_password' }, { headers: noStore })
         }
-        // الحسابات المرفوضة ممنوع تدخل خالص
+        // الحسابات المرفوضة ممنوع تدخل خالص (ر15 — رسالة عربية بكلمات المستر الحرفية)
         var st = (student as any).status
         if (st === 'rejected' || st === 'refused') {
           return NextResponse.json(
-            { students: [], deviceBlocked: false, error: '❌ Your account has been rejected from the platform. If you have any questions, contact the teacher' },
+            { students: [], deviceBlocked: false, error: '⛔ حسابك اترفض من المنصة — لو عندك استفسار كلم المستر وهو اللي يقدر يرجّع حسابك من لوحة التحكم' },
             { status: 403 }
           )
         }
@@ -543,7 +543,7 @@ export async function POST(request: NextRequest) {
         var dupSt = String((dup as any).status || '')
         if (dupSt === 'rejected' || dupSt === 'refused') {
           return NextResponse.json(
-            { error: '❌ Your account has been rejected from the platform. If you have any questions, contact the teacher' },
+            { error: '⛔ حسابك اترفض من المنصة — لو عندك استفسار كلم المستر وهو اللي يقدر يرجّع حسابك من لوحة التحكم' },
             { status: 403 }
           )
         }

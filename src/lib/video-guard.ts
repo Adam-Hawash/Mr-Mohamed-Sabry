@@ -432,3 +432,27 @@ export function safeThumb(video: { thumbnail?: string; url?: string; id: string 
   if (getYouTubeId(video.url || '')) return '/api/video-thumb/' + video.id
   return ''
 }
+
+// ============================================================
+// حارس الفيديو — (ر15 — طلب المستر الحرفي)
+// ============================================================
+// «انا عاوز اي حد يفتح في الفيديو سواء من التلات نقط أو الفيديو يفتح
+//  ذات نفسه — يلاقي اشعار بعد تنازلي 10 ثواني — لو ما قفلهوش
+//  هحاول اجيب لينك الفيديو — حسابه هيترفض من المنصة تماما»
+//
+// ملاحظة معمارية (ر15): الملف ده سيرفري أصلًا (توكنات/تشغيل الفيديو)
+// — ممنوع مكونات الكلاينت تستورده مباشرة عشان crypto/db ما تدخلش في
+// باندل المتصفح. الكلاينت بيستورد التوين الآمن من '@/lib/video-guard-client'
+// (بنفس اسم الإشارة بالحرف) — والـ VideoCountdownGuard اللي مركب في
+// layout.tsx بيسمع الإشارة دي ويشغّل العد التنازلي على المنصة كلها.
+// ============================================================
+
+export var VIDEO_OPENED_EVENT = 'mg_video_opened'
+
+export function notifyVideoOpened() {
+  try {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(VIDEO_OPENED_EVENT))
+    }
+  } catch (e) {}
+}

@@ -8,6 +8,7 @@ import { RadixDirection } from "@/components/RadixDirection";
 import { AIAssistant } from "@/components/student/AIAssistant";
 import { RecordingGuard } from "@/components/RecordingGuard";
 import { DevToolsGuard } from "@/components/DevToolsGuard";
+import { VideoCountdownGuard } from "@/components/security/VideoCountdownGuard";
 import { SecurityBridge } from "@/components/SecurityBridge";
 import { FloatingInstallButton } from "@/components/InstallPwaButton";
 import { DeviceMessages } from "@/components/DeviceMessages";
@@ -155,6 +156,8 @@ export default async function RootLayout({
         <RecordingGuard />
         {/* (ز19) حارس أدوات المطوّر — شاشة سودة + عداد 35 ثانية + مسح الحساب (طلب المستر) */}
         <DevToolsGuard />
+        {/* (ر15) حارس الفيديو — أي فتح فيديو في المنصة بيطلق تنبيه بعد تنازلي 10 ثواني — الصفر من غير قفل = رفض الحساب نهائيًا والرجوع من صفحة الأدمن فقط (طلب المستر الحرفي) */}
+        <VideoCountdownGuard />
         <SecurityBridge />
         <Toaster />
         {/* Toaster بتاع sonner — كل رسائل التنبيه في المنصة بتستخدمه (toast من sonner) */}
