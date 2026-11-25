@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@napi-rs/canvas": "^1.0.9",
+    "@libsql/client": "^0.8.1",
+    "picocolors": "^1.1.1",
     "@prisma/adapter-libsql": "^6.19.3",
     "@prisma/client": "^6.19.3",
     "@radix-ui/react-alert-dialog": "^1.1.23",
